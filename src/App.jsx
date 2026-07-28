@@ -27,7 +27,7 @@ const COUPLE = {
   rsvpDeadline: 'January 15, 2027',
   airport: 'John Wayne Airport (SNA)',
   airportDistance: 'Approx. 30 min via I-405 & CA-133',
-  brandName: 'happi:ai',
+  brandName: 'SO HAPPI',
 }
 
 const STORY_MILESTONES = [
@@ -83,15 +83,15 @@ const HOTELS = [
 const FAQ_ITEMS = [
   {
     q: "What's the parking situation?",
-    a: "Valet is available at Montage — but honestly, don't drive. This is your night to actually celebrate. Rideshare in, rideshare home. PCH at midnight is not the move.",
+    a: "Valet is available at Montage, but we'd love for you to rideshare. PCH at midnight is not the move.",
   },
   {
     q: "I heard the ceremony is outdoors. Will it be cold?",
-    a: "Laguna Beach in late March is typically 60–65°F by evening. The ceremony and cocktail hour are on the grass. Bring a wrap — the ocean breeze is real and you'll want to be comfortable.",
+    a: "Laguna Beach in late March is typically 60–65°F by evening. The ceremony and cocktail hour are on the grass. Bring a wrap.",
   },
   {
     q: "Are kids invited?",
-    a: "We love your kids. This evening is adults-only. Think of it as a built-in excuse to get a sitter and have a proper night out.",
+    a: "We love your kids. This evening is adults-only.",
   },
   {
     q: "Can I take photos?",
@@ -107,7 +107,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What time does it end?",
-    a: "We haven't decided. We think that's the right answer.",
+    a: "Midnight.",
   },
 ]
 
@@ -144,7 +144,7 @@ function useCountdown(targetDate) {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ isHome, setActiveTab }) {
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 h-16 flex items-center justify-center bg-transparent">
+    <nav className="relative w-full h-16 flex items-center justify-center bg-transparent z-50">
       <button
         onClick={() => setActiveTab('home')}
         className="group flex items-center justify-center"
@@ -164,7 +164,7 @@ function Navbar({ isHome, setActiveTab }) {
 // ─── Tab Bar ──────────────────────────────────────────────────────────────────
 function TabBar({ activeTab, isHome, setActiveTab }) {
   return (
-    <div className="fixed top-16 inset-x-0 z-40 transition-all duration-300 bg-deep/60 backdrop-blur-md border-b border-white/8">
+    <div className="sticky top-0 z-40 transition-all duration-300 bg-deep/60 backdrop-blur-md border-b border-white/8">
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center justify-center overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           {TABS.map(tab => (
@@ -653,8 +653,7 @@ function RSVPSection() {
               {notFound && (
                 <div className="mt-5 p-5 bg-surface-2 rounded-2xl border border-divider">
                   <p className="font-body text-sm text-muted leading-relaxed">
-                    We couldn't find that name. Try it as it appears on your invitation, or reach us at{' '}
-                    <a href="mailto:rodgmz@gmail.com" className="text-primary hover:opacity-70 transition-opacity">rodgmz@gmail.com</a>.
+                    We couldn't find that name. Try it as it appears on your invitation.
                   </p>
                 </div>
               )}
@@ -757,14 +756,7 @@ function Footer() {
           {COUPLE.dateLong} · {COUPLE.venue}
         </p>
         <div className="section-divider w-32 mx-auto mb-8" />
-        <a
-          href="mailto:rodgmz@gmail.com"
-          className="inline-flex items-center gap-2 text-sm font-body text-muted hover:text-primary transition-colors lift-on-hover"
-        >
-          <Mail className="h-4 w-4" strokeWidth={2.2} />
-          Questions? Reach out.
-        </a>
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/12 mt-10">
+        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/12 mt-2">
           Website by {COUPLE.brandName}
         </p>
       </div>
@@ -811,25 +803,20 @@ export default function App() {
     <div className="min-h-[100dvh] text-ink relative">
       {/* Fixed wallpaper layer */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
-        {/*
-          background-blend-mode: multiply blends the toile image with the wine background-color
-          on the SAME element — no separate img, no filter+blend conflict.
-          White/cream areas × wine = wine (vanish into background).
-          Dark botanical marks × wine = very dark wine marks (visible).
-        */}
+        {/* Painted canvas wash — multiply tints into wine colorway */}
         <div
           className="absolute inset-0"
           style={{
-            backgroundColor: '#5E1828',
-            backgroundImage: 'url(/toile.jpg)',
+            backgroundColor: '#7A2235',
+            backgroundImage: 'url(/tex.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundBlendMode: 'multiply',
-            opacity: 0.88,
+            opacity: 0.92,
           }}
         />
         {/* Unifying dark veil */}
-        <div className="absolute inset-0" style={{ background: 'rgba(5, 0, 2, 0.28)' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(5, 0, 2, 0.10)' }} />
       </div>
 
       {/* Page content */}
@@ -837,7 +824,7 @@ export default function App() {
         <div className="noise-overlay" aria-hidden />
         <Navbar isHome={isHome} setActiveTab={goToTab} />
         <TabBar activeTab={activeTab} isHome={isHome} setActiveTab={goToTab} />
-        <main className="pt-[7.5rem]">
+        <main>
           {content[activeTab]}
         </main>
         <Footer />

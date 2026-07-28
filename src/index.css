@@ -51,9 +51,13 @@
   }
 
   .glass-card {
-    background: rgba(175, 88, 55, 0.85);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,175,135,0.28);
+    background: rgba(155, 65, 40, 0.58);
+    backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
+    border: 1px solid rgba(255,175,135,0.20);
+  }
+
+  .event-card, .travel-card {
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   }
 
   .glass-dark {
