@@ -6,19 +6,19 @@
   html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
   body {
     @apply text-ink font-body overflow-x-hidden;
-    background-color: #5E1828;
+    background-color: #081A0E;
   }
-  ::selection { background-color: #C8836E; color: white; }
+  ::selection { background-color: #B08085; color: white; }
   ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #3A1520; }
-  ::-webkit-scrollbar-thumb { background: #6A2A3A; border-radius: 6px; }
-  ::-webkit-scrollbar-thumb:hover { background: #C8836E; }
+  ::-webkit-scrollbar-track { background: #040E07; }
+  ::-webkit-scrollbar-thumb { background: #1E5030; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #C4A0A8; }
 }
 
 @layer components {
   .noise-overlay {
     position: fixed; inset: 0; pointer-events: none; z-index: 1;
-    opacity: 0.06; mix-blend-mode: overlay;
+    opacity: 0.025; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
@@ -40,20 +40,20 @@
   .lift-on-hover:hover { transform: translateY(-1px); }
 
   .gradient-text {
-    background: linear-gradient(135deg, #C8836E 0%, #C49AAE 50%, #C9A052 100%);
+    background: linear-gradient(135deg, #B08085 0%, #C4A0A8 50%, #C4A055 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
 
   .glass {
-    background: rgba(42, 10, 24, 0.82);
+    background: rgba(8, 25, 14, 0.88);
     backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
-    border-bottom: 1px solid rgba(200,131,110,0.18);
+    border-bottom: 1px solid rgba(120,180,140,0.18);
   }
 
   .glass-card {
-    background: rgba(155, 65, 40, 0.58);
+    background: rgba(12, 35, 20, 0.70);
     backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-    border: 1px solid rgba(255,175,135,0.20);
+    border: 1px solid rgba(120,180,140,0.20);
   }
 
   .event-card, .travel-card {
@@ -61,7 +61,7 @@
   }
 
   .glass-dark {
-    background: rgba(22, 4, 14, 0.78);
+    background: rgba(4, 14, 8, 0.88);
     backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
     border: 1px solid rgba(255,255,255,0.08);
   }

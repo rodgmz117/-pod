@@ -205,42 +205,10 @@ function Hero({ setActiveTab }) {
   }, [])
 
   return (
-    <section ref={ref} className="relative h-[100dvh] overflow-hidden">
-      <img
-        src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=1920&q=80&fit=crop"
-        alt="Laguna Beach coast at dusk"
-        className="absolute inset-0 h-full w-full object-cover scale-[1.02]"
-      />
-      <div className="absolute inset-0 bg-gradient-to-br from-deep/80 via-deep/40 to-deep/70" />
-      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80" />
-      <div className="absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-deep/50 to-transparent" />
-
-      {/* Floating botanical particles */}
-      {!prefersReducedMotion && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
-          {[...Array(14)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-drift"
-              style={{
-                left: `${5 + i * 6.5}%`,
-                top: `${8 + (i % 6) * 10}%`,
-                opacity: 0.12 + (i % 3) * 0.05,
-                animationDelay: `${i * 0.6}s`,
-                animationDuration: `${7 + (i % 4)}s`,
-              }}
-            >
-              <svg width="7" height="13" viewBox="0 0 7 13">
-                <ellipse
-                  cx="3.5" cy="6.5" rx="2.2" ry="5"
-                  fill={i % 3 === 0 ? '#C8836E' : i % 3 === 1 ? '#C49AAE' : '#C9A052'}
-                  transform={`rotate(${-25 + i * 10} 3.5 6.5)`}
-                />
-              </svg>
-            </div>
-          ))}
-        </div>
-      )}
+    <section ref={ref} className="relative min-h-[82dvh] overflow-hidden">
+      <div className="absolute inset-0" style={{ backgroundColor: '#6B2040', backgroundImage: 'url(/butterfly.png)', backgroundSize: '600px auto', backgroundRepeat: 'repeat-x', backgroundPosition: 'top center', backgroundBlendMode: 'multiply' }} />
+      <div className="absolute inset-0" style={{ background: 'rgba(20, 15, 5, 0.5)' }} />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
       <div className="absolute inset-0 flex flex-col justify-end pb-16 sm:pb-24">
         <div className="max-w-6xl mx-auto w-full px-6 sm:px-10 lg:px-16">
@@ -280,7 +248,7 @@ function Hero({ setActiveTab }) {
           <div className="hero-cta flex flex-wrap gap-3 mt-8 sm:mt-10">
             <button
               onClick={() => setActiveTab('rsvp')}
-              className="magnetic-btn inline-flex items-center gap-2 bg-primary text-white px-7 py-3.5 rounded-full font-body font-semibold text-sm shadow-xl shadow-primary/20"
+              className="magnetic-btn inline-flex items-center gap-2 bg-primary text-white px-7 py-3.5 rounded-full font-body font-semibold text-sm"
             >
               RSVP Now <Heart className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
@@ -803,21 +771,12 @@ export default function App() {
     <div className="min-h-[100dvh] text-ink relative">
       {/* Fixed wallpaper layer */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
-        {/* Painted canvas wash — multiply tints into wine colorway */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundColor: '#7A2235',
-            backgroundImage: 'url(/tex.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundBlendMode: 'multiply',
-            opacity: 0.92,
-          }}
-        />
-        {/* Unifying dark veil */}
-        <div className="absolute inset-0" style={{ background: 'rgba(5, 0, 2, 0.10)' }} />
+        <div className="absolute inset-0" style={{ backgroundColor: '#6B2040', backgroundImage: 'url(/butterfly.png)', backgroundSize: '600px auto', backgroundRepeat: 'repeat-x', backgroundPosition: 'top center', backgroundBlendMode: 'multiply' }} />
+        <div className="absolute inset-0" style={{ background: 'rgba(20, 15, 5, 0.55)' }} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
       </div>
+
+      {/* Global bottom gradient — sits above content on all tabs */}
 
       {/* Page content */}
       <div className="relative z-10 min-h-[100dvh]">
