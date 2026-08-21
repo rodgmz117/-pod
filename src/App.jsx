@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
+import Admin from './Admin.jsx'
+import { findGuest, submitRSVP, getConfig } from './lib/supabase.js'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -8,6 +10,7 @@ import {
 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
+
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
@@ -52,11 +55,9 @@ const STORY_MILESTONES = [
 ]
 
 const SCHEDULE = [
-  { time: '5:00 PM',   event: 'Arrive & Valet',   location: 'Main Entrance, Montage' },
-  { time: '5:00 PM',   event: 'Ceremony',          location: 'Outdoors on the Lawn' },
-  { time: 'Following', event: 'Cocktail Hour',     location: 'Outdoor Terrace' },
-  { time: 'Evening',   event: 'Dinner',            location: 'Outdoor Lawn' },
-  { time: 'Late',      event: 'Dancing',           location: '— and the rest of the night' },
+  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn' },
+  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn' },
+  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom' },
 ]
 
 const HOTELS = [
@@ -64,19 +65,19 @@ const HOTELS = [
     name: 'Le Petit Pali Laguna Beach',
     distance: '~650 ft',
     note: 'Literally across Coast Hwy from Montage',
-    url: 'https://lepetitpali.com',
+    url: 'https://www.lepetitpali.com/locations/laguna-beach',
   },
   {
     name: 'The Ranch at Laguna Beach',
     distance: '~1.5 miles',
-    note: 'Tucked into the canyon — deeply Laguna',
-    url: 'https://theranchlb.com',
+    note: 'Boutique resort tucked into Laguna Canyon.',
+    url: 'https://be.synxis.com/?hotel=61912&chain=10237&arrive=2027-03-26&depart=2027-03-28&adult=2&currency=USD&locale=en-US',
   },
   {
     name: 'Laguna Cliffs Marriott Resort & Spa',
     distance: '~8 miles (Dana Point)',
     note: 'Clifftop resort, easy rideshare distance',
-    url: 'https://marriott.com/hotels/travel/lgamc-laguna-cliffs-marriott-resort-and-spa/',
+    url: 'https://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=SNADP&fromDate=03/26/2027&toDate=03/28/2027',
   },
 ]
 
@@ -144,18 +145,18 @@ function useCountdown(targetDate) {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ isHome, setActiveTab }) {
   return (
-    <nav className="relative w-full h-16 flex items-center justify-center bg-transparent z-50">
+    <nav className="relative w-full h-16 flex items-center justify-center z-50 bg-transparent">
       <button
         onClick={() => setActiveTab('home')}
         className="group flex items-center justify-center"
         aria-label="Home"
       >
-        <span className="relative flex h-11 w-11 items-center justify-center rounded-full bg-primary transition-transform duration-200 group-hover:scale-105">
-          <span className="font-serif italic text-white text-sm">{COUPLE.initials}</span>
-          <span className={`absolute inset-0 rounded-full ring-2 transition-colors duration-200 ${
-            isHome ? 'ring-white/25 group-hover:ring-white/45' : 'ring-primary/25 group-hover:ring-primary/40'
-          }`} />
-        </span>
+        <img
+          src="/monogram.jpg"
+          alt="P & R monogram"
+          className="transition-transform duration-200 group-hover:scale-105"
+          style={{ width: '52px', height: '52px', objectFit: 'cover', mixBlendMode: 'multiply', borderRadius: '50%' }}
+        />
       </button>
     </nav>
   )
@@ -164,14 +165,14 @@ function Navbar({ isHome, setActiveTab }) {
 // ─── Tab Bar ──────────────────────────────────────────────────────────────────
 function TabBar({ activeTab, isHome, setActiveTab }) {
   return (
-    <div className="sticky top-0 z-40 transition-all duration-300 bg-deep/60 backdrop-blur-md border-b border-white/8">
+    <div className="sticky top-0 z-40 transition-all duration-300 backdrop-blur-sm border-b border-white/8" style={{ background: 'rgba(0,0,0,0.32)' }}>
       <div className="max-w-5xl mx-auto px-4">
         <div className="flex items-center justify-center overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           {TABS.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-shrink-0 px-4 sm:px-5 py-[14px] font-mono text-[10px] uppercase tracking-[0.2em] border-b-2 transition-all duration-200 whitespace-nowrap ${
+              className={`flex-shrink-0 px-4 sm:px-5 py-[14px] font-subheading text-[10px] uppercase tracking-[0.2em] border-b-2 transition-all duration-200 whitespace-nowrap ${
                 activeTab === tab.id
                   ? 'border-primary-light text-white'
                   : 'border-transparent text-white/45 hover:text-white/70'
@@ -205,14 +206,12 @@ function Hero({ setActiveTab }) {
   }, [])
 
   return (
-    <section ref={ref} className="relative min-h-[82dvh] overflow-hidden">
-      <div className="absolute inset-0" style={{ backgroundColor: '#6B2040', backgroundImage: 'url(/butterfly.png)', backgroundSize: '600px auto', backgroundRepeat: 'repeat-x', backgroundPosition: 'top center', backgroundBlendMode: 'multiply' }} />
-      <div className="absolute inset-0" style={{ background: 'rgba(20, 15, 5, 0.5)' }} />
+    <section ref={ref} className="relative min-h-[100dvh] overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end pb-16 sm:pb-24">
+      <div className="absolute inset-0 flex flex-col justify-end pb-[22vh] sm:pb-[26vh] pt-32">
         <div className="max-w-6xl mx-auto w-full px-6 sm:px-10 lg:px-16">
-          <p className="hero-eyebrow font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-white/40 mb-6">
+          <p className="hero-eyebrow font-subheading text-[10px] sm:text-[11px] uppercase tracking-[0.3em] text-white/40 mb-6">
             {COUPLE.dateLong}&nbsp;&nbsp;·&nbsp;&nbsp;{COUPLE.city}
           </p>
 
@@ -220,14 +219,10 @@ function Hero({ setActiveTab }) {
             <span className="hero-name-1 block font-script text-[4.5rem] sm:text-[7.5rem] lg:text-[10rem] text-ink/90">
               {COUPLE.name1}
             </span>
-            <span className="hero-name-2 block font-script text-[4.5rem] sm:text-[7.5rem] lg:text-[10rem] gradient-text">
+            <span className="hero-name-2 block font-script text-[4.5rem] sm:text-[7.5rem] lg:text-[10rem] silver-metallic">
               {COUPLE.name2}
             </span>
           </h1>
-
-          <p className="hero-venue font-serif italic text-base sm:text-lg text-white/35 font-light mt-4 sm:mt-5">
-            {COUPLE.venue}
-          </p>
 
           <div className="hero-count flex items-center gap-6 sm:gap-8 mt-7">
             {[
@@ -240,7 +235,7 @@ function Hero({ setActiveTab }) {
                 <div className="font-serif text-3xl sm:text-4xl font-medium text-ink tabular-nums">
                   {String(v).padStart(2, '0')}
                 </div>
-                <div className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+                <div className="font-subheading text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
               </div>
             ))}
           </div>
@@ -248,13 +243,13 @@ function Hero({ setActiveTab }) {
           <div className="hero-cta flex flex-wrap gap-3 mt-8 sm:mt-10">
             <button
               onClick={() => setActiveTab('rsvp')}
-              className="magnetic-btn inline-flex items-center gap-2 bg-primary text-white px-7 py-3.5 rounded-full font-body font-semibold text-sm"
+              className="magnetic-btn inline-flex items-center gap-2 btn-silver-metallic px-7 py-3.5 rounded-full font-subheading font-semibold text-sm"
             >
               RSVP Now <Heart className="h-3.5 w-3.5" strokeWidth={2.2} />
             </button>
             <button
               onClick={() => setActiveTab('story')}
-              className="magnetic-btn inline-flex items-center gap-2 glass-dark text-white/80 px-7 py-3.5 rounded-full font-body font-semibold text-sm border border-white/12"
+              className="magnetic-btn inline-flex items-center gap-2 glass-dark text-white/80 px-7 py-3.5 rounded-full font-subheading font-semibold text-sm border border-white/12"
             >
               Our Story
             </button>
@@ -284,7 +279,7 @@ function OurStory() {
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="text-center mb-16 sm:mb-22">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-primary mb-4">The Beginning</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">The Beginning</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">How it started</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
@@ -300,7 +295,7 @@ function OurStory() {
                 }`}
               >
                 <div className={`[direction:ltr] ${i % 2 === 0 ? 'lg:pr-20' : 'lg:pl-20'}`}>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary/60 mb-3">{m.year}</p>
+                  <p className="font-subheading text-[10px] uppercase tracking-[0.24em] text-primary/60 mb-3">{m.year}</p>
                   <h3 className="font-serif text-2xl sm:text-3xl font-medium text-ink mb-4 leading-snug">{m.title}</h3>
                   <p className="font-body text-muted leading-relaxed text-base">{m.text}</p>
                 </div>
@@ -347,7 +342,7 @@ function EventDetails() {
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-2xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-primary mb-4">The Day</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">The Day</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">Event Details</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
@@ -355,7 +350,7 @@ function EventDetails() {
         <div className="event-card bg-surface rounded-3xl px-8 py-7 border border-divider mb-5">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-1.5">Venue</p>
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-1.5">Venue</p>
               <h3 className="font-serif text-xl font-medium text-ink">{COUPLE.venue}</h3>
               <p className="font-body text-sm text-muted mt-1">{COUPLE.address}</p>
             </div>
@@ -370,17 +365,17 @@ function EventDetails() {
           </div>
           <div className="mt-5 pt-5 border-t border-divider">
             <div className="flex items-center justify-between mb-2">
-              <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink">{COUPLE.dressCode}</p>
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
+              <p className="font-subheading text-[10px] uppercase tracking-[0.16em] text-ink">{COUPLE.dressCode}</p>
             </div>
             <p className="font-body text-xs text-muted leading-relaxed">
-              Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns. Save the sundresses for brunch.
+              Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
             </p>
           </div>
         </div>
 
         <div className="event-card bg-surface rounded-3xl px-8 py-8 border border-divider mb-5">
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted mb-6">Schedule</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-6">Schedule</p>
           <div className="divide-y divide-divider">
             {SCHEDULE.map((item, i) => (
               <div key={i} className="flex items-center gap-5 py-4 first:pt-0 last:pb-0">
@@ -425,7 +420,7 @@ function Travel() {
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="text-center mb-14">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Getting Here</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Getting Here</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">Travel &amp; Stay</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
@@ -435,7 +430,7 @@ function Travel() {
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 mb-5">
               <Plane className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted mb-2">Nearest Airport</p>
+            <p className="font-subheading text-[10px] uppercase tracking-[0.18em] text-muted mb-2">Nearest Airport</p>
             <h3 className="font-serif text-lg font-medium text-ink mb-2">{COUPLE.airport}</h3>
             <p className="font-body text-sm text-muted leading-relaxed">{COUPLE.airportDistance}</p>
             <p className="font-body text-xs text-muted/60 mt-2">LAX is ~60 mi north — doable, worth planning around traffic.</p>
@@ -447,7 +442,7 @@ function Travel() {
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-mauve/10 mb-4">
                   <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                 </div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
+                <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
                 <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug">{hotel.name}</h3>
                 <p className="font-body text-xs text-muted mb-4 leading-relaxed flex-1">{hotel.note}</p>
                 <a
@@ -468,9 +463,9 @@ function Travel() {
             <Car className="h-5 w-5 text-primary" strokeWidth={2.2} />
           </div>
           <div>
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted mb-2">Getting Around</p>
+            <p className="font-subheading text-[10px] uppercase tracking-[0.18em] text-muted mb-2">Getting Around</p>
             <p className="font-body text-muted text-sm leading-relaxed">
-              Valet parking is available at Montage, but we strongly recommend rideshare. The open bar is calling, PCH at midnight deserves your full attention, and Lyft is right there on your phone. Come, celebrate, get home safely.
+              Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
             </p>
           </div>
         </div>
@@ -496,32 +491,32 @@ function RedEnvelopes() {
 
   return (
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
-      <div className="max-w-2xl mx-auto px-6 text-center">
-        <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-accent/70 mb-4">A Tradition We Love</p>
+      <div className="max-w-md mx-auto px-6 text-center">
+        <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Gifts</p>
         <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight mb-6">Red Envelopes</h2>
         <div className="section-divider w-24 mx-auto mb-10" />
 
-        <div className="envelope-card red-envelope-glow bg-surface rounded-3xl border border-accent/20 overflow-hidden text-left">
-          <div className="bg-accent px-8 py-10 relative overflow-hidden">
-            <div className="absolute inset-0 opacity-8 pointer-events-none">
-              <svg width="100%" height="100%" viewBox="0 0 400 160" preserveAspectRatio="xMidYMid slice">
-                <path d="M0 0 L200 80 L400 0" fill="none" stroke="white" strokeWidth="0.5" />
-                {[0,1,2,3,4].map(i => (
-                  <circle key={i} cx={60 + i * 70} cy={30 + (i%2)*40} r="28" fill="none" stroke="white" strokeWidth="0.3" />
-                ))}
+        <div className="envelope-card red-envelope-glow rounded-3xl border border-white/10 overflow-hidden text-left relative" style={{ background: 'rgba(48, 6, 12, 0.96)' }}>
+          <div className="hidden sm:flex items-center justify-center pt-8 pb-6 relative border-b border-white/10 overflow-hidden">
+            <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.12 }}>
+              <svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
+                <line x1="0" y1="4" x2="200" y2="118" stroke="white" strokeWidth="0.8" />
+                <line x1="400" y1="4" x2="200" y2="118" stroke="white" strokeWidth="0.8" />
               </svg>
             </div>
-            <div className="relative text-center">
-              <p className="font-script text-5xl sm:text-6xl text-white/85 mb-3">紅包</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-white/45">Hóng Bāo</p>
-            </div>
+            <img
+              src="/monogram-pr.jpg"
+              alt="R & P monogram"
+              className="relative"
+              style={{ width: '110px', height: '110px', objectFit: 'cover', borderRadius: '50%' }}
+            />
           </div>
 
-          <div className="px-8 py-10">
-            <p className="font-body text-muted leading-relaxed text-base mb-5">
+          <div className="px-8 pb-10 sm:pt-8 pt-10 relative">
+            <p className="font-body text-muted leading-relaxed text-sm mb-5">
               We aren't registered anywhere. In place of a traditional gift, we warmly welcome red envelopes — a tradition meaningful to us and to Paean's family. A red envelope is a gift of good fortune and blessings for the new chapter ahead.
             </p>
-            <p className="font-body text-muted/65 text-sm leading-relaxed">
+            <p className="font-body text-muted leading-relaxed text-sm">
               If you'd like to bring one, we'll have a box at the reception. There is absolutely no obligation — your presence at this celebration is the only thing we asked for when we sent the invitations.
             </p>
             <div className="mt-8 pt-8 border-t border-divider text-center">
@@ -535,14 +530,22 @@ function RedEnvelopes() {
 }
 
 // ─── RSVP ─────────────────────────────────────────────────────────────────────
+const MEALS = [
+  { value: 'beef',       label: 'Beef' },
+  { value: 'fish',       label: 'Fish' },
+  { value: 'vegetarian', label: 'Vegetarian' },
+]
+
 function RSVPSection() {
   const ref = useRef(null)
-  const [query, setQuery] = useState('')
+  const [query, setQuery]         = useState('')
   const [searching, setSearching] = useState(false)
-  const [result, setResult] = useState(null)
+  const [result, setResult]       = useState(null)
+  // selections: { [guestId]: { attending: bool, meal: '' } }
   const [selections, setSelections] = useState({})
-  const [submitted, setSubmitted] = useState(false)
-  const [notFound, setNotFound] = useState(false)
+  const [submitted, setSubmitted]   = useState(null) // 'attending' | 'declined'
+  const [notFound, setNotFound]     = useState(false)
+  const [mealError, setMealError]   = useState(false)
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -560,12 +563,64 @@ function RSVPSection() {
     setSearching(true)
     setNotFound(false)
     setResult(null)
-    await new Promise(r => setTimeout(r, 700))
+    const { data } = await findGuest(query)
     setSearching(false)
-    setNotFound(true)
+    if (!data) { setNotFound(true); return }
+    const guestList = [
+      { id: 'primary', name: data.primary_guest_name },
+      ...(data.plus_one_name ? [{ id: 'plusone', name: data.plus_one_name }] : []),
+      ...(data.party_members || []).map((m, i) => ({ id: `party_${i}`, name: m.name })),
+    ]
+    setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList })
   }
 
-  const toggle = (id) => setSelections(s => ({ ...s, [id]: !s[id] }))
+  const toggleAttending = (id) => {
+    setMealError(false)
+    setSelections(s => ({
+      ...s,
+      [id]: { attending: !s[id]?.attending, meal: s[id]?.meal || '' },
+    }))
+  }
+
+  const setMeal = (id, meal) => {
+    setMealError(false)
+    setSelections(s => ({ ...s, [id]: { ...s[id], attending: true, meal } }))
+  }
+
+  const setNotes = (id, notes) => {
+    setSelections(s => ({ ...s, [id]: { ...s[id], notes } }))
+  }
+
+  const handleConfirm = async () => {
+    const attending = result?.guests.filter(g => selections[g.id]?.attending) || []
+    if (attending.some(g => !selections[g.id]?.meal)) { setMealError(true); return }
+    const primary = selections['primary'] || {}
+    const partyGuests = result.guests.filter(g => g.id !== 'primary')
+    await submitRSVP(result.guestId, {
+      rsvp_status:          'attending',
+      num_attending:        attending.length,
+      primary_attending:    primary.attending || false,
+      primary_meal_choice:  primary.meal || null,
+      dietary_restrictions: primary.notes || null,
+      party_members: partyGuests.map(g => ({
+        name:          g.name,
+        attending:     selections[g.id]?.attending || false,
+        meal_choice:   selections[g.id]?.meal || null,
+        dietary_notes: selections[g.id]?.notes || null,
+      })),
+    })
+    setSubmitted('attending')
+  }
+
+  const handleDecline = async () => {
+    await submitRSVP(result.guestId, {
+      rsvp_status:      'declined',
+      num_attending:    0,
+      primary_attending: false,
+      party_members:    (result.guests || []).filter(g => g.id !== 'primary').map(g => ({ name: g.name, attending: false })),
+    })
+    setSubmitted('declined')
+  }
 
   if (submitted) {
     return (
@@ -575,8 +630,17 @@ function RSVPSection() {
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
             </div>
-            <h3 className="font-serif text-2xl font-medium text-ink mb-3">You're in.</h3>
-            <p className="font-body text-muted leading-relaxed text-sm">We've got you. See you on March 27 in Laguna Beach.</p>
+            {submitted === 'attending' ? (
+              <>
+                <h3 className="font-serif text-2xl font-medium text-ink mb-3">You're in.</h3>
+                <p className="font-body text-muted leading-relaxed text-sm">We've got you. See you on March 27 in Laguna Beach.</p>
+              </>
+            ) : (
+              <>
+                <h3 className="font-serif text-2xl font-medium text-ink mb-3">We'll miss you.</h3>
+                <p className="font-body text-muted leading-relaxed text-sm">Thank you for letting us know. We hope to celebrate with you another time.</p>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -587,7 +651,7 @@ function RSVPSection() {
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-lg mx-auto px-6">
         <div className="text-center mb-12">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Join Us</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Join Us</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">RSVP</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
           <p className="font-body text-muted text-sm mt-5">Kindly respond by {COUPLE.rsvpDeadline}</p>
@@ -609,7 +673,7 @@ function RSVPSection() {
                 <button
                   onClick={handleSearch}
                   disabled={searching}
-                  className="magnetic-btn flex items-center justify-center h-[50px] w-[50px] shrink-0 bg-primary rounded-2xl text-white disabled:opacity-50"
+                  className="magnetic-btn flex items-center justify-center h-[50px] w-[50px] shrink-0 btn-amber-gradient rounded-2xl text-white disabled:opacity-50"
                 >
                   {searching
                     ? <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -629,31 +693,90 @@ function RSVPSection() {
           )}
 
           {result && (
-            <div className="space-y-3">
-              <p className="font-serif text-base text-ink mb-4">Welcome, {result.household}. Who's coming?</p>
-              {result.guests.map(g => (
-                <button
-                  key={g.id}
-                  onClick={() => toggle(g.id)}
-                  className={`flex items-center gap-3 w-full p-4 rounded-2xl border-2 transition-all text-left ${
-                    selections[g.id]
-                      ? 'border-primary bg-primary/5 text-primary'
-                      : 'border-divider bg-surface-2 text-muted'
-                  }`}
-                >
-                  <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                    selections[g.id] ? 'border-primary bg-primary' : 'border-muted'
+            <div className="space-y-4">
+              <p className="font-serif text-base text-ink mb-2">
+                {result.salutation
+                  ? `Welcome, ${result.salutation} ${result.guests[0]?.name.split(' ').pop()}.`
+                  : `Welcome, ${result.guests[0]?.name.split(' ')[0]}.`
+                } Who's joining us?
+              </p>
+
+              {result.guests.map(g => {
+                const sel = selections[g.id] || {}
+                return (
+                  <div key={g.id} className={`rounded-2xl border-2 transition-all overflow-hidden ${
+                    sel.attending ? 'border-primary' : 'border-divider'
                   }`}>
-                    {selections[g.id] && <Check className="h-3 w-3 text-white" />}
+                    {/* Attending toggle */}
+                    <button
+                      onClick={() => toggleAttending(g.id)}
+                      className={`flex items-center gap-3 w-full p-4 text-left transition-colors ${
+                        sel.attending ? 'bg-primary/5' : 'bg-surface-2'
+                      }`}
+                    >
+                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        sel.attending ? 'border-primary bg-primary' : 'border-muted'
+                      }`}>
+                        {sel.attending && <Check className="h-3 w-3 text-white" />}
+                      </div>
+                      <span className={`font-serif text-sm font-medium transition-colors ${sel.attending ? 'text-ink' : 'text-muted'}`}>
+                        {g.name}
+                      </span>
+                    </button>
+
+                    {/* Meal + notes — only when attending */}
+                    {sel.attending && (
+                      <div className="px-4 pb-4 pt-3 border-t border-divider/50 bg-primary/[0.02] space-y-3">
+                        <div>
+                          <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2.5">Meal preference</p>
+                          <div className="flex gap-2">
+                            {MEALS.map(m => (
+                              <button
+                                key={m.value}
+                                onClick={() => setMeal(g.id, m.value)}
+                                className={`flex-1 py-2 rounded-xl font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
+                                  sel.meal === m.value
+                                    ? 'border-primary bg-primary text-white'
+                                    : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
+                                }`}
+                              >
+                                {m.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Allergies or dietary notes</p>
+                          <input
+                            type="text"
+                            value={sel.notes || ''}
+                            onChange={e => setNotes(g.id, e.target.value)}
+                            placeholder="Optional"
+                            className="w-full bg-surface border border-divider rounded-xl px-4 py-2.5 font-body text-xs text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <span className="font-serif text-sm font-medium">{g.name}</span>
-                </button>
-              ))}
+                )
+              })}
+
+              {mealError && (
+                <p className="font-body text-xs text-rose-400">Please select a meal for each attending guest.</p>
+              )}
+
               <button
-                onClick={() => setSubmitted(true)}
-                className="magnetic-btn ring-pulse w-full bg-primary text-white py-4 rounded-2xl font-body font-semibold text-sm mt-2 shadow-lg shadow-primary/20"
+                onClick={handleConfirm}
+                className="magnetic-btn ring-pulse w-full btn-amber-gradient text-white py-4 rounded-2xl font-subheading font-semibold text-sm shadow-lg shadow-primary/20"
               >
                 Confirm RSVP
+              </button>
+
+              <button
+                onClick={handleDecline}
+                className="w-full text-center font-body text-xs text-muted hover:text-ink transition-colors pt-1"
+              >
+                {result.guests.length === 1 ? "I can't make it" : "We can't make it"}
               </button>
             </div>
           )}
@@ -683,7 +806,7 @@ function FAQ() {
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-2xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
-          <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Questions</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Questions</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">FAQ</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
@@ -720,11 +843,11 @@ function Footer() {
     <footer className="bg-deep border-t border-divider py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 text-center">
         <p className="font-script text-4xl sm:text-5xl gradient-text mb-2">Rod &amp; Paean</p>
-        <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-white/20 mb-8">
+        <p className="font-subheading text-[10px] uppercase tracking-[0.24em] text-white/20 mb-8">
           {COUPLE.dateLong} · {COUPLE.venue}
         </p>
         <div className="section-divider w-32 mx-auto mb-8" />
-        <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/12 mt-2">
+        <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-white/12 mt-2">
           Website by {COUPLE.brandName}
         </p>
       </div>
@@ -738,7 +861,7 @@ function getTabFromHash() {
   return TABS.find(t => t.id === hash) ? hash : 'home'
 }
 
-export default function App() {
+function Site() {
   const [activeTab, setActiveTab] = useState(getTabFromHash)
   const isHome = activeTab === 'home'
 
@@ -771,12 +894,14 @@ export default function App() {
     <div className="min-h-[100dvh] text-ink relative">
       {/* Fixed wallpaper layer */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
-        <div className="absolute inset-0" style={{ backgroundColor: '#6B2040', backgroundImage: 'url(/butterfly.png)', backgroundSize: '600px auto', backgroundRepeat: 'repeat-x', backgroundPosition: 'top center', backgroundBlendMode: 'multiply' }} />
-        <div className="absolute inset-0" style={{ background: 'rgba(20, 15, 5, 0.55)' }} />
+        <div className="absolute inset-0" style={{ backgroundImage: 'url(/wallpaper-topo.png)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+        <div className="absolute top-0 left-0 right-0 h-28 bg-gradient-to-b from-black/50 to-transparent" />
       </div>
 
       {/* Global bottom gradient — sits above content on all tabs */}
+
+      {/* Single top shade spanning navbar + tabbar */}
 
       {/* Page content */}
       <div className="relative z-10 min-h-[100dvh]">
@@ -790,4 +915,9 @@ export default function App() {
       </div>
     </div>
   )
+}
+
+export default function App() {
+  if (window.location.hash === '#admin') return <Admin />
+  return <Site />
 }
