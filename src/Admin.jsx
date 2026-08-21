@@ -3,7 +3,7 @@ import {
   Upload, LogOut, Pencil, Trash2, Plus, Download, Search,
   Send, X, Check, RefreshCw, Lock, Unlock, Mail, ChevronDown,
 } from 'lucide-react'
-import { getAllGuests, insertGuests, updateGuestField, deleteGuest } from './lib/supabase.js'
+import { getAllGuests, insertGuests, updateGuestField, deleteGuest, deleteGuests, getConfig, updateConfig } from './lib/supabase.js'
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD
 
@@ -69,6 +69,12 @@ function RSVPSelect({ value, onChange }) {
       <option value="declined">Declined</option>
     </select>
   )
+}
+
+function RSVPBadge({ value }) {
+  const color = value === 'attending' ? '#34d399' : value === 'declined' ? '#f87171' : 'rgba(255,255,255,0.4)'
+  const label = value === 'attending' ? 'Attending' : value === 'declined' ? 'Declined' : 'Pending'
+  return <span style={{ color }} className="font-subheading text-[10px] uppercase tracking-[0.15em]">{label}</span>
 }
 
 function SalutationSelect({ value, onChange }) {
@@ -141,28 +147,50 @@ function Checkbox({ checked, indeterminate, onChange }) {
 }
 
 // ─── Email modal ──────────────────────────────────────────────────────────────
-function EmailModal({ guests, selected, onClose }) {
-  const [step, setStep]           = useState('compose')
-  const [recipientMode, setMode]  = useState(selected.size > 0 ? 'selected' : 'pending')
+const RECIPIENT_FILTERS = ['all', 'attending', 'declined', 'pending']
+
+function formatDeadline(dateStr) {
+  if (!dateStr) return null
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function EmailModal({ guests, rsvpDeadline, onClose }) {
+  const [step, setStep]           = useState('recipients')
   const [subject, setSubject]     = useState("You're invited — Rod & Paean, March 27, 2027")
   const [body, setBody]           = useState("We would be so honored to celebrate our wedding day with you. We've reserved a place in your name.")
   const [testEmail, setTestEmail] = useState('')
   const [result, setResult]       = useState(null)
   const [error, setError]         = useState('')
 
+  const withEmailGuests = useMemo(() => guests.filter(g => g.email), [guests])
+
+  const [recipientIds, setRecipientIds] = useState(() => new Set())
+  const [recipientSearch, setRecipientSearch] = useState('')
+  const [recipientFilter, setRecipientFilter] = useState('all')
+
   useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = '' } }, [])
 
-  const withEmail = useMemo(() => {
-    if (recipientMode === 'selected') return guests.filter(g => selected.has(g._id) && g.email)
-    if (recipientMode === 'pending')  return guests.filter(g => !g.rsvp && g.email)
-    return guests.filter(g => g.email)
-  }, [guests, selected, recipientMode])
+  const toggleRecipient = (id) => setRecipientIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
 
-  const counts = useMemo(() => ({
-    selected: guests.filter(g => selected.has(g._id) && g.email).length,
-    pending:  guests.filter(g => !g.rsvp && g.email).length,
-    all:      guests.filter(g => g.email).length,
-  }), [guests, selected])
+  const visibleRecipients = useMemo(() => {
+    const q = recipientSearch.toLowerCase()
+    return withEmailGuests.filter(g => {
+      const matchSearch = !q || g.primary_guest_name?.toLowerCase().includes(q) || g.email?.toLowerCase().includes(q)
+      const matchFilter = recipientFilter === 'all' || g.rsvp_status === recipientFilter || (recipientFilter === 'pending' && !g.rsvp_status)
+      return matchSearch && matchFilter
+    })
+  }, [withEmailGuests, recipientSearch, recipientFilter])
+
+  const allVisRecipientsChecked  = visibleRecipients.length > 0 && visibleRecipients.every(g => recipientIds.has(g._id))
+  const someVisRecipientsChecked = visibleRecipients.some(g => recipientIds.has(g._id)) && !allVisRecipientsChecked
+  const toggleAllRecipients = (checked) => setRecipientIds(prev => {
+    const n = new Set(prev)
+    visibleRecipients.forEach(g => checked ? n.add(g._id) : n.delete(g._id))
+    return n
+  })
+
+  const withEmail = useMemo(() => guests.filter(g => recipientIds.has(g._id)), [guests, recipientIds])
 
   const send = async (isTest = false) => {
     setError('')
@@ -197,7 +225,10 @@ function EmailModal({ guests, selected, onClose }) {
 
         <div className="flex items-center justify-between px-7 pt-6 pb-4 border-b border-divider shrink-0">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">
-            {step === 'sending' ? 'Sending…' : step === 'done' ? (result?.isTest ? 'Test sent' : 'Invitations sent') : 'Email Guests'}
+            {step === 'sending'    ? 'Sending…'
+              : step === 'done'    ? (result?.isTest ? 'Test sent' : 'Invitations sent')
+              : step === 'recipients' ? 'Choose Recipients'
+              : 'Compose Email'}
           </p>
           {step !== 'sending' && <button onClick={onClose}><X className="h-4 w-4 text-muted hover:text-ink transition-colors" /></button>}
         </div>
@@ -241,27 +272,73 @@ function EmailModal({ guests, selected, onClose }) {
             </div>
           )}
 
+          {step === 'recipients' && (
+            <>
+              {withEmailGuests.length === 0 ? (
+                <p className="font-body text-xs text-amber-400">No guests have email addresses on file.</p>
+              ) : (
+                <div>
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 bg-surface-2 border border-divider rounded-full px-4 py-2 flex-1 min-w-[160px]">
+                      <Search className="h-3.5 w-3.5 text-muted shrink-0" />
+                      <input value={recipientSearch} onChange={e => setRecipientSearch(e.target.value)} placeholder="Search guests…"
+                        className="bg-transparent font-body text-xs text-ink placeholder:text-muted/40 focus:outline-none w-full" />
+                    </div>
+                    <div className="flex items-center gap-1 bg-surface-2 border border-divider rounded-full px-2 py-1.5">
+                      {RECIPIENT_FILTERS.map(f => (
+                        <button key={f} onClick={() => setRecipientFilter(f)}
+                          className={`px-3 py-1 rounded-full font-subheading text-[9px] uppercase tracking-[0.15em] transition-colors ${recipientFilter === f ? 'bg-primary text-white' : 'text-muted hover:text-ink'}`}>
+                          {f}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="border border-divider rounded-2xl overflow-hidden">
+                    <div className="max-h-[22rem] overflow-y-auto">
+                      <table className="w-full">
+                        <thead className="sticky top-0 bg-surface border-b border-divider">
+                          <tr>
+                            <th className="px-4 py-2.5 w-10 text-left">
+                              <Checkbox checked={allVisRecipientsChecked} indeterminate={someVisRecipientsChecked} onChange={toggleAllRecipients} />
+                            </th>
+                            <th className="px-2 py-2.5 text-left font-subheading text-[9px] uppercase tracking-[0.15em] text-muted">Name</th>
+                            <th className="px-2 py-2.5 text-left font-subheading text-[9px] uppercase tracking-[0.15em] text-muted">Email</th>
+                            <th className="px-4 py-2.5 text-left font-subheading text-[9px] uppercase tracking-[0.15em] text-muted">RSVP</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-divider/50">
+                          {visibleRecipients.length === 0 ? (
+                            <tr><td colSpan={4} className="px-4 py-8 text-center font-body text-xs text-muted/40">No matches</td></tr>
+                          ) : visibleRecipients.map(g => (
+                            <tr key={g._id} onClick={() => toggleRecipient(g._id)}
+                              className={`cursor-pointer transition-colors ${recipientIds.has(g._id) ? 'bg-primary/5' : 'hover:bg-surface-2/30'}`}>
+                              <td className="px-4 py-2.5" onClick={e => e.stopPropagation()}>
+                                <Checkbox checked={recipientIds.has(g._id)} onChange={() => toggleRecipient(g._id)} />
+                              </td>
+                              <td className="px-2 py-2.5 font-body text-xs text-ink truncate max-w-[140px]">{g.primary_guest_name}</td>
+                              <td className="px-2 py-2.5 font-body text-xs text-muted truncate max-w-[180px]">{g.email}</td>
+                              <td className="px-4 py-2.5"><RSVPBadge value={g.rsvp_status} /></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <p className="font-body text-xs text-muted/50 mt-2">{withEmail.length} of {withEmailGuests.length} selected</p>
+                </div>
+              )}
+            </>
+          )}
+
           {step === 'compose' && (
             <>
-              <div>
-                <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2.5">Recipients</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: 'selected', label: 'Selected',    count: counts.selected },
-                    { value: 'pending',  label: 'No RSVP yet', count: counts.pending  },
-                    { value: 'all',      label: 'Everyone',    count: counts.all      },
-                  ].map(opt => (
-                    <button key={opt.value} onClick={() => setMode(opt.value)}
-                      className={`flex flex-col items-start px-4 py-3 rounded-2xl border-2 text-left transition-colors ${
-                        recipientMode === opt.value ? 'border-primary bg-primary/5' : 'border-divider hover:border-primary/30'
-                      }`}>
-                      <span className="font-serif text-2xl text-ink leading-none mb-1">{opt.count}</span>
-                      <span className="font-body text-xs text-muted leading-tight">{opt.label}</span>
-                    </button>
-                  ))}
-                </div>
-                {counts.all === 0 && <p className="font-body text-xs text-amber-400 mt-2">No guests have email addresses on file.</p>}
-              </div>
+              <button type="button" onClick={() => setStep('recipients')}
+                className="w-full flex items-center justify-between bg-surface-2 border border-divider rounded-2xl px-5 py-3.5 hover:border-primary/30 transition-colors text-left">
+                <span className="font-body text-sm text-ink">
+                  Sending to <strong>{withEmail.length}</strong> guest{withEmail.length !== 1 ? 's' : ''}
+                </span>
+                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-primary">Edit</span>
+              </button>
 
               <div>
                 <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Subject line</p>
@@ -288,6 +365,9 @@ function EmailModal({ guests, selected, onClose }) {
                   <div className="mt-2.5">
                     <span className="inline-block bg-primary text-white font-body text-xs font-semibold px-4 py-1.5 rounded-full">RSVP Now</span>
                   </div>
+                  {formatDeadline(rsvpDeadline) && (
+                    <p className="font-body text-xs text-muted/70 italic mt-3">Kindly respond by {formatDeadline(rsvpDeadline)}.</p>
+                  )}
                 </div>
               </div>
 
@@ -310,9 +390,19 @@ function EmailModal({ guests, selected, onClose }) {
           )}
         </div>
 
-        {step === 'compose' && (
+        {step === 'recipients' && (
           <div className="px-7 py-5 border-t border-divider shrink-0 flex items-center justify-between gap-3">
             <button onClick={onClose} className="font-body text-sm text-muted hover:text-ink transition-colors">Cancel</button>
+            <button onClick={() => setStep('compose')} disabled={withEmail.length === 0}
+              className="inline-flex items-center gap-2 btn-amber-gradient text-white px-6 py-3 rounded-2xl font-subheading font-semibold text-sm disabled:opacity-40">
+              Continue with {withEmail.length} guest{withEmail.length !== 1 ? 's' : ''} →
+            </button>
+          </div>
+        )}
+
+        {step === 'compose' && (
+          <div className="px-7 py-5 border-t border-divider shrink-0 flex items-center justify-between gap-3">
+            <button onClick={() => setStep('recipients')} className="font-body text-sm text-muted hover:text-ink transition-colors">← Back</button>
             <button onClick={() => send(false)} disabled={withEmail.length === 0}
               className="inline-flex items-center gap-2 btn-amber-gradient text-white px-6 py-3 rounded-2xl font-subheading font-semibold text-sm disabled:opacity-40">
               <Mail className="h-3.5 w-3.5" />
@@ -593,7 +683,8 @@ export default function Admin() {
   const [selected, setSelected]     = useState(new Set())
   const [showEmail, setShowEmail]   = useState(false)
   const [showImport, setShowImport] = useState(false)
-  const [rsvpLocked, setRsvpLocked] = useState(false)
+  const [rsvpLocked, setRsvpLocked]     = useState(false)
+  const [rsvpDeadline, setRsvpDeadline] = useState('')
 
   const login  = () => {
     if (pw === ADMIN_PASSWORD) { sessionStorage.setItem('admin_authed', '1'); setAuthed(true); setPwError(false) }
@@ -609,7 +700,24 @@ export default function Admin() {
     setGuests((data || []).map(g => ({ ...g, _id: g.id })))
   }
 
-  useEffect(() => { if (authed) loadGuests() }, [authed])
+  const loadConfig = async () => {
+    const data = await getConfig()
+    if (data?.rsvp_deadline) setRsvpDeadline(data.rsvp_deadline)
+    setRsvpLocked(!!data?.rsvp_locked)
+  }
+
+  useEffect(() => { if (authed) { loadGuests(); loadConfig() } }, [authed])
+
+  const saveDeadline = async (value) => {
+    setRsvpDeadline(value)
+    await updateConfig({ rsvp_deadline: value })
+  }
+
+  const toggleLock = async () => {
+    const next = !rsvpLocked
+    setRsvpLocked(next)
+    await updateConfig({ rsvp_locked: next })
+  }
 
   const updateGuest = async (id, field, value) => {
     setGuests(gs => gs.map(g => g._id === id ? { ...g, [field]: value } : g))
@@ -622,6 +730,14 @@ export default function Admin() {
     setSelected(s => { const n = new Set(s); n.delete(id); return n })
     const guest = guests.find(g => g._id === id)
     if (guest?.id) await deleteGuest(guest.id)
+  }
+
+  const deleteSelected = async () => {
+    if (!window.confirm(`Delete ${selected.size} guest${selected.size !== 1 ? 's' : ''}? This can't be undone.`)) return
+    const ids = guests.filter(g => selected.has(g._id) && g.id).map(g => g.id)
+    setGuests(gs => gs.filter(g => !selected.has(g._id)))
+    setSelected(new Set())
+    if (ids.length > 0) await deleteGuests(ids)
   }
 
   const addGuest = () => setGuests(gs => [...gs, {
@@ -663,8 +779,6 @@ export default function Admin() {
   const toggleRow = (id, checked) => setSelected(s => { const n = new Set(s); checked ? n.add(id) : n.delete(id); return n })
   const toggleAll = (checked) => setSelected(s => { const n = new Set(s); visible.forEach(g => checked ? n.add(g._id) : n.delete(g._id)); return n })
 
-  const selectedWithEmail = guests.filter(g => selected.has(g._id) && g.email)
-
   const exportCSV = () => {
     const a = document.createElement('a')
     a.href = URL.createObjectURL(new Blob([toCSV(guests)], { type: 'text/csv' }))
@@ -698,7 +812,7 @@ export default function Admin() {
   // ─── Dashboard ─────────────────────────────────────────────────────────────
   return (
     <div className="min-h-[100dvh] text-ink" style={{ background: '#0E0406' }}>
-      {showEmail  && <EmailModal  guests={guests} selected={selected} onClose={() => setShowEmail(false)} />}
+      {showEmail  && <EmailModal  guests={guests} rsvpDeadline={rsvpDeadline} onClose={() => setShowEmail(false)} />}
       {showImport && <ImportModal guests={guests} onClose={() => setShowImport(false)} onDone={() => { setShowImport(false); loadGuests() }} />}
 
       {/* Top bar */}
@@ -709,7 +823,12 @@ export default function Admin() {
             <span className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted hidden sm:block">· Admin</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button onClick={() => setRsvpLocked(l => !l)}
+            <label className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-divider cursor-pointer">
+              <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted">RSVP by</span>
+              <input type="date" value={rsvpDeadline} onChange={e => saveDeadline(e.target.value)}
+                className="bg-transparent font-body text-xs text-ink focus:outline-none [color-scheme:dark]" />
+            </label>
+            <button onClick={toggleLock}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-subheading text-[9px] uppercase tracking-[0.15em] transition-colors ${
                 rsvpLocked ? 'bg-rose-900/40 text-rose-400 border border-rose-500/20' : 'bg-surface border border-divider text-muted hover:text-ink'
               }`}>
@@ -790,9 +909,9 @@ export default function Admin() {
           {guests.length > 0 && (
             <div className="flex items-center gap-2 ml-auto">
               {selected.size > 0 && (
-                <button onClick={() => setShowEmail(true)}
-                  className="inline-flex items-center gap-2 btn-amber-gradient text-white px-4 py-2 rounded-full font-subheading font-semibold text-xs">
-                  <Send className="h-3 w-3" /> Email selected ({selectedWithEmail.length})
+                <button onClick={deleteSelected}
+                  className="inline-flex items-center gap-2 bg-rose-900/30 border border-rose-500/30 text-rose-400 hover:bg-rose-900/50 px-4 py-2 rounded-full font-subheading font-semibold text-xs transition-colors">
+                  <Trash2 className="h-3 w-3" /> Delete selected ({selected.size})
                 </button>
               )}
               <button onClick={addGuest} className="inline-flex items-center gap-1.5 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted hover:text-ink border border-divider rounded-full px-4 py-2 transition-colors">

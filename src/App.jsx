@@ -16,6 +16,12 @@ const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+function formatDeadline(dateStr) {
+  if (!dateStr) return null
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const COUPLE = {
   name1: 'Rod',
@@ -546,6 +552,15 @@ function RSVPSection() {
   const [submitted, setSubmitted]   = useState(null) // 'attending' | 'declined'
   const [notFound, setNotFound]     = useState(false)
   const [mealError, setMealError]   = useState(false)
+  const [rsvpDeadline, setRsvpDeadline] = useState(null)
+  const [rsvpLocked, setRsvpLocked]     = useState(false)
+
+  useEffect(() => {
+    getConfig().then(data => {
+      if (data?.rsvp_deadline) setRsvpDeadline(formatDeadline(data.rsvp_deadline))
+      setRsvpLocked(!!data?.rsvp_locked)
+    })
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -647,6 +662,22 @@ function RSVPSection() {
     )
   }
 
+  if (rsvpLocked) {
+    return (
+      <section ref={ref} className="pt-10 pb-20 sm:pb-28">
+        <div className="max-w-lg mx-auto px-6 text-center">
+          <div className="rsvp-card bg-surface rounded-3xl p-12 border border-divider">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
+              <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
+            </div>
+            <h3 className="font-serif text-2xl font-medium text-ink mb-3">RSVPs are closed.</h3>
+            <p className="font-body text-muted leading-relaxed text-sm">Thank you to everyone who responded. Please reach out to us directly with any questions.</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section ref={ref} className="pt-10 pb-20 sm:pb-28">
       <div className="max-w-lg mx-auto px-6">
@@ -654,7 +685,7 @@ function RSVPSection() {
           <p className="font-subheading text-[10px] uppercase tracking-[0.26em] text-primary mb-4">Join Us</p>
           <h2 className="font-serif text-4xl sm:text-6xl font-medium text-ink tracking-tight">RSVP</h2>
           <div className="gold-line w-24 mx-auto mt-6" />
-          <p className="font-body text-muted text-sm mt-5">Kindly respond by {COUPLE.rsvpDeadline}</p>
+          <p className="font-body text-muted text-sm mt-5">Kindly respond by {rsvpDeadline || COUPLE.rsvpDeadline}</p>
         </div>
 
         <div className="rsvp-card bg-surface rounded-3xl p-8 border border-divider">

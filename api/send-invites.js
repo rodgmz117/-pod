@@ -23,6 +23,9 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Subject and body are required.' })
   }
 
+  const { data: config } = await supabase.from('wedding_config').select('rsvp_deadline').eq('id', 1).single()
+  const deadlineText = formatDeadline(config?.rsvp_deadline)
+
   const isTest = recipients === 'test'
   if (isTest && !testEmail?.trim()) {
     return res.status(400).json({ error: 'Test email address is required.' })
@@ -60,7 +63,7 @@ export default async function handler(req, res) {
         from: FROM_EMAIL,
         to:   guest.email,
         subject,
-        html: buildHtml({ firstName, body, rsvpUrl }),
+        html: buildHtml({ firstName, body, rsvpUrl, deadlineText }),
       })
       if (error) { errors.push(`${guest.primary_guest_name}: ${error.message}`); failed++ }
       else { if (guest.id) sentIds.push(guest.id); sent++ }
@@ -80,7 +83,13 @@ export default async function handler(req, res) {
   return res.status(200).json({ sent, failed, errors })
 }
 
-function buildHtml({ firstName, body, rsvpUrl }) {
+function formatDeadline(dateStr) {
+  if (!dateStr) return null
+  const [y, m, d] = dateStr.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function buildHtml({ firstName, body, rsvpUrl, deadlineText }) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,9 +120,9 @@ function buildHtml({ firstName, body, rsvpUrl }) {
         </td></tr>
       </table>
 
-      <p style="margin:36px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9A8A7A;line-height:1.7;font-style:italic;text-align:center;">
-        Kindly respond by January 15, 2027.
-      </p>
+      ${deadlineText ? `<p style="margin:36px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#9A8A7A;line-height:1.7;font-style:italic;text-align:center;">
+        Kindly respond by ${deadlineText}.
+      </p>` : ''}
     </td>
   </tr>
 

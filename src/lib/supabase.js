@@ -36,6 +36,11 @@ export async function getConfig() {
   return data
 }
 
+export async function updateConfig(fields) {
+  const { error } = await supabase.from('wedding_config').update(fields).eq('id', 1)
+  return { error }
+}
+
 // ─── Admin: read ──────────────────────────────────────────────────────────────
 export async function getAllGuests() {
   const { data, error } = await supabase
@@ -58,5 +63,10 @@ export async function updateGuestField(id, field, value) {
 
 export async function deleteGuest(id) {
   const { error } = await supabase.from('guests').delete().eq('id', id)
+  return { error }
+}
+
+export async function deleteGuests(ids) {
+  const { error } = await supabase.from('guests').delete().in('id', ids)
   return { error }
 }
