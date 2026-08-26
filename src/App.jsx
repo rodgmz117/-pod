@@ -583,7 +583,6 @@ function RSVPSection() {
     if (!data) { setNotFound(true); return }
     const guestList = [
       { id: 'primary', name: data.primary_guest_name },
-      ...(data.plus_one_name ? [{ id: 'plusone', name: data.plus_one_name }] : []),
       ...(data.party_members || []).map((m, i) => ({ id: `party_${i}`, name: m.name })),
     ]
     setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList })

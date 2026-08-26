@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
 import {
   Upload, LogOut, Pencil, Trash2, Plus, Download, Search,
   Send, X, Check, RefreshCw, Lock, Unlock, Mail, ChevronDown,
@@ -35,6 +35,13 @@ function parseCSVText(text) {
     obj.rsvp_status = obj.rsvp || 'pending'
     return obj
   })
+}
+
+// Splits any party member whose name contains commas (bad data, or a pasted list) into separate members.
+function splitPartyMembers(members) {
+  return (members || []).flatMap(m =>
+    (m.name || '').split(',').map(s => s.trim()).filter(Boolean).map(name => ({ ...m, name })),
+  )
 }
 
 function toCSV(guests) {
@@ -77,6 +84,32 @@ function RSVPBadge({ value }) {
   return <span style={{ color }} className="font-subheading text-[10px] uppercase tracking-[0.15em]">{label}</span>
 }
 
+// attending is tri-state: true = attending, false = declined, null/undefined = pending
+function memberStatus(member) {
+  if (member.attending === true) return 'attending'
+  if (member.attending === false) return 'declined'
+  return 'pending'
+}
+
+function GuestRow({ name, attending, meal, rsvpStatus, secondary }) {
+  const isPending = rsvpStatus === 'pending' || !rsvpStatus
+  return (
+    <div className="flex items-center gap-1.5">
+      {isPending ? (
+        <span className="h-3 w-3 shrink-0" />
+      ) : attending ? (
+        <Check className="h-3 w-3 text-emerald-400 shrink-0" strokeWidth={2.5} />
+      ) : (
+        <X className="h-3 w-3 text-muted/40 shrink-0" strokeWidth={2.2} />
+      )}
+      <span className={`font-body text-xs truncate ${secondary ? 'text-muted' : 'text-ink'}`}>{name}</span>
+      {attending && meal && (
+        <span className="font-mono text-[9px] text-muted capitalize bg-surface-2 px-1.5 py-0.5 rounded shrink-0">{meal}</span>
+      )}
+    </div>
+  )
+}
+
 function SalutationSelect({ value, onChange }) {
   return (
     <select
@@ -111,28 +144,20 @@ function MealSelect({ value, onChange }) {
   )
 }
 
-function EditableCell({ value, onChange, placeholder = '—', dim }) {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft]     = useState(value)
-  const commit = () => { onChange(draft); setEditing(false) }
-  const cancel = () => { setDraft(value); setEditing(false) }
-  if (editing)
-    return (
-      <input
-        autoFocus
-        value={draft}
-        onChange={e => setDraft(e.target.value)}
-        onBlur={commit}
-        onKeyDown={e => { if (e.key === 'Enter') commit(); if (e.key === 'Escape') cancel() }}
-        className="w-full bg-surface-2 border border-primary/40 rounded-lg px-2 py-1 font-body text-xs text-ink focus:outline-none"
-      />
-    )
+function MemberRSVPSelect({ attending, onChange }) {
+  const value = attending === true ? 'attending' : attending === false ? 'declined' : 'pending'
+  const color = value === 'attending' ? '#34d399' : value === 'declined' ? '#f87171' : 'rgba(255,255,255,0.4)'
   return (
-    <button onClick={() => { setDraft(value); setEditing(true) }}
-      className={`group flex items-center gap-1 text-left hover:opacity-70 transition-opacity w-full ${dim ? 'text-muted' : 'text-ink'}`}>
-      <span className="font-body text-xs">{value || <span className="text-white/20">{placeholder}</span>}</span>
-      <Pencil className="h-2.5 w-2.5 opacity-0 group-hover:opacity-30 shrink-0" />
-    </button>
+    <select
+      value={value}
+      onChange={e => onChange(e.target.value === 'pending' ? null : e.target.value === 'attending')}
+      style={{ color, borderColor: 'rgba(196,100,32,0.25)', background: 'rgba(58,14,24,0.72)' }}
+      className="rounded-lg px-2 py-1 font-subheading text-[9px] uppercase tracking-[0.15em] focus:outline-none transition-colors cursor-pointer"
+    >
+      <option value="pending">Pending</option>
+      <option value="attending">Attending</option>
+      <option value="declined">Declined</option>
+    </select>
   )
 }
 
@@ -685,6 +710,8 @@ export default function Admin() {
   const [showImport, setShowImport] = useState(false)
   const [rsvpLocked, setRsvpLocked]     = useState(false)
   const [rsvpDeadline, setRsvpDeadline] = useState('')
+  const [expandedParty, setExpandedParty] = useState(new Set())
+  const toggleParty = (id) => setExpandedParty(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n })
 
   const login  = () => {
     if (pw === ADMIN_PASSWORD) { sessionStorage.setItem('admin_authed', '1'); setAuthed(true); setPwError(false) }
@@ -697,7 +724,13 @@ export default function Admin() {
     const { data, error } = await getAllGuests()
     setLoading(false)
     if (error) { setFetchError('Could not load guest list from Supabase.'); return }
-    setGuests((data || []).map(g => ({ ...g, _id: g.id })))
+    const normalized = (data || []).map(g => ({ ...g, _id: g.id, party_members: splitPartyMembers(g.party_members) }))
+    setGuests(normalized)
+    normalized.forEach((g, i) => {
+      if (g.party_members.length !== (data[i].party_members || []).length) {
+        updateGuestField(g.id, 'party_members', g.party_members)
+      }
+    })
   }
 
   const loadConfig = async () => {
@@ -719,10 +752,53 @@ export default function Admin() {
     await updateConfig({ rsvp_locked: next })
   }
 
-  const updateGuest = async (id, field, value) => {
-    setGuests(gs => gs.map(g => g._id === id ? { ...g, [field]: value } : g))
-    const guest = guests.find(g => g._id === id)
-    if (guest?.id) await updateGuestField(guest.id, field, value)
+  const blankEdit = {
+    household_name: '', salutation: '', primary_guest_name: '', party_members: [],
+    max_guests_allotted: 1, email: '', rsvp_status: 'pending', primary_meal_choice: '', dietary_restrictions: '',
+  }
+  const [editingId, setEditingId] = useState(null)
+  const [edit, setEdit]           = useState(blankEdit)
+
+  const setEditField = (field, value) => setEdit(e => ({ ...e, [field]: value }))
+  // Adding/removing a party member always keeps Seats in sync with the actual party size.
+  const setEditPartyMembers = (members) => setEdit(e => ({ ...e, party_members: members, max_guests_allotted: members.length + 1 }))
+
+  const startEdit = (g) => {
+    setEditingId(g._id)
+    setEdit({
+      household_name:       g.household_name || '',
+      salutation:           g.salutation || '',
+      primary_guest_name:   g.primary_guest_name || '',
+      party_members:        (g.party_members || []).map(m => ({ ...m })),
+      max_guests_allotted:  g.max_guests_allotted || 1,
+      email:                g.email || '',
+      rsvp_status:          g.rsvp_status || 'pending',
+      primary_meal_choice:  g.primary_meal_choice || '',
+      dietary_restrictions: g.dietary_restrictions || '',
+    })
+  }
+  const cancelEdit = () => { setEditingId(null); setEdit(blankEdit) }
+  const saveEdit = async () => {
+    if (!edit.primary_guest_name.trim()) return
+    const guest = guests.find(g => g._id === editingId)
+    if (!guest) return
+    const cleanedParty = edit.party_members.filter(m => m.name.trim()).map(m => ({ ...m, name: m.name.trim() }))
+    const isAttending = edit.rsvp_status === 'attending'
+    const cleaned = {
+      ...edit,
+      primary_guest_name: edit.primary_guest_name.trim(),
+      party_members: cleanedParty,
+      // Seats can never be fewer than the named party — grows automatically as members are added.
+      max_guests_allotted: Math.max(parseInt(edit.max_guests_allotted) || 1, 1 + cleanedParty.length),
+      // Confirmed count is derived from RSVP status + who's individually marked attending, not left stale.
+      primary_attending: isAttending,
+      num_attending: isAttending ? 1 + cleanedParty.filter(m => m.attending).length : 0,
+    }
+    setGuests(gs => gs.map(g => g._id === editingId ? { ...g, ...cleaned } : g))
+    if (guest.id) {
+      await Promise.all(Object.entries(cleaned).map(([field, value]) => updateGuestField(guest.id, field, value)))
+    }
+    cancelEdit()
   }
 
   const removeGuest = async (id) => {
@@ -753,8 +829,9 @@ export default function Admin() {
       ...(g.party_members || []).map(m => m.meal_choice),
     ]).filter(Boolean)
     return {
-      households: guests.length,
-      seats:      guests.reduce((s, g) => s + (parseInt(g.max_guests_allotted) || 1), 0),
+      households:     guests.length,
+      seatsInvited:   guests.reduce((s, g) => s + (parseInt(g.max_guests_allotted) || 1), 0),
+      seatsConfirmed: guests.reduce((s, g) => s + (parseInt(g.num_attending) || 0), 0),
       attending:  attending.length,
       declined:   guests.filter(g => g.rsvp_status === 'declined').length,
       pending:    guests.filter(g => g.rsvp_status === 'pending' || !g.rsvp_status).length,
@@ -859,11 +936,11 @@ export default function Admin() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-          <StatCard label="Households"  value={stats.households} sub={`${stats.seats} seats invited`} />
+          <StatCard label="Households"  value={stats.households} sub={`${stats.seatsInvited} seats invited`} />
           <StatCard label="Attending"   value={stats.attending}  sub="households" accent />
           <StatCard label="Declined"    value={stats.declined}   sub="households" />
           <StatCard label="Pending"     value={stats.pending}    sub="no response yet" />
-          <StatCard label="Total Seats" value={stats.seats}      sub="across all households" />
+          <StatCard label="Total Seats" value={stats.seatsConfirmed} sub={`of ${stats.seatsInvited} invited`} />
         </div>
 
         {fetchError && (
@@ -934,7 +1011,7 @@ export default function Admin() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-divider">
-                    {['Household', 'Title', 'Primary Guest', 'Party Members', 'Seats', 'Email', 'RSVP', 'Meal', 'Dietary Notes', ''].map((h, i) => (
+                    {['Household', 'Title', 'Primary Guest', 'Seats', 'Email', 'RSVP', 'Meal', 'Dietary Notes', ''].map((h, i) => (
                       <th key={i} className="px-4 py-3.5 text-left font-subheading text-[9px] uppercase tracking-[0.18em] text-muted whitespace-nowrap">{h}</th>
                     ))}
                     <th className="px-4 py-3.5 pr-5 text-right">
@@ -954,47 +1031,161 @@ export default function Admin() {
                   ) : visible.map(g => {
                     const isSelected = selected.has(g._id)
                     const members    = g.party_members || []
+                    const isEditing  = editingId === g._id
                     return (
-                      <tr key={g._id} className={`group transition-colors ${isSelected ? 'bg-primary/5' : 'hover:bg-surface-2/20'}`}>
+                      <Fragment key={g._id}>
+                      <tr onClick={() => !isEditing && members.length > 0 && toggleParty(g._id)}
+                        className={`group transition-colors ${isEditing ? '' : members.length > 0 ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/5' : 'hover:bg-surface-2/20'}`}>
                         <td className="px-4 py-3.5 max-w-[140px]">
-                          <EditableCell value={g.household_name} onChange={v => updateGuest(g._id, 'household_name', v)} placeholder="Household" />
+                          {isEditing ? (
+                            <input autoFocus value={edit.household_name} onChange={e => setEditField('household_name', e.target.value)}
+                              onKeyDown={e => e.key === 'Escape' && cancelEdit()} placeholder="Household"
+                              className="w-full bg-transparent border-b border-primary/40 focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                          ) : (
+                            <p className="font-body text-xs text-ink truncate">{g.household_name}</p>
+                          )}
                           {g.email_sent && <p className="font-subheading text-[8px] uppercase tracking-wide text-primary/60 mt-0.5">Invited</p>}
                         </td>
                         <td className="px-4 py-3.5 w-20">
-                          <SalutationSelect value={g.salutation} onChange={v => updateGuest(g._id, 'salutation', v)} />
+                          {isEditing
+                            ? <SalutationSelect value={edit.salutation} onChange={v => setEditField('salutation', v)} />
+                            : <span className="font-body text-xs text-muted">{g.salutation || '—'}</span>}
                         </td>
                         <td className="px-4 py-3.5 max-w-[130px]">
-                          <EditableCell value={g.primary_guest_name} onChange={v => updateGuest(g._id, 'primary_guest_name', v)} placeholder="Name" />
+                          {isEditing ? (
+                            <input
+                              value={edit.primary_guest_name}
+                              onChange={e => setEditField('primary_guest_name', e.target.value)}
+                              onKeyDown={e => e.key === 'Escape' && cancelEdit()}
+                              placeholder="Primary guest"
+                              className="w-full bg-transparent border-b border-primary/40 focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors"
+                            />
+                          ) : (
+                            <GuestRow name={g.primary_guest_name} attending={g.primary_attending} rsvpStatus={g.rsvp_status} />
+                          )}
+                        </td>
+                        <td className="px-4 py-3.5 w-16">
+                          {isEditing ? (
+                            <input type="number" min="1" value={edit.max_guests_allotted}
+                              onChange={e => setEditField('max_guests_allotted', e.target.value)}
+                              className="w-10 bg-transparent border-b border-primary/40 focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <span className="font-body text-xs text-muted">
+                                {g.rsvp_status === 'attending' ? (g.num_attending ?? 0) : g.max_guests_allotted}
+                              </span>
+                              {members.length > 0 && (
+                                <ChevronDown className={`h-3 w-3 text-muted shrink-0 transition-transform ${expandedParty.has(g._id) ? 'rotate-180' : ''}`} />
+                              )}
+                            </div>
+                          )}
                         </td>
                         <td className="px-4 py-3.5 max-w-[160px]">
-                          {members.length > 0
-                            ? <div className="space-y-0.5">{members.map((m, i) => <p key={i} className="font-body text-xs text-muted">{m.name}</p>)}</div>
-                            : <span className="font-body text-xs text-white/20">—</span>}
-                        </td>
-                        <td className="px-4 py-3.5 w-12">
-                          <EditableCell value={g.max_guests_allotted} onChange={v => updateGuest(g._id, 'max_guests_allotted', v)} dim />
-                        </td>
-                        <td className="px-4 py-3.5 max-w-[160px]">
-                          <EditableCell value={g.email} onChange={v => updateGuest(g._id, 'email', v)} placeholder="—" dim />
+                          {isEditing ? (
+                            <input value={edit.email} onChange={e => setEditField('email', e.target.value)} placeholder="—"
+                              className="w-full bg-transparent border-b border-primary/40 focus:border-primary outline-none font-body text-xs text-muted pb-1 transition-colors" />
+                          ) : (
+                            <span className="font-body text-xs text-muted truncate block">{g.email || '—'}</span>
+                          )}
                         </td>
                         <td className="px-4 py-3.5">
-                          <RSVPSelect value={g.rsvp_status} onChange={v => updateGuest(g._id, 'rsvp_status', v)} />
+                          {isEditing
+                            ? <RSVPSelect value={edit.rsvp_status} onChange={v => setEditField('rsvp_status', v)} />
+                            : <RSVPBadge value={g.rsvp_status} />}
                         </td>
                         <td className="px-4 py-3.5">
-                          <MealSelect value={g.primary_meal_choice} onChange={v => updateGuest(g._id, 'primary_meal_choice', v)} />
+                          {isEditing
+                            ? <MealSelect value={edit.primary_meal_choice} onChange={v => setEditField('primary_meal_choice', v)} />
+                            : <span className="font-mono text-[10px] text-muted capitalize">{g.primary_meal_choice || '—'}</span>}
                         </td>
                         <td className="px-4 py-3.5 max-w-[160px]">
-                          <EditableCell value={g.dietary_restrictions} onChange={v => updateGuest(g._id, 'dietary_restrictions', v)} placeholder="—" dim />
+                          {isEditing ? (
+                            <input value={edit.dietary_restrictions} onChange={e => setEditField('dietary_restrictions', e.target.value)} placeholder="—"
+                              className="w-full bg-transparent border-b border-primary/40 focus:border-primary outline-none font-body text-xs text-muted pb-1 transition-colors" />
+                          ) : (
+                            <span className="font-body text-xs text-muted truncate block">{g.dietary_restrictions || '—'}</span>
+                          )}
                         </td>
-                        <td className="px-4 py-3.5 w-10">
-                          <button onClick={() => removeGuest(g._id)} className="opacity-0 group-hover:opacity-100 transition-opacity text-muted hover:text-rose-400">
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                        <td className="px-4 py-3.5 w-16">
+                          {isEditing ? (
+                            <div className="flex items-center gap-1">
+                              <button onClick={saveEdit} className="font-body text-[10px] px-2 py-1 rounded-full bg-primary text-white font-medium">Save</button>
+                              <button onClick={cancelEdit} className="font-body text-[10px] px-2 py-1 rounded-full border border-divider text-muted hover:text-ink transition-colors">Cancel</button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <button onClick={e => { e.stopPropagation(); startEdit(g) }} className="text-muted hover:text-ink transition-colors" title="Edit">
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                              <button onClick={e => { e.stopPropagation(); removeGuest(g._id) }} className="text-muted hover:text-rose-400 transition-colors" title="Delete">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          )}
                         </td>
-                        <td className="px-4 py-3.5 pr-5 w-10 text-right">
+                        <td className="px-4 py-3.5 pr-5 w-10 text-right" onClick={e => e.stopPropagation()}>
                           <Checkbox checked={isSelected} indeterminate={false} onChange={c => toggleRow(g._id, c)} />
                         </td>
                       </tr>
+                      {(isEditing || expandedParty.has(g._id)) && (members.length > 0 || isEditing) && (
+                        <tr className="bg-surface-2/20">
+                          <td colSpan={9} className="px-8 py-3">
+                            {isEditing ? (
+                              <div>
+                                <div className="grid grid-cols-[160px_100px_84px_180px_20px] gap-x-3 gap-y-1.5 items-center">
+                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Name</span>
+                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">RSVP</span>
+                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Meal</span>
+                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Dietary</span>
+                                  <span />
+                                  {edit.party_members.map((m, i) => {
+                                    const setMember = (fields) => setEditField('party_members', edit.party_members.map((pm, pi) => pi === i ? { ...pm, ...fields } : pm))
+                                    return (
+                                      <Fragment key={i}>
+                                        <input value={m.name} onChange={e => setMember({ name: e.target.value })} placeholder="Party member"
+                                          className="min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                                        <MemberRSVPSelect attending={m.attending} onChange={v => setMember({ attending: v })} />
+                                        <MealSelect value={m.meal_choice} onChange={v => setMember({ meal_choice: v })} />
+                                        <input value={m.dietary_notes || ''} onChange={e => setMember({ dietary_notes: e.target.value })} placeholder="—"
+                                          className="min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-muted pb-1 transition-colors" />
+                                        <button type="button" onClick={() => setEditPartyMembers(edit.party_members.filter((_, pi) => pi !== i))}
+                                          className="text-muted hover:text-rose-400 transition-colors">
+                                          <Trash2 className="h-3 w-3" strokeWidth={2} />
+                                        </button>
+                                      </Fragment>
+                                    )
+                                  })}
+                                </div>
+                                <button type="button" onClick={() => setEditPartyMembers([...edit.party_members, { name: '', attending: null, meal_choice: '', dietary_notes: '' }])}
+                                  className="mt-2 text-left font-body text-xs text-muted hover:text-primary transition-colors">
+                                  + add member
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-[160px_100px_84px_180px] gap-x-3 gap-y-1.5 items-center">
+                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Name</span>
+                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">RSVP</span>
+                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Meal</span>
+                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Dietary</span>
+                                {members.map((m, i) => {
+                                  const status = memberStatus(m)
+                                  return (
+                                    <Fragment key={i}>
+                                      <span className="font-body text-xs text-ink truncate">{m.name || 'Guest'}</span>
+                                      <RSVPBadge value={status} />
+                                      <span className="font-body text-xs text-muted">
+                                        {status === 'attending' ? (m.meal_choice || '—') : '—'}
+                                      </span>
+                                      <span className="font-body text-xs text-muted truncate">{m.dietary_notes || '—'}</span>
+                                    </Fragment>
+                                  )
+                                })}
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      </Fragment>
                     )
                   })}
                 </tbody>
