@@ -37,7 +37,12 @@ export async function getConfig() {
 }
 
 export async function updateConfig(fields) {
-  const { error } = await supabase.from('wedding_config').update(fields).eq('id', 1)
+  // .select() is required here — without it, an UPDATE silently blocked by a missing
+  // RLS policy returns success with 0 rows changed instead of an error.
+  const { data, error } = await supabase.from('wedding_config').update(fields).eq('id', 1).select()
+  if (!error && (!data || data.length === 0)) {
+    return { error: { message: 'Update was blocked (0 rows changed) — check the wedding_config RLS policy.' } }
+  }
   return { error }
 }
 

@@ -49,5 +49,6 @@ ALTER TABLE wedding_config ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "guests_select" ON guests FOR SELECT USING (true);
 CREATE POLICY "guests_update" ON guests FOR UPDATE USING (true);
 
--- Config: public can read (for RSVP deadline + locked state)
+-- Config: public can read (for RSVP deadline + locked state) and admin can write
 CREATE POLICY "config_select" ON wedding_config FOR SELECT USING (true);
+CREATE POLICY "config_update" ON wedding_config FOR UPDATE USING (true);

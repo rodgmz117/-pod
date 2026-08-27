@@ -710,6 +710,7 @@ export default function Admin() {
   const [showImport, setShowImport] = useState(false)
   const [rsvpLocked, setRsvpLocked]     = useState(false)
   const [rsvpDeadline, setRsvpDeadline] = useState('')
+  const [configError, setConfigError]   = useState('')
   const [expandedParty, setExpandedParty] = useState(new Set())
   const toggleParty = (id) => setExpandedParty(s => { const n = new Set(s); n.has(id) ? n.delete(id) : n.add(id); return n })
 
@@ -742,14 +743,20 @@ export default function Admin() {
   useEffect(() => { if (authed) { loadGuests(); loadConfig() } }, [authed])
 
   const saveDeadline = async (value) => {
+    const previous = rsvpDeadline
     setRsvpDeadline(value)
-    await updateConfig({ rsvp_deadline: value })
+    const { error } = await updateConfig({ rsvp_deadline: value })
+    if (error) { setRsvpDeadline(previous); setConfigError('Could not save RSVP deadline.') }
+    else setConfigError('')
   }
 
   const toggleLock = async () => {
-    const next = !rsvpLocked
+    const previous = rsvpLocked
+    const next = !previous
     setRsvpLocked(next)
-    await updateConfig({ rsvp_locked: next })
+    const { error } = await updateConfig({ rsvp_locked: next })
+    if (error) { setRsvpLocked(previous); setConfigError('Could not save RSVP lock.') }
+    else setConfigError('')
   }
 
   const blankEdit = {
@@ -946,6 +953,12 @@ export default function Admin() {
         {fetchError && (
           <div className="bg-rose-900/20 border border-rose-500/20 rounded-2xl px-5 py-4 mb-6">
             <p className="font-body text-sm text-rose-400">{fetchError}</p>
+          </div>
+        )}
+
+        {configError && (
+          <div className="bg-rose-900/20 border border-rose-500/20 rounded-2xl px-5 py-4 mb-6">
+            <p className="font-body text-sm text-rose-400">{configError}</p>
           </div>
         )}
 
