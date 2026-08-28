@@ -190,8 +190,7 @@ function Hero({ scrollToSection }) {
   }, [])
 
   return (
-    <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] overflow-hidden">
-      <div className="absolute inset-0 flex flex-col justify-center py-16 sm:py-24">
+    <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
         <div className="max-w-6xl mx-auto w-full px-6 sm:px-10 lg:px-16 text-center">
           <h1 className="leading-relaxed">
             <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] text-ink/90">
@@ -244,7 +243,6 @@ function Hero({ scrollToSection }) {
             </button>
           </div>
         </div>
-      </div>
     </section>
   )
 }
