@@ -228,27 +228,6 @@ function ScrollProgressBar({ progress }) {
   )
 }
 
-// ─── Bottom RSVP Bar (mobile only) ─────────────────────────────────────────────
-function BottomRSVPBar({ visible, scrollToSection }) {
-  return (
-    <div
-      className={`sm:hidden fixed bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${
-        visible ? 'translate-y-0' : 'translate-y-full'
-      }`}
-      style={{ background: 'rgba(0,0,0,0.42)', backdropFilter: 'blur(20px)' }}
-    >
-      <div className="border-t border-white/8 px-6 py-3 flex justify-center pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-        <button
-          onClick={() => scrollToSection('rsvp')}
-          className="magnetic-btn btn-outline-sharp px-10 py-2.5 font-serif text-sm tracking-[0.05em]"
-        >
-          RSVP
-        </button>
-      </div>
-    </div>
-  )
-}
-
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 function Hero({ scrollToSection }) {
   const ref = useRef(null)
@@ -277,7 +256,7 @@ function Hero({ scrollToSection }) {
             <img
               src="/home-hero.jpg"
               alt=""
-              className="hero-monogram block -mx-6 w-[calc(100%+3rem)] sm:mx-auto sm:w-auto my-3 sm:my-4 h-48 sm:h-56 lg:h-72 object-cover"
+              className="hero-monogram block mx-auto my-3 sm:my-4 h-40 sm:h-56 lg:h-72 w-auto object-cover"
             />
             <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] silver-metallic">
               {COUPLE.name2}
@@ -437,7 +416,7 @@ function Travel() {
 
         {/* Stay With Us — Montage room block */}
         <div className="max-w-2xl mx-auto mb-6">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-right">Stay With Us</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
           <div className="travel-card bg-surface rounded-3xl p-8 border border-divider">
             <h3 className="font-serif text-xl font-medium text-ink mb-3">{COUPLE.venue}</h3>
             <p className="font-body text-sm text-muted leading-relaxed">
@@ -451,10 +430,10 @@ function Travel() {
 
         {/* Alternate accommodations */}
         <div className="max-w-4xl mx-auto mb-10">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Alternate Accommodations</p>
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible">
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
             {HOTELS.map((hotel, i) => (
-              <div key={i} className="travel-card bg-surface rounded-3xl p-6 border border-divider flex flex-col shrink-0 w-[78%] snap-center sm:w-auto sm:shrink">
+              <div key={i} className="travel-card bg-surface rounded-3xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-mauve/10 mb-4">
                   <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                 </div>
@@ -945,10 +924,6 @@ function Site() {
           <FAQ />
         </main>
         <Footer />
-        <BottomRSVPBar
-          visible={activeSection !== 'home' && activeSection !== 'rsvp'}
-          scrollToSection={scrollToSection}
-        />
       </div>
     </div>
   )
