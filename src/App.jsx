@@ -245,7 +245,7 @@ function Hero({ scrollToSection }) {
     <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
       {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover grayscale" />
+        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-[center_65%] grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
