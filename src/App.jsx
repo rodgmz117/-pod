@@ -97,26 +97,6 @@ const TABS = [
   { id: 'faq',     label: 'Questions' },
 ]
 
-// ─── Countdown ────────────────────────────────────────────────────────────────
-function useCountdown(targetDate) {
-  const calc = () => {
-    const diff = new Date(targetDate) - new Date()
-    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 }
-    return {
-      days:    Math.floor(diff / 86400000),
-      hours:   Math.floor((diff % 86400000) / 3600000),
-      minutes: Math.floor((diff % 3600000) / 60000),
-      seconds: Math.floor((diff % 60000) / 1000),
-    }
-  }
-  const [time, setTime] = useState(calc)
-  useEffect(() => {
-    const t = setInterval(() => setTime(calc()), 1000)
-    return () => clearInterval(t)
-  }, [targetDate])
-  return time
-}
-
 // ─── Active section tracking (mobile menu highlight + bottom RSVP bar) ────────
 function useActiveSection(ids) {
   const [active, setActive] = useState(ids[0])
@@ -161,18 +141,13 @@ function useScrollProgress() {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 w-full h-16 flex items-center justify-between px-6 sm:px-10 backdrop-blur-sm border-b border-white/8" style={{ background: 'rgba(0,0,0,0.32)' }}>
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full h-16 flex items-center justify-between px-6 sm:px-10 bg-deep border-b border-white/8">
       <button
         onClick={() => scrollToSection('home')}
-        className="group flex items-center justify-center"
+        className="font-serif text-sm sm:text-base tracking-[0.3em] text-ink/90 hover:text-white transition-colors"
         aria-label="Home"
       >
-        <img
-          src="/monogram.jpg"
-          alt="P & R monogram"
-          className="transition-transform duration-200 group-hover:scale-105"
-          style={{ width: '44px', height: '44px', objectFit: 'cover', mixBlendMode: 'multiply', borderRadius: '50%' }}
-        />
+        R <span className="text-primary">&amp;</span> P
       </button>
       <button
         onClick={() => setMenuOpen(o => !o)}
@@ -229,77 +204,99 @@ function ScrollProgressBar({ progress }) {
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-function Hero({ scrollToSection }) {
+function useCountdown(targetDate) {
+  const calc = () => {
+    const diff = new Date(targetDate) - new Date()
+    if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+    return {
+      days:    Math.floor(diff / 86400000),
+      hours:   Math.floor((diff % 86400000) / 3600000),
+      minutes: Math.floor((diff % 3600000) / 60000),
+      seconds: Math.floor((diff % 60000) / 1000),
+    }
+  }
+  const [time, setTime] = useState(calc)
+  useEffect(() => {
+    const t = setInterval(() => setTime(calc()), 1000)
+    return () => clearInterval(t)
+  }, [targetDate])
+  return time
+}
+
+function Hero() {
   const ref = useRef(null)
   const { days, hours, minutes, seconds } = useCountdown(COUPLE.date)
 
   useEffect(() => {
     if (prefersReducedMotion) return
     const ctx = gsap.context(() => {
-      gsap.from('.hero-name-1',  { y: 52, opacity: 0, duration: 1.2, delay: 0.5,  ease: 'power3.out' })
-      gsap.from('.hero-monogram', { scale: 0.9, opacity: 0, duration: 1,   delay: 0.6,  ease: 'power3.out' })
-      gsap.from('.hero-name-2',  { y: 52, opacity: 0, duration: 1.2, delay: 0.72, ease: 'power3.out' })
-      gsap.from('.hero-venue',   { y: 16, opacity: 0, duration: 0.8, delay: 0.85, ease: 'power3.out' })
-      gsap.from('.hero-count',   { y: 16, opacity: 0, duration: 0.8, delay: 1.05, ease: 'power3.out' })
-      gsap.from('.hero-cta',     { y: 16, opacity: 0, duration: 0.8, delay: 1.2,  ease: 'power3.out' })
+      gsap.from('.hero-venue',    { y: 16, opacity: 0, duration: 0.8, delay: 0.4,  ease: 'power3.out' })
+      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.55, ease: 'power3.out' })
+      gsap.from('.hero-monogram', { scale: 0.9, opacity: 0, duration: 1,   delay: 0.72, ease: 'power3.out' })
+      gsap.from('.hero-name-2',   { y: 52, opacity: 0, duration: 1.2, delay: 0.9,  ease: 'power3.out' })
+      gsap.from('.hero-date',     { y: 16, opacity: 0, duration: 0.8, delay: 1.15, ease: 'power3.out' })
+      gsap.from('.hero-count',    { y: 16, opacity: 0, duration: 0.8, delay: 1.3,  ease: 'power3.out' })
     }, ref)
     return () => ctx.revert()
   }, [])
 
   return (
     <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
-        <div className="max-w-6xl mx-auto w-full px-6 sm:px-10 lg:px-16 text-center">
-          <h1 className="leading-relaxed">
-            <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] text-ink/90">
-              {COUPLE.name1}
-            </span>
-            <img
-              src="/home-hero.jpg"
-              alt=""
-              className="hero-monogram block mx-auto my-3 sm:my-4 h-40 sm:h-56 lg:h-72 w-auto object-cover"
-            />
-            <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] silver-metallic">
-              {COUPLE.name2}
-            </span>
-          </h1>
+      {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame */}
+      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+        <img src="/home-hero.jpg" alt="" className="absolute -inset-[8%] h-auto w-auto min-h-[116%] min-w-[116%] object-cover grayscale" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
+      </div>
 
-          <div className="hero-venue mt-5 sm:mt-6">
-            <p className="font-body text-[11px] sm:text-xs uppercase tracking-[0.25em] text-white/50 mb-2">
-              Please join us for our wedding celebration
-            </p>
-            <p className="font-serif text-lg sm:text-xl text-ink/90 tracking-wide">
-              {COUPLE.dateLong}
-            </p>
-            <p className="font-serif italic text-sm text-white/50 mt-1">
-              {COUPLE.venue} &middot; {COUPLE.city}
-            </p>
+      {/* Inset frame */}
+      <div className="absolute inset-4 sm:inset-8 border border-primary/25 pointer-events-none" aria-hidden />
+
+      <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
+        <p className="hero-venue font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-6 sm:mb-8">
+          Please join us for our wedding celebration
+        </p>
+
+        <h1 className="leading-relaxed">
+          <span className="hero-name-1 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
+            {COUPLE.name1}
+          </span>
+
+          <div className="hero-monogram mx-auto my-6 sm:my-8 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center border border-primary/40">
+            <span className="font-serif text-lg sm:text-xl tracking-[0.15em] silver-metallic">{COUPLE.initials}</span>
           </div>
 
-          <div className="hero-count flex items-center justify-center gap-6 sm:gap-8 mt-5 sm:mt-6">
-            {[
-              { v: days,    l: 'Days' },
-              { v: hours,   l: 'Hours' },
-              { v: minutes, l: 'Min' },
-              { v: seconds, l: 'Sec' },
-            ].map(({ v, l }) => (
-              <div key={l} className="text-center">
-                <div className="font-serif text-2xl sm:text-3xl font-medium text-ink tabular-nums">
-                  {String(v).padStart(2, '0')}
-                </div>
-                <div className="font-subheading text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
-              </div>
-            ))}
-          </div>
+          <span className="hero-name-2 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
+            {COUPLE.name2}
+          </span>
+        </h1>
 
-          <div className="hero-cta flex justify-center mt-5 sm:mt-6">
-            <button
-              onClick={() => scrollToSection('rsvp')}
-              className="lift-on-hover btn-outline-sharp inline-flex items-center gap-2 px-8 py-3 font-serif text-base tracking-[0.05em]"
-            >
-              RSVP
-            </button>
-          </div>
+        <div className="gold-line w-24 mx-auto my-8 sm:my-10" />
+
+        <div className="hero-date">
+          <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
+            {COUPLE.dateLong}
+          </p>
+          <p className="font-subheading text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/50 mt-3">
+            {COUPLE.venue} &middot; {COUPLE.city}
+          </p>
         </div>
+
+        <div className="hero-count flex items-center justify-center gap-6 sm:gap-8 mt-8 sm:mt-10">
+          {[
+            { v: days,    l: 'Days' },
+            { v: hours,   l: 'Hours' },
+            { v: minutes, l: 'Min' },
+            { v: seconds, l: 'Sec' },
+          ].map(({ v, l }) => (
+            <div key={l} className="text-center">
+              <div className="font-serif text-2xl sm:text-3xl font-medium text-ink tabular-nums">
+                {String(v).padStart(2, '0')}
+              </div>
+              <div className="font-subheading text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </section>
   )
 }
@@ -918,7 +915,7 @@ function Site() {
         <ScrollProgressBar progress={scrollProgress} />
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} activeSection={activeSection} />
         <main>
-          <Hero scrollToSection={scrollToSection} />
+          <Hero />
           <RSVPSection />
           <EventDetails />
           <Travel />
