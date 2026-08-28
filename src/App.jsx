@@ -422,7 +422,7 @@ function Travel() {
             <p className="font-body text-sm text-muted leading-relaxed">
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
             </p>
-            <div className="mt-6 text-center sm:text-left">
+            <div className="mt-6 text-center">
               <span className="inline-flex items-center gap-1.5 px-6 py-3 border border-divider text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
                 Booking Link Coming Soon
               </span>
