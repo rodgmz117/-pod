@@ -117,6 +117,47 @@ function useCountdown(targetDate) {
   return time
 }
 
+// ─── Active section tracking (mobile menu highlight + bottom RSVP bar) ────────
+function useActiveSection(ids) {
+  const [active, setActive] = useState(ids[0])
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) setActive(entry.target.id)
+        })
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    )
+    const els = ids.map(id => document.getElementById(id)).filter(Boolean)
+    els.forEach(el => observer.observe(el))
+    return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return active
+}
+
+// ─── Scroll progress (mobile progress line) ────────────────────────────────────
+function useScrollProgress() {
+  const [progress, setProgress] = useState(0)
+  useEffect(() => {
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight
+        setProgress(scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0)
+        ticking = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return progress
+}
+
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
   return (
@@ -145,7 +186,7 @@ function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
 }
 
 // ─── Menu Overlay ───────────────────────────────────────────────────────────────
-function MenuOverlay({ open, onClose, scrollToSection }) {
+function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   useEffect(() => {
     if (!open) return
     document.body.style.overflow = 'hidden'
@@ -161,12 +202,49 @@ function MenuOverlay({ open, onClose, scrollToSection }) {
           <button
             key={tab.id}
             onClick={() => scrollToSection(tab.id)}
-            className="lift-on-hover px-8 py-3 font-serif text-2xl sm:text-3xl text-ink/85 hover:text-primary-light transition-colors border-b border-transparent hover:border-primary/40"
+            className={`lift-on-hover px-8 py-3 font-serif text-2xl sm:text-3xl transition-colors border-b ${
+              tab.id === activeSection
+                ? 'text-primary-light border-primary/40'
+                : 'text-ink/85 hover:text-primary-light border-transparent hover:border-primary/40'
+            }`}
           >
             {tab.label}
           </button>
         ))}
       </nav>
+    </div>
+  )
+}
+
+// ─── Scroll Progress Bar (mobile only) ─────────────────────────────────────────
+function ScrollProgressBar({ progress }) {
+  return (
+    <div className="sm:hidden fixed top-16 left-0 right-0 z-40 h-[2px] bg-white/5">
+      <div
+        className="h-full transition-[width] duration-75 ease-out"
+        style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #B84010, #E0B848)' }}
+      />
+    </div>
+  )
+}
+
+// ─── Bottom RSVP Bar (mobile only) ─────────────────────────────────────────────
+function BottomRSVPBar({ visible, scrollToSection }) {
+  return (
+    <div
+      className={`sm:hidden fixed bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${
+        visible ? 'translate-y-0' : 'translate-y-full'
+      }`}
+      style={{ background: 'rgba(0,0,0,0.42)', backdropFilter: 'blur(20px)' }}
+    >
+      <div className="border-t border-white/8 px-6 py-3 flex justify-center pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+        <button
+          onClick={() => scrollToSection('rsvp')}
+          className="magnetic-btn btn-outline-sharp px-10 py-2.5 font-serif text-sm tracking-[0.05em]"
+        >
+          RSVP
+        </button>
+      </div>
     </div>
   )
 }
@@ -199,7 +277,7 @@ function Hero({ scrollToSection }) {
             <img
               src="/home-hero.jpg"
               alt=""
-              className="hero-monogram block mx-auto my-3 sm:my-4 h-40 sm:h-56 lg:h-72 w-auto object-cover"
+              className="hero-monogram block -mx-6 w-[calc(100%+3rem)] sm:mx-auto sm:w-auto my-3 sm:my-4 h-48 sm:h-56 lg:h-72 object-cover"
             />
             <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-3xl lg:text-4xl tracking-[0.25em] silver-metallic">
               {COUPLE.name2}
@@ -374,9 +452,9 @@ function Travel() {
         {/* Alternate accommodations */}
         <div className="max-w-4xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Alternate Accommodations</p>
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory -mx-6 px-6 pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible">
             {HOTELS.map((hotel, i) => (
-              <div key={i} className="travel-card bg-surface rounded-3xl p-6 border border-divider flex flex-col">
+              <div key={i} className="travel-card bg-surface rounded-3xl p-6 border border-divider flex flex-col shrink-0 w-[78%] snap-center sm:w-auto sm:shrink">
                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-mauve/10 mb-4">
                   <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                 </div>
@@ -821,6 +899,8 @@ function Footer() {
 // ─── Root ─────────────────────────────────────────────────────────────────────
 function Site() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const activeSection = useActiveSection(TABS.map(t => t.id))
+  const scrollProgress = useScrollProgress()
 
   const scrollToSection = useCallback((id) => {
     // Close the menu first — closing it restores body overflow, and doing that mid-animation
@@ -854,7 +934,8 @@ function Site() {
       <div className="relative z-10 min-h-[100dvh]">
         <div className="noise-overlay" aria-hidden />
         <Navbar scrollToSection={scrollToSection} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} />
+        <ScrollProgressBar progress={scrollProgress} />
+        <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} activeSection={activeSection} />
         <main>
           <Hero scrollToSection={scrollToSection} />
           <RSVPSection />
@@ -864,6 +945,10 @@ function Site() {
           <FAQ />
         </main>
         <Footer />
+        <BottomRSVPBar
+          visible={activeSection !== 'home' && activeSection !== 'rsvp'}
+          scrollToSection={scrollToSection}
+        />
       </div>
     </div>
   )

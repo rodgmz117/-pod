@@ -153,4 +153,7 @@
   .red-envelope-glow {
     box-shadow: 0 0 60px rgba(181,23,43,0.15), 0 0 120px rgba(181,23,43,0.05);
   }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
