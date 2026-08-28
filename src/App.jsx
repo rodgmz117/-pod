@@ -245,12 +245,12 @@ function Hero({ scrollToSection }) {
     <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
       {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-[center_65%] grayscale" />
+        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-top grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
-      {/* Inset frame */}
-      <div className="absolute inset-4 sm:inset-8 border border-primary/25 pointer-events-none" aria-hidden />
+      {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
+      <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
 
       <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
         <p className="hero-venue font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-6 sm:mb-8">
