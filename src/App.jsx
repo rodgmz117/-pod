@@ -223,7 +223,7 @@ function useCountdown(targetDate) {
   return time
 }
 
-function Hero() {
+function Hero({ scrollToSection }) {
   const ref = useRef(null)
   const { days, hours, minutes, seconds } = useCountdown(COUPLE.date)
 
@@ -236,6 +236,7 @@ function Hero() {
       gsap.from('.hero-name-2',   { y: 52, opacity: 0, duration: 1.2, delay: 0.9,  ease: 'power3.out' })
       gsap.from('.hero-date',     { y: 16, opacity: 0, duration: 0.8, delay: 1.15, ease: 'power3.out' })
       gsap.from('.hero-count',    { y: 16, opacity: 0, duration: 0.8, delay: 1.3,  ease: 'power3.out' })
+      gsap.from('.hero-cta',      { y: 16, opacity: 0, duration: 0.8, delay: 1.45, ease: 'power3.out' })
     }, ref)
     return () => ctx.revert()
   }, [])
@@ -244,7 +245,7 @@ function Hero() {
     <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
       {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="absolute -inset-[8%] h-auto w-auto min-h-[116%] min-w-[116%] object-cover grayscale" />
+        <img src="/home-hero.jpg" alt="" className="absolute -inset-[22%] h-auto w-auto min-h-[144%] min-w-[144%] object-cover grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
@@ -295,6 +296,15 @@ function Hero() {
               <div className="font-subheading text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
             </div>
           ))}
+        </div>
+
+        <div className="hero-cta flex justify-center mt-8 sm:mt-10">
+          <button
+            onClick={() => scrollToSection('rsvp')}
+            className="lift-on-hover btn-outline-sharp inline-flex items-center gap-2 px-8 py-3 font-serif text-base tracking-[0.05em]"
+          >
+            RSVP
+          </button>
         </div>
       </div>
     </section>
@@ -915,7 +925,7 @@ function Site() {
         <ScrollProgressBar progress={scrollProgress} />
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} activeSection={activeSection} />
         <main>
-          <Hero />
+          <Hero scrollToSection={scrollToSection} />
           <RSVPSection />
           <EventDetails />
           <Travel />
