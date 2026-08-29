@@ -245,13 +245,13 @@ function Hero({ scrollToSection }) {
 
   return (
     <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-16 sm:py-24">
-      {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame.
-          object-position X of 15% keeps the ring hand in frame on mobile, where cropping is horizontal (narrow viewport vs the
-          photo's landscape aspect ratio) rather than vertical like on desktop — center (the default) landed in the empty gap
-          between the two subjects. Y stays "top" for desktop's vertical crop; it's a no-op on mobile since there's no vertical
-          overflow to crop there. */}
-      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-[15%_top] grayscale" />
+      {/* Full-bleed black & white photo backdrop. On mobile the viewport is much taller/narrower than
+          this landscape photo, so object-cover would have to crop most of the width away — not enough
+          room to show both people no matter where the crop is centered. Switched mobile to object-contain
+          (whole photo visible, letterboxed with a solid fill) so both subjects stay in frame; desktop
+          keeps the original cover crop, which has enough width to fill without cropping out either person. */}
+      <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
+        <img src="/home-hero.jpg" alt="" className="h-full w-full object-contain object-center sm:object-cover sm:object-top grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
@@ -448,11 +448,15 @@ function Travel() {
         <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
           <div className="relative">
-            <ChevronLeft className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 h-5 w-5 text-primary/50 pointer-events-none" strokeWidth={2} />
-            <ChevronRight className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 h-5 w-5 text-primary/50 pointer-events-none" strokeWidth={2} />
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+            <div className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80 pointer-events-none">
+              <ChevronLeft className="h-4 w-4 text-primary/70" strokeWidth={2} />
+            </div>
+            <div className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80 pointer-events-none">
+              <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
+            </div>
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[12%] -mx-6 px-[12%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
               {HOTELS.map((hotel, i) => (
-                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
+                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[76%] snap-center sm:w-auto sm:shrink">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>
