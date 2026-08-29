@@ -155,6 +155,11 @@
     background: linear-gradient(90deg, transparent, rgba(184,64,16,0.50), rgba(224,184,72,0.50), rgba(184,64,16,0.50), transparent);
   }
 
+  /* Darker ox-blood tint for alternating sections — translucent so the fixed wallpaper texture still shows through */
+  .bg-oxblood {
+    background: rgba(20, 4, 7, 0.55);
+  }
+
   .red-envelope-glow {
     box-shadow: 0 0 60px rgba(181,23,43,0.15), 0 0 120px rgba(181,23,43,0.05);
   }
