@@ -333,8 +333,8 @@ function EventDetails() {
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
 
-        <div className="event-card bg-surface rounded-3xl px-8 py-7 border border-divider mb-5">
-          <div className="flex items-start justify-between gap-6">
+        <div className="event-card mb-16">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-6 pb-6 border-b border-divider">
             <div>
               <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-1.5">Venue</p>
               <h3 className="font-serif text-xl font-medium text-ink">{COUPLE.venue}</h3>
@@ -349,7 +349,7 @@ function EventDetails() {
               Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
             </a>
           </div>
-          <div className="mt-5 pt-5 border-t border-divider">
+          <div className="py-6 border-b border-divider">
             <div className="flex items-center justify-between mb-2">
               <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
               <p className="font-subheading text-[10px] uppercase tracking-[0.16em] text-ink">{COUPLE.dressCode}</p>
@@ -358,7 +358,7 @@ function EventDetails() {
               Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
             </p>
           </div>
-          <div className="mt-5 pt-5 border-t border-divider">
+          <div className="pt-6">
             <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Getting Here</p>
             <p className="font-body text-muted text-xs leading-relaxed">
               Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
@@ -366,11 +366,11 @@ function EventDetails() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 mb-5">
+        <div className="event-card grid sm:grid-cols-3 gap-12 sm:gap-8 mb-16 text-center">
           {SCHEDULE.map((item, i) => {
             const Icon = EVENT_ICONS[item.icon]
             return (
-              <div key={i} className="event-card bg-surface rounded-3xl px-7 py-8 border border-divider text-center w-full max-w-xs">
+              <div key={i}>
                 <Icon className="h-7 w-7 text-primary/50 mx-auto mb-4" strokeWidth={1.25} />
                 <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
                 <p className="font-body text-sm text-muted">{item.time} · {item.location}</p>
@@ -380,7 +380,7 @@ function EventDetails() {
           })}
         </div>
 
-        <div className="event-card bg-surface/50 rounded-2xl px-6 py-5 border border-divider/60 mb-5">
+        <div className="event-card text-center pt-8 border-t border-divider">
           <p className="font-body text-sm text-muted leading-relaxed">
             <span className="text-primary font-medium">Note —</span>{' '}
             The ceremony and cocktail hour are outdoors on the grass. Laguna Beach in late March is typically 60–65°F by evening. Bring a wrap if you run cold.
@@ -417,9 +417,9 @@ function Travel() {
         </div>
 
         {/* Stay With Us — Montage room block */}
-        <div className="max-w-2xl mx-auto mb-6">
+        <div className="max-w-2xl mx-auto mb-16">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
-          <div className="travel-card bg-surface rounded-3xl p-8 border border-divider">
+          <div className="travel-card">
             <h3 className="font-serif text-xl font-medium text-ink mb-3">{COUPLE.venue}</h3>
             <p className="font-body text-sm text-muted leading-relaxed">
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
@@ -433,12 +433,12 @@ function Travel() {
         </div>
 
         {/* Alternate accommodations */}
-        <div className="max-w-4xl mx-auto mb-10">
+        <div className="max-w-4xl mx-auto mb-16">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
             {HOTELS.map((hotel, i) => (
-              <div key={i} className="travel-card bg-surface rounded-3xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-mauve/10 mb-4">
+              <div key={i} className="travel-card border border-divider p-6 flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
+                <div className="flex h-9 w-9 items-center justify-center bg-mauve/10 mb-4">
                   <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                 </div>
                 <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
@@ -457,10 +457,10 @@ function Travel() {
           </div>
         </div>
 
-        <div className="max-w-md mx-auto">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center">Nearest Airport</p>
-          <div className="travel-card bg-surface rounded-3xl p-7 border border-divider flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+        <div className="max-w-md mx-auto text-center">
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4">Nearest Airport</p>
+          <div className="travel-card flex flex-col items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center bg-primary/10">
               <Plane className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
             <div>
@@ -496,7 +496,7 @@ function RedEnvelopes() {
         <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Gifts</p>
         <div className="section-divider w-24 mx-auto mt-6 mb-10" />
 
-        <div className="envelope-card red-envelope-glow rounded-3xl border border-white/10 overflow-hidden text-left relative" style={{ background: 'rgba(48, 6, 12, 0.96)' }}>
+        <div className="envelope-card red-envelope-glow border border-white/10 overflow-hidden text-left relative" style={{ background: 'rgba(48, 6, 12, 0.96)' }}>
           <div className="hidden sm:flex items-center justify-center pt-8 pb-6 relative border-b border-white/10 overflow-hidden">
             <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.12 }}>
               <svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
@@ -634,7 +634,7 @@ function RSVPSection() {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className="rsvp-card bg-surface rounded-3xl p-12 border border-divider">
+          <div className="rsvp-card bg-surface p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
             </div>
@@ -659,7 +659,7 @@ function RSVPSection() {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg mx-auto px-6 text-center">
-          <div className="rsvp-card bg-surface rounded-3xl p-12 border border-divider">
+          <div className="rsvp-card bg-surface p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
             </div>
@@ -681,7 +681,7 @@ function RSVPSection() {
           <p className="font-body text-muted text-sm mt-5">Kindly respond by {rsvpDeadline || COUPLE.rsvpDeadline}</p>
         </div>
 
-        <div className="rsvp-card bg-surface rounded-3xl p-8 border border-divider">
+        <div className="rsvp-card bg-surface p-8 border border-divider">
           {!result && (
             <>
               <p className="font-serif text-base text-ink mb-5">Enter the name on your invitation.</p>
@@ -692,7 +692,7 @@ function RSVPSection() {
                   onChange={e => setQuery(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSearch()}
                   placeholder="Your name…"
-                  className="flex-1 bg-surface-2 border border-divider rounded-2xl px-5 py-3.5 font-body text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors"
+                  className="flex-1 bg-surface-2 border border-divider px-5 py-3.5 font-body text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors"
                 />
                 <button
                   onClick={handleSearch}
@@ -707,7 +707,7 @@ function RSVPSection() {
               </div>
 
               {notFound && (
-                <div className="mt-5 p-5 bg-surface-2 rounded-2xl border border-divider">
+                <div className="mt-5 p-5 bg-surface-2 border border-divider">
                   <p className="font-body text-sm text-muted leading-relaxed">
                     We couldn't find that name. Try it as it appears on your invitation.
                   </p>
@@ -728,7 +728,7 @@ function RSVPSection() {
               {result.guests.map(g => {
                 const sel = selections[g.id] || {}
                 return (
-                  <div key={g.id} className={`rounded-2xl border-2 transition-all overflow-hidden ${
+                  <div key={g.id} className={`border-2 transition-all overflow-hidden ${
                     sel.attending ? 'border-primary' : 'border-divider'
                   }`}>
                     {/* Attending toggle */}
@@ -758,7 +758,7 @@ function RSVPSection() {
                               <button
                                 key={m.value}
                                 onClick={() => setMeal(g.id, m.value)}
-                                className={`flex-1 py-2 rounded-xl font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
+                                className={`flex-1 py-2 font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
                                   sel.meal === m.value
                                     ? 'border-primary bg-primary text-white'
                                     : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
@@ -776,7 +776,7 @@ function RSVPSection() {
                             value={sel.notes || ''}
                             onChange={e => setNotes(g.id, e.target.value)}
                             placeholder="Optional"
-                            className="w-full bg-surface border border-divider rounded-xl px-4 py-2.5 font-body text-xs text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
+                            className="w-full bg-surface border border-divider px-4 py-2.5 font-body text-xs text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
                           />
                         </div>
                       </div>
@@ -835,12 +835,12 @@ function FAQ() {
           <div className="gold-line w-24 mx-auto mt-6" />
         </div>
 
-        <div className="space-y-3">
+        <div className="border-t border-divider">
           {FAQ_ITEMS.map((item, i) => (
-            <div key={i} className="faq-item bg-surface rounded-2xl border border-divider overflow-hidden">
+            <div key={i} className="faq-item border-b border-divider">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between gap-4 px-7 py-5 text-left"
+                className="w-full flex items-center justify-between gap-4 py-6 text-left"
               >
                 <span className="font-serif text-base font-medium text-ink leading-snug">{item.q}</span>
                 <ChevronDown
@@ -849,7 +849,7 @@ function FAQ() {
                 />
               </button>
               {open === i && (
-                <div className="px-7 pb-6 border-t border-divider/60 pt-5">
+                <div className="pb-6">
                   <p className="font-body text-muted text-sm leading-relaxed">{item.a}</p>
                 </div>
               )}
