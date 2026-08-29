@@ -230,8 +230,7 @@ function Hero({ scrollToSection }) {
   useEffect(() => {
     if (prefersReducedMotion) return
     const ctx = gsap.context(() => {
-      gsap.from('.hero-venue',    { y: 16, opacity: 0, duration: 0.8, delay: 0.4,  ease: 'power3.out' })
-      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.55, ease: 'power3.out' })
+      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.4,  ease: 'power3.out' })
       gsap.from('.hero-monogram', { scale: 0.9, opacity: 0, duration: 1,   delay: 0.72, ease: 'power3.out' })
       gsap.from('.hero-name-2',   { y: 52, opacity: 0, duration: 1.2, delay: 0.9,  ease: 'power3.out' })
       gsap.from('.hero-date',     { y: 16, opacity: 0, duration: 0.8, delay: 1.15, ease: 'power3.out' })
@@ -253,10 +252,6 @@ function Hero({ scrollToSection }) {
       <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
 
       <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
-        <p className="hero-venue font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-6 sm:mb-8">
-          Please join us for our wedding celebration
-        </p>
-
         <h1 className="leading-relaxed">
           <span className="hero-name-1 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
             {COUPLE.name1}
