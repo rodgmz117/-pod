@@ -40,7 +40,7 @@ const COUPLE = {
 }
 
 const SCHEDULE = [
-  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11', note: 'Please give yourself 15 minutes before the ceremony.' },
+  { time: '5:00 pm',   event: 'Ceremony',           location: 'Ocean Lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
   { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   iconSrc: '/icon-cocktail.svg' },
   { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', iconSrc: '/icon-disco.svg' },
 ]
@@ -267,7 +267,7 @@ function Hero({ scrollToSection }) {
 
         <div className="hero-date">
           <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
-            {COUPLE.dateLong}
+            {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
           </p>
           <p className="font-subheading text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/50 mt-3">
             {COUPLE.venue} &middot; {COUPLE.city}
@@ -341,7 +341,7 @@ function EventDetails() {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-1.5 text-sm font-body text-primary hover:opacity-70 transition-opacity mt-1 lift-on-hover"
+              className="shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary hover:opacity-70 transition-opacity mt-1 lift-on-hover"
             >
               Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
             </a>
@@ -358,7 +358,7 @@ function EventDetails() {
           <div className="mt-5 pt-5 border-t border-divider">
             <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Getting Here</p>
             <p className="font-body text-muted text-xs leading-relaxed">
-              Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
+              Plan to arrive 15 minutes before the ceremony begins. Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
             </p>
           </div>
         </div>
@@ -368,8 +368,8 @@ function EventDetails() {
             <div key={i} className="event-card bg-surface rounded-xl px-7 py-6 border border-divider text-center w-full max-w-xs">
               <img src={item.iconSrc} alt="" className={`${item.iconClass || 'h-16'} w-auto mx-auto mb-3 opacity-90`} />
               <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
-              <p className="font-body text-sm text-muted">{item.time} · {item.location}</p>
-              {item.note && <p className="font-body text-xs text-muted mt-2">{item.note}</p>}
+              <p className="font-serif text-xl font-medium text-ink">{item.time}</p>
+              <p className="font-body text-xs text-muted mt-0.5">{item.location}</p>
             </div>
           ))}
         </div>
