@@ -458,20 +458,20 @@ function Travel() {
             <button
               onClick={() => scrollHotels(-1)}
               aria-label="Previous hotel"
-              className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80"
+              className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-deep"
             >
               <ChevronLeft className="h-4 w-4 text-primary/70" strokeWidth={2} />
             </button>
             <button
               onClick={() => scrollHotels(1)}
               aria-label="Next hotel"
-              className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80"
+              className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-deep"
             >
               <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
             </button>
-            <div ref={hotelScrollRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-[14vw] scroll-pr-[9vw] pl-[14vw] pr-[9vw] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+            <div ref={hotelScrollRef} className="flex gap-6 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[15vw] px-[15vw] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
               {HOTELS.map((hotel, i) => (
-                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[77vw] snap-center sm:w-auto sm:shrink">
+                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider shadow-lg shadow-black/40 sm:shadow-none flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>
