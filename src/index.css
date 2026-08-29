@@ -157,13 +157,16 @@
 
   /* Darker ox-blood tint for alternating sections — fades in/out at the top and bottom
      of the section instead of cutting off with a hard edge, so it blends into the
-     neighboring sections. Translucent so the fixed wallpaper texture still shows through. */
+     neighboring sections. Translucent so the fixed wallpaper texture still shows through.
+     Fixed pixel fade (not a % of section height) so short and tall sections get the same
+     size blend — a %-based fade compressed into almost nothing on short sections, making
+     the tint, the fade, and the next section all visible in one screen at once. */
   .bg-oxblood {
     background: linear-gradient(
       to bottom,
-      transparent 0%,
-      rgba(20, 4, 7, 0.55) 15%,
-      rgba(20, 4, 7, 0.55) 85%,
+      transparent 0,
+      rgba(20, 4, 7, 0.55) 100px,
+      rgba(20, 4, 7, 0.55) calc(100% - 100px),
       transparent 100%
     );
   }
@@ -174,9 +177,9 @@
   .bg-oxblood-lead {
     background: linear-gradient(
       to bottom,
-      rgba(20, 4, 7, 0.75) 0%,
-      rgba(20, 4, 7, 0.55) 20%,
-      rgba(20, 4, 7, 0.55) 85%,
+      rgba(20, 4, 7, 0.75) 0,
+      rgba(20, 4, 7, 0.55) 100px,
+      rgba(20, 4, 7, 0.55) calc(100% - 100px),
       transparent 100%
     );
   }
