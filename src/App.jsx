@@ -7,7 +7,7 @@ import {
   Heart, Plane, Building,
   ExternalLink, ChevronDown, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
-  Gem, Wine, PartyPopper,
+  Infinity, Sparkles, Music2,
 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -41,12 +41,12 @@ const COUPLE = {
 }
 
 const SCHEDULE = [
-  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     icon: 'Gem',        note: 'Please give yourself 15 minutes before the ceremony.' },
-  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   icon: 'Wine' },
-  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', icon: 'PartyPopper' },
+  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     icon: 'Infinity', note: 'Please give yourself 15 minutes before the ceremony.' },
+  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   icon: 'Sparkles' },
+  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', icon: 'Music2' },
 ]
 
-const EVENT_ICONS = { Gem, Wine, PartyPopper }
+const EVENT_ICONS = { Infinity, Sparkles, Music2 }
 
 const HOTELS = [
   {
