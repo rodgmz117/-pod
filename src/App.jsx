@@ -361,8 +361,10 @@ function EventDetails() {
             </a>
           </div>
           <div className="mt-6 pt-6 border-t border-divider">
-            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Dress Code</p>
-            <p className="font-serif text-base text-ink mb-2">{COUPLE.dressCode}</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
+              <p className="font-serif text-base text-ink">{COUPLE.dressCode}</p>
+            </div>
             <p className="font-body text-xs text-muted leading-relaxed">
               Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
             </p>
@@ -444,33 +446,34 @@ function Travel() {
 
         {/* Alternate accommodations */}
         <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-1 sm:mb-4 text-center sm:text-left">Alternate Accommodations</p>
-          <p className="sm:hidden flex items-center justify-center gap-2 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted mb-3">
-            <ChevronLeft className="h-3 w-3" strokeWidth={2} /> Swipe <ChevronRight className="h-3 w-3" strokeWidth={2} />
-          </p>
-          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
-            {HOTELS.map((hotel, i) => (
-              <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
-                  <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
+          <div className="relative">
+            <ChevronLeft className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 h-5 w-5 text-primary/50 pointer-events-none" strokeWidth={2} />
+            <ChevronRight className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 h-5 w-5 text-primary/50 pointer-events-none" strokeWidth={2} />
+            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+              {HOTELS.map((hotel, i) => (
+                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
+                    <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
+                  </div>
+                  <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
+                  <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug">{hotel.name}</h3>
+                  <p className="font-body text-xs text-muted mb-4 leading-relaxed flex-1">{hotel.note}</p>
+                  <a
+                    href={hotel.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-frame-draw inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
+                  >
+                    <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                    <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                    <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                    <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                    <span className="btn-reveal-label gap-1.5">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
+                  </a>
                 </div>
-                <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
-                <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug">{hotel.name}</h3>
-                <p className="font-body text-xs text-muted mb-4 leading-relaxed flex-1">{hotel.note}</p>
-                <a
-                  href={hotel.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-frame-draw inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
-                >
-                  <span className="btn-frame-draw-edge btn-frame-draw-left" />
-                  <span className="btn-frame-draw-edge btn-frame-draw-right" />
-                  <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
-                  <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
-                  <span className="btn-reveal-label gap-1.5">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
-                </a>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
