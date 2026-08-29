@@ -408,7 +408,7 @@ function Travel() {
   }, [])
 
   return (
-    <section ref={ref} id="travel" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="travel" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="text-center mb-14">
           <Compass className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -632,7 +632,7 @@ function RSVPSection() {
 
   if (submitted) {
     return (
-      <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -657,7 +657,7 @@ function RSVPSection() {
 
   if (rsvpLocked) {
     return (
-      <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -672,7 +672,7 @@ function RSVPSection() {
   }
 
   return (
-    <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-lg lg:max-w-xl mx-auto px-6">
         <div className="text-center mb-12">
           <Send className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -827,7 +827,7 @@ function FAQ() {
   }, [])
 
   return (
-    <section ref={ref} id="faq" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="faq" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-2xl lg:max-w-3xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
           <MessageCircleQuestion className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -926,11 +926,32 @@ function Site() {
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} activeSection={activeSection} />
         <main>
           <Hero scrollToSection={scrollToSection} />
-          <RSVPSection />
-          <EventDetails />
-          <Travel />
-          <RedEnvelopes />
-          <FAQ />
+          <div className="relative">
+            {/* Continuous wash, not a per-section tint — darkest right under Hero,
+                easing to plain wallpaper through the middle, darkening again near the
+                end. Sized to this wrapper's full content height so it isn't tied to any
+                single section's height. */}
+            <div
+              className="absolute inset-0 -z-10 pointer-events-none"
+              aria-hidden
+              style={{
+                background: `linear-gradient(
+                  to bottom,
+                  rgba(20,4,7,0.7) 0%,
+                  rgba(20,4,7,0.25) 12%,
+                  transparent 32%,
+                  transparent 68%,
+                  rgba(20,4,7,0.25) 88%,
+                  rgba(20,4,7,0.6) 100%
+                )`,
+              }}
+            />
+            <RSVPSection />
+            <EventDetails />
+            <Travel />
+            <RedEnvelopes />
+            <FAQ />
+          </div>
         </main>
         <Footer />
       </div>
