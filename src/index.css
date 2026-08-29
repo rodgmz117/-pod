@@ -35,22 +35,59 @@
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .magnetic-btn {
-    position: relative; overflow: hidden;
-    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
-  }
-  .magnetic-btn:hover  { transform: scale(1.03) translateY(-1px); }
-  .magnetic-btn:active { transform: scale(0.97); }
-  .magnetic-btn::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
-    transform: translateY(100%);
-    transition: transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
-  }
-  .magnetic-btn:hover::before { transform: translateY(0); }
-
   .lift-on-hover { transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); }
   .lift-on-hover:hover { transform: translateY(-1px); }
+
+  .btn-underline-draw { position: relative; }
+  .btn-underline-draw::after {
+    content: ''; position: absolute; left: 50%; right: 50%; bottom: -3px;
+    height: 1px; background: currentColor;
+    transition: left 0.3s ease, right 0.3s ease;
+  }
+  .btn-underline-draw:hover::after { left: 0; right: 0; }
+
+  .btn-radial-fill { position: relative; overflow: hidden; z-index: 0; }
+  .btn-radial-fill::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    width: 0; height: 0; border-radius: 50%;
+    background: rgba(196,100,32,0.18);
+    transform: translate(-50%, -50%);
+    transition: width 0.4s ease, height 0.4s ease;
+    z-index: -1;
+  }
+  .btn-radial-fill:hover::before { width: 250%; height: 250%; }
+
+  .btn-reveal-label { position: relative; z-index: 3; display: inline-flex; align-items: center; }
+
+  /* Frame draw — starts as just a bottom underline; on hover the rest of the border
+     grows up from both bottom corners, then across the top, meeting in the middle. */
+  .btn-frame-draw {
+    position: relative;
+    background-color: transparent;
+    color: #F2EDE4;
+    border: none;
+    border-bottom: 1px solid rgba(196, 100, 32, 0.7);
+  }
+  .btn-frame-draw-edge { position: absolute; background: rgba(196, 100, 32, 0.9); }
+  .btn-frame-draw-left, .btn-frame-draw-right {
+    top: 0; bottom: 0; width: 1px;
+    transform: scaleY(0);
+    transition: transform 0.3s ease-out;
+  }
+  .btn-frame-draw-left  { left: 0;  transform-origin: bottom; }
+  .btn-frame-draw-right { right: 0; transform-origin: bottom; }
+  .btn-frame-draw-top-left, .btn-frame-draw-top-right {
+    top: 0; height: 1px; width: 50%;
+    transform: scaleX(0);
+    transition: transform 0.25s ease-out;
+    transition-delay: 0.15s;
+  }
+  .btn-frame-draw-top-left  { left: 0;  transform-origin: left; }
+  .btn-frame-draw-top-right { right: 0; transform-origin: right; }
+  .btn-frame-draw:hover .btn-frame-draw-left,
+  .btn-frame-draw:hover .btn-frame-draw-right { transform: scaleY(1); }
+  .btn-frame-draw:hover .btn-frame-draw-top-left,
+  .btn-frame-draw:hover .btn-frame-draw-top-right { transform: scaleX(1); }
 
   .gradient-text {
     background: linear-gradient(160deg, #E8C070 0%, #D47820 45%, #B84A10 100%);
@@ -147,7 +184,7 @@
 
   .gold-line {
     height: 1px;
-    background: linear-gradient(90deg, transparent, #B84010, #E0B848, #B84010, transparent);
+    background: linear-gradient(90deg, transparent, rgba(184,64,16,0.55), rgba(224,184,72,0.55), rgba(184,64,16,0.55), transparent);
   }
 
   .section-divider {

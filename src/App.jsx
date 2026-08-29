@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   Heart, Plane, Building,
-  ExternalLink, ChevronDown, Check, Search,
+  ExternalLink, ChevronDown, ChevronLeft, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
 } from 'lucide-react'
 
@@ -40,9 +40,9 @@ const COUPLE = {
 }
 
 const SCHEDULE = [
-  { time: '5:00 pm',   event: 'Ceremony',           location: 'Ocean Lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
-  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   iconSrc: '/icon-cocktail.svg' },
-  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', iconSrc: '/icon-disco.svg' },
+  { time: '5:00 pm',   event: 'Ceremony',           location: 'ocean lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
+  { time: 'following', event: 'Cocktail Reception', location: 'pacific lawn',   iconSrc: '/icon-cocktail.svg' },
+  { time: 'evening',   event: 'Dinner & Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
 ]
 
 const HOTELS = [
@@ -188,6 +188,12 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   )
 }
 
+// ─── Icon Divider ───────────────────────────────────────────────────────────────
+// Plain thin line, same border color/opacity as the Hero's inset frame.
+function IconDivider({ className = '' }) {
+  return <div className={`w-20 mx-auto border-t border-primary/25 ${className}`} />
+}
+
 // ─── Scroll Progress Bar (mobile only) ─────────────────────────────────────────
 function ScrollProgressBar({ progress }) {
   return (
@@ -254,8 +260,8 @@ function Hero({ scrollToSection }) {
             {COUPLE.name1}
           </span>
 
-          <div className="hero-monogram mx-auto my-6 sm:my-8 flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center border border-primary/40">
-            <span className="font-serif text-lg sm:text-xl tracking-[0.15em] silver-metallic">{COUPLE.initials}</span>
+          <div className="hero-monogram mx-auto my-6 sm:my-8 flex items-center justify-center">
+            <span className="font-serif text-4xl sm:text-5xl text-primary">&amp;</span>
           </div>
 
           <span className="hero-name-2 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
@@ -263,7 +269,7 @@ function Hero({ scrollToSection }) {
           </span>
         </h1>
 
-        <div className="gold-line w-24 mx-auto my-8 sm:my-10" />
+        <IconDivider className="my-8 sm:my-10" />
 
         <div className="hero-date">
           <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
@@ -293,9 +299,13 @@ function Hero({ scrollToSection }) {
         <div className="hero-cta flex justify-center mt-8 sm:mt-10">
           <button
             onClick={() => scrollToSection('rsvp')}
-            className="lift-on-hover btn-outline-sharp inline-flex items-center gap-2 px-8 py-3 font-serif text-base tracking-[0.05em]"
+            className="btn-frame-draw px-8 py-3 font-serif text-base tracking-[0.05em]"
           >
-            RSVP
+            <span className="btn-frame-draw-edge btn-frame-draw-left" />
+            <span className="btn-frame-draw-edge btn-frame-draw-right" />
+            <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+            <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+            <span className="btn-reveal-label">RSVP</span>
           </button>
         </div>
       </div>
@@ -327,7 +337,7 @@ function EventDetails() {
         <div className="text-center mb-14">
           <CalendarHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">The Day</p>
-          <div className="gold-line w-24 mx-auto mt-6" />
+          <IconDivider className="mt-3" />
         </div>
 
         <div className="event-card bg-surface rounded-xl px-8 py-7 border border-divider mb-5">
@@ -341,7 +351,7 @@ function EventDetails() {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary hover:opacity-70 transition-opacity mt-1 lift-on-hover"
+              className="btn-underline-draw shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary mt-1"
             >
               Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
             </a>
@@ -407,7 +417,7 @@ function Travel() {
         <div className="text-center mb-14">
           <Compass className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Travel &amp; Stay</p>
-          <div className="gold-line w-24 mx-auto mt-6" />
+          <IconDivider className="mt-3" />
         </div>
 
         {/* Stay With Us — Montage room block */}
@@ -442,7 +452,7 @@ function Travel() {
                   href={hotel.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="lift-on-hover btn-outline-sharp inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
+                  className="btn-radial-fill btn-outline-sharp inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
                 >
                   View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} />
                 </a>
@@ -488,7 +498,7 @@ function RedEnvelopes() {
       <div className="max-w-md lg:max-w-lg mx-auto px-6 text-center">
         <HandHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
         <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Gifts</p>
-        <div className="section-divider w-24 mx-auto mt-6 mb-10" />
+        <IconDivider className="mt-3 mb-10" />
 
         <div className="envelope-card red-envelope-glow rounded-xl border border-white/10 overflow-hidden text-left relative" style={{ background: 'rgba(48, 6, 12, 0.96)' }}>
           <div className="hidden sm:flex items-center justify-center pt-8 pb-6 relative border-b border-white/10 overflow-hidden">
@@ -535,11 +545,13 @@ function RSVPSection() {
   const [query, setQuery]         = useState('')
   const [searching, setSearching] = useState(false)
   const [result, setResult]       = useState(null)
-  // selections: { [guestId]: { attending: bool, meal: '' } }
+  // selections: { [guestId]: { attending: bool | undefined, meal: '' } } — attending is
+  // tri-state: undefined = unanswered, true/false = an explicit choice was made.
   const [selections, setSelections] = useState({})
   const [submitted, setSubmitted]   = useState(null) // 'attending' | 'declined'
   const [notFound, setNotFound]     = useState(false)
-  const [mealError, setMealError]   = useState(false)
+  const [mealError, setMealError]         = useState(false)
+  const [attendanceError, setAttendanceError] = useState(false)
   const [rsvpDeadline, setRsvpDeadline] = useState(null)
   const [rsvpLocked, setRsvpLocked]     = useState(false)
 
@@ -576,11 +588,23 @@ function RSVPSection() {
     setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList })
   }
 
-  const toggleAttending = (id) => {
+  const handleBack = () => {
+    setResult(null)
+    setSelections({})
+    setQuery('')
+    setNotFound(false)
+    setMealError(false)
+    setAttendanceError(false)
+  }
+
+  const setAttendance = (id, value) => {
+    setAttendanceError(false)
     setMealError(false)
     setSelections(s => ({
       ...s,
-      [id]: { attending: !s[id]?.attending, meal: s[id]?.meal || '' },
+      [id]: value
+        ? { ...s[id], attending: true, meal: s[id]?.meal || '' }
+        : { attending: false, meal: '', notes: '' },
     }))
   }
 
@@ -594,24 +618,31 @@ function RSVPSection() {
   }
 
   const handleConfirm = async () => {
-    const attending = result?.guests.filter(g => selections[g.id]?.attending) || []
+    const allAnswered = result.guests.every(g => selections[g.id]?.attending !== undefined)
+    if (!allAnswered) { setAttendanceError(true); return }
+    setAttendanceError(false)
+
+    const attending = result.guests.filter(g => selections[g.id]?.attending === true)
     if (attending.some(g => !selections[g.id]?.meal)) { setMealError(true); return }
+    setMealError(false)
+
     const primary = selections['primary'] || {}
     const partyGuests = result.guests.filter(g => g.id !== 'primary')
+    const anyAttending = attending.length > 0
     await submitRSVP(result.guestId, {
-      rsvp_status:          'attending',
+      rsvp_status:          anyAttending ? 'attending' : 'declined',
       num_attending:        attending.length,
-      primary_attending:    primary.attending || false,
+      primary_attending:    primary.attending === true,
       primary_meal_choice:  primary.meal || null,
       dietary_restrictions: primary.notes || null,
       party_members: partyGuests.map(g => ({
         name:          g.name,
-        attending:     selections[g.id]?.attending || false,
+        attending:     selections[g.id]?.attending === true,
         meal_choice:   selections[g.id]?.meal || null,
         dietary_notes: selections[g.id]?.notes || null,
       })),
     })
-    setSubmitted('attending')
+    setSubmitted(anyAttending ? 'attending' : 'declined')
   }
 
   const handleDecline = async () => {
@@ -671,14 +702,14 @@ function RSVPSection() {
         <div className="text-center mb-12">
           <Send className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Join Us</p>
-          <div className="gold-line w-24 mx-auto mt-6" />
+          <IconDivider className="mt-3" />
           <p className="font-body text-muted text-sm mt-5">Kindly respond by {rsvpDeadline || COUPLE.rsvpDeadline}</p>
         </div>
 
         <div className="rsvp-card bg-surface rounded-xl p-8 border border-divider">
           {!result && (
             <>
-              <p className="font-serif text-base text-ink mb-5">Enter the name on your invitation.</p>
+              <p className="font-body text-base text-ink mb-5">Enter the name on your invitation.</p>
               <div className="flex gap-3">
                 <input
                   type="text"
@@ -691,7 +722,7 @@ function RSVPSection() {
                 <button
                   onClick={handleSearch}
                   disabled={searching}
-                  className="magnetic-btn btn-outline-sharp flex items-center justify-center h-[50px] w-[50px] shrink-0 disabled:opacity-50"
+                  className="btn-radial-fill btn-outline-sharp flex items-center justify-center h-[50px] w-[50px] shrink-0 disabled:opacity-50"
                 >
                   {searching
                     ? <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
@@ -712,7 +743,14 @@ function RSVPSection() {
 
           {result && (
             <div className="space-y-4">
-              <p className="font-serif text-base text-ink mb-2">
+              <button
+                onClick={handleBack}
+                className="inline-flex items-center gap-1 font-body text-xs text-muted hover:text-ink transition-colors -mt-2 mb-1"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" strokeWidth={2.2} /> Back
+              </button>
+
+              <p className="font-body text-base text-ink mb-2">
                 {result.salutation
                   ? `Welcome, ${result.salutation} ${result.guests[0]?.name.split(' ').pop()}.`
                   : `Welcome, ${result.guests[0]?.name.split(' ')[0]}.`
@@ -723,27 +761,36 @@ function RSVPSection() {
                 const sel = selections[g.id] || {}
                 return (
                   <div key={g.id} className={`rounded-lg border-2 transition-all overflow-hidden ${
-                    sel.attending ? 'border-primary' : 'border-divider'
+                    sel.attending === true ? 'border-primary' : 'border-divider'
                   }`}>
-                    {/* Attending toggle */}
-                    <button
-                      onClick={() => toggleAttending(g.id)}
-                      className={`flex items-center gap-3 w-full p-4 text-left transition-colors ${
-                        sel.attending ? 'bg-primary/5' : 'bg-surface-2'
-                      }`}
-                    >
-                      <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                        sel.attending ? 'border-primary bg-primary' : 'border-muted'
-                      }`}>
-                        {sel.attending && <Check className="h-3 w-3 text-white" />}
+                    <div className="p-4 bg-surface-2">
+                      <p className="font-serif text-sm font-medium text-ink mb-3">{g.name}</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setAttendance(g.id, true)}
+                          className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-md font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
+                            sel.attending === true
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
+                          }`}
+                        >
+                          {sel.attending === true && <Check className="h-3 w-3" />} Attending
+                        </button>
+                        <button
+                          onClick={() => setAttendance(g.id, false)}
+                          className={`flex-1 py-2 rounded-md font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
+                            sel.attending === false
+                              ? 'border-primary bg-primary text-white'
+                              : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
+                          }`}
+                        >
+                          Not Attending
+                        </button>
                       </div>
-                      <span className={`font-serif text-sm font-medium transition-colors ${sel.attending ? 'text-ink' : 'text-muted'}`}>
-                        {g.name}
-                      </span>
-                    </button>
+                    </div>
 
                     {/* Meal + notes — only when attending */}
-                    {sel.attending && (
+                    {sel.attending === true && (
                       <div className="px-4 pb-4 pt-3 border-t border-divider/50 bg-primary/[0.02] space-y-3">
                         <div>
                           <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2.5">Meal preference</p>
@@ -779,15 +826,22 @@ function RSVPSection() {
                 )
               })}
 
+              {attendanceError && (
+                <p className="font-body text-xs text-rose-400">Please mark Attending or Not Attending for each guest.</p>
+              )}
               {mealError && (
                 <p className="font-body text-xs text-rose-400">Please select a meal for each attending guest.</p>
               )}
 
               <button
                 onClick={handleConfirm}
-                className="magnetic-btn ring-pulse btn-outline-sharp w-full py-4 font-serif text-base tracking-[0.05em]"
+                className="btn-frame-draw ring-pulse w-full py-4 font-serif text-base tracking-[0.05em]"
               >
-                Confirm RSVP
+                <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                <span className="btn-reveal-label">Confirm RSVP</span>
               </button>
 
               <button
@@ -826,7 +880,7 @@ function FAQ() {
         <div className="text-center mb-14">
           <MessageCircleQuestion className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Questions</p>
-          <div className="gold-line w-24 mx-auto mt-6" />
+          <IconDivider className="mt-3" />
         </div>
 
         <div className="space-y-3">
