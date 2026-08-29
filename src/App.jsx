@@ -429,8 +429,12 @@ function Travel() {
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
             </p>
             <div className="mt-6 text-center">
-              <span className="inline-flex items-center gap-1.5 rounded-lg px-6 py-3 border border-divider text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
-                Booking Link Coming Soon
+              <span className="btn-frame-draw btn-frame-draw-muted inline-flex items-center px-6 py-3 text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
+                <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                <span className="btn-reveal-label">Booking Link Coming Soon</span>
               </span>
             </div>
           </div>
@@ -458,7 +462,7 @@ function Travel() {
                   <span className="btn-frame-draw-edge btn-frame-draw-right" />
                   <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
                   <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
-                  <span className="btn-reveal-label">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
+                  <span className="btn-reveal-label gap-1.5">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
                 </a>
               </div>
             ))}

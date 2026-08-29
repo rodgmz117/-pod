@@ -89,6 +89,10 @@
     transition: transform 0.25s ease-out 0.15s;
   }
 
+  /* Muted variant — same frame-draw motion, faded color for a disabled-looking CTA. */
+  .btn-frame-draw-muted { border-bottom-color: rgba(196, 100, 32, 0.3); }
+  .btn-frame-draw-muted .btn-frame-draw-edge { background: rgba(196, 100, 32, 0.35); }
+
   .gradient-text {
     background: linear-gradient(160deg, #E8C070 0%, #D47820 45%, #B84A10 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
