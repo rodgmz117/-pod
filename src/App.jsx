@@ -141,7 +141,7 @@ function useScrollProgress() {
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 w-full h-16 flex items-center justify-between px-6 sm:px-10 bg-deep border-b border-white/8">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full h-16 flex items-center justify-between px-6 sm:px-10 bg-deep border-b border-divider">
       <button
         onClick={() => scrollToSection('home')}
         className="font-serif text-sm sm:text-base tracking-[0.3em] text-ink/90 hover:text-white transition-colors"
