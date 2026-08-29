@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
   Heart, Plane, Building,
-  ExternalLink, ChevronDown, ChevronLeft, Check, Search,
+  ExternalLink, ChevronDown, ChevronLeft, ChevronRight, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
 } from 'lucide-react'
 
@@ -244,10 +244,14 @@ function Hero({ scrollToSection }) {
   }, [])
 
   return (
-    <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-20 sm:py-24">
-      {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame */}
+    <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-16 sm:py-24">
+      {/* Full-bleed black & white photo backdrop — oversized and clipped so it reads "zoomed out" while still filling the frame.
+          object-position X of 15% keeps the ring hand in frame on mobile, where cropping is horizontal (narrow viewport vs the
+          photo's landscape aspect ratio) rather than vertical like on desktop — center (the default) landed in the empty gap
+          between the two subjects. Y stays "top" for desktop's vertical crop; it's a no-op on mobile since there's no vertical
+          overflow to crop there. */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-top grayscale" />
+        <img src="/home-hero.jpg" alt="" className="h-full w-full object-cover object-[15%_top] grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
@@ -256,31 +260,31 @@ function Hero({ scrollToSection }) {
 
       <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
         <h1 className="leading-relaxed">
-          <span className="hero-name-1 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
+          <span className="hero-name-1 block font-serif uppercase text-3xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
             {COUPLE.name1}
           </span>
 
-          <div className="hero-monogram mx-auto my-6 sm:my-8 flex items-center justify-center">
-            <span className="font-serif text-4xl sm:text-5xl text-primary">&amp;</span>
+          <div className="hero-monogram mx-auto my-3 sm:my-8 flex items-center justify-center">
+            <span className="font-serif text-2xl sm:text-5xl text-primary">&amp;</span>
           </div>
 
-          <span className="hero-name-2 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
+          <span className="hero-name-2 block font-serif uppercase text-3xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
             {COUPLE.name2}
           </span>
         </h1>
 
-        <IconDivider className="my-8 sm:my-10" />
+        <IconDivider className="my-5 sm:my-10" />
 
         <div className="hero-date">
-          <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
+          <p className="font-serif text-xl sm:text-4xl text-ink tracking-wide">
             {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
           </p>
-          <p className="font-subheading text-[10px] sm:text-xs uppercase tracking-[0.25em] text-white/50 mt-3">
+          <p className="font-subheading text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.25em] text-white/50 mt-2 sm:mt-3">
             {COUPLE.venue} &middot; {COUPLE.city}
           </p>
         </div>
 
-        <div className="hero-count flex items-center justify-center gap-6 sm:gap-8 mt-8 sm:mt-10">
+        <div className="hero-count flex items-center justify-center gap-6 sm:gap-8 mt-5 sm:mt-10">
           {[
             { v: days,    l: 'Days' },
             { v: hours,   l: 'Hours' },
@@ -296,7 +300,7 @@ function Hero({ scrollToSection }) {
           ))}
         </div>
 
-        <div className="hero-cta flex justify-center mt-8 sm:mt-10">
+        <div className="hero-cta flex justify-center mt-5 sm:mt-10">
           <button
             onClick={() => scrollToSection('rsvp')}
             className="btn-frame-draw px-8 py-3 font-serif text-base tracking-[0.05em]"
@@ -340,32 +344,30 @@ function EventDetails() {
           <IconDivider className="mt-3" />
         </div>
 
-        <div className="event-card bg-surface rounded-xl px-8 py-7 border border-divider mb-5">
-          <div className="flex items-start justify-between gap-6">
+        <div className="event-card bg-surface rounded-xl px-6 py-7 sm:px-8 border border-divider mb-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <div>
-              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-1.5">Venue</p>
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Venue</p>
               <h3 className="font-serif text-xl font-medium text-ink">{COUPLE.venue}</h3>
-              <p className="font-body text-sm text-muted mt-1">{COUPLE.address}</p>
+              <p className="font-body text-sm text-muted mt-1.5">{COUPLE.address}</p>
             </div>
             <a
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-underline-draw shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary mt-1"
+              className="btn-underline-draw shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary sm:mt-1"
             >
               Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
             </a>
           </div>
-          <div className="mt-5 pt-5 border-t border-divider">
-            <div className="flex items-center justify-between mb-2">
-              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
-              <p className="font-subheading text-[10px] uppercase tracking-[0.16em] text-ink">{COUPLE.dressCode}</p>
-            </div>
+          <div className="mt-6 pt-6 border-t border-divider">
+            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Dress Code</p>
+            <p className="font-serif text-base text-ink mb-2">{COUPLE.dressCode}</p>
             <p className="font-body text-xs text-muted leading-relaxed">
               Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
             </p>
           </div>
-          <div className="mt-5 pt-5 border-t border-divider">
+          <div className="mt-6 pt-6 border-t border-divider">
             <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Getting Here</p>
             <p className="font-body text-muted text-xs leading-relaxed">
               Plan to arrive 15 minutes before the ceremony begins. Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
@@ -442,7 +444,10 @@ function Travel() {
 
         {/* Alternate accommodations */}
         <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-1 sm:mb-4 text-center sm:text-left">Alternate Accommodations</p>
+          <p className="sm:hidden flex items-center justify-center gap-2 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted mb-3">
+            <ChevronLeft className="h-3 w-3" strokeWidth={2} /> Swipe <ChevronRight className="h-3 w-3" strokeWidth={2} />
+          </p>
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
             {HOTELS.map((hotel, i) => (
               <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[80%] snap-center sm:w-auto sm:shrink">

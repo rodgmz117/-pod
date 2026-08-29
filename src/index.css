@@ -93,6 +93,19 @@
   .btn-frame-draw-muted { border-bottom-color: rgba(196, 100, 32, 0.3); }
   .btn-frame-draw-muted .btn-frame-draw-edge { background: rgba(196, 100, 32, 0.35); }
 
+  /* Touch devices have no real hover state — the draw-in animation either never
+     plays or gets stuck "on" after a tap. Show a normal static border instead,
+     with a simple tap-feedback tint. */
+  @media (hover: none) {
+    .btn-frame-draw {
+      border: 1px solid rgba(196, 100, 32, 0.55);
+      transition: background-color 0.2s ease;
+    }
+    .btn-frame-draw-muted { border-color: rgba(196, 100, 32, 0.25); }
+    .btn-frame-draw-edge { display: none; }
+    .btn-frame-draw:active { background-color: rgba(196, 100, 32, 0.12); }
+  }
+
   .gradient-text {
     background: linear-gradient(160deg, #E8C070 0%, #D47820 45%, #B84A10 100%);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
