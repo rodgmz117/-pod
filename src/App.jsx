@@ -325,7 +325,7 @@ function EventDetails() {
   const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(COUPLE.venue + ', ' + COUPLE.address)}`
 
   return (
-    <section ref={ref} id="details" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="details" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-3xl lg:max-w-4xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
           <CalendarHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -408,7 +408,7 @@ function Travel() {
   }, [])
 
   return (
-    <section ref={ref} id="travel" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="travel" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
         <div className="text-center mb-14">
           <Compass className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -490,7 +490,7 @@ function RedEnvelopes() {
   }, [])
 
   return (
-    <section ref={ref} id="gifts" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="gifts" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-md lg:max-w-lg mx-auto px-6 text-center">
         <HandHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
         <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Gifts</p>
@@ -632,7 +632,7 @@ function RSVPSection() {
 
   if (submitted) {
     return (
-      <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -657,7 +657,7 @@ function RSVPSection() {
 
   if (rsvpLocked) {
     return (
-      <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -672,7 +672,7 @@ function RSVPSection() {
   }
 
   return (
-    <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-lg lg:max-w-xl mx-auto px-6">
         <div className="text-center mb-12">
           <Send className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
@@ -827,7 +827,7 @@ function FAQ() {
   }, [])
 
   return (
-    <section ref={ref} id="faq" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="faq" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-2xl lg:max-w-3xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
           <MessageCircleQuestion className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
