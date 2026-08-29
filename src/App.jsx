@@ -452,9 +452,13 @@ function Travel() {
                   href={hotel.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-radial-fill btn-outline-sharp inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
+                  className="btn-frame-draw inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
                 >
-                  View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} />
+                  <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                  <span className="btn-reveal-label">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
                 </a>
               </div>
             ))}
@@ -722,12 +726,18 @@ function RSVPSection() {
                 <button
                   onClick={handleSearch}
                   disabled={searching}
-                  className="btn-radial-fill btn-outline-sharp flex items-center justify-center h-[50px] w-[50px] shrink-0 disabled:opacity-50"
+                  className="btn-frame-draw flex items-center justify-center h-[50px] w-[50px] shrink-0 disabled:opacity-50"
                 >
-                  {searching
-                    ? <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                    : <Search className="h-4 w-4" strokeWidth={2.2} />
-                  }
+                  <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                  <span className="btn-reveal-label">
+                    {searching
+                      ? <div className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                      : <Search className="h-4 w-4" strokeWidth={2.2} />
+                    }
+                  </span>
                 </button>
               </div>
 

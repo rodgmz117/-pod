@@ -46,16 +46,6 @@
   }
   .btn-underline-draw:hover::after { left: 0; right: 0; }
 
-  .btn-radial-fill { position: relative; overflow: hidden; z-index: 0; }
-  .btn-radial-fill::before {
-    content: ''; position: absolute; top: 50%; left: 50%;
-    width: 0; height: 0; border-radius: 50%;
-    background: rgba(196,100,32,0.18);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s ease, height 0.4s ease;
-    z-index: -1;
-  }
-  .btn-radial-fill:hover::before { width: 250%; height: 250%; }
 
   .btn-reveal-label { position: relative; z-index: 3; display: inline-flex; align-items: center; }
 
@@ -69,25 +59,35 @@
     border-bottom: 1px solid rgba(196, 100, 32, 0.7);
   }
   .btn-frame-draw-edge { position: absolute; background: rgba(196, 100, 32, 0.9); }
+  /* Leaving (default state, going toward scaleY(0)): retract AFTER the top segments,
+     so it mirrors the entry order in reverse. */
   .btn-frame-draw-left, .btn-frame-draw-right {
     top: 0; bottom: 0; width: 1px;
     transform: scaleY(0);
-    transition: transform 0.3s ease-out;
+    transition: transform 0.3s ease-out 0.15s;
   }
   .btn-frame-draw-left  { left: 0;  transform-origin: bottom; }
   .btn-frame-draw-right { right: 0; transform-origin: bottom; }
+  /* Leaving: retract immediately, no delay — first to disappear. */
   .btn-frame-draw-top-left, .btn-frame-draw-top-right {
     top: 0; height: 1px; width: 50%;
     transform: scaleX(0);
     transition: transform 0.25s ease-out;
-    transition-delay: 0.15s;
   }
   .btn-frame-draw-top-left  { left: 0;  transform-origin: left; }
   .btn-frame-draw-top-right { right: 0; transform-origin: right; }
+  /* Entering: sides grow immediately, no delay — first to appear. */
   .btn-frame-draw:hover .btn-frame-draw-left,
-  .btn-frame-draw:hover .btn-frame-draw-right { transform: scaleY(1); }
+  .btn-frame-draw:hover .btn-frame-draw-right {
+    transform: scaleY(1);
+    transition: transform 0.3s ease-out;
+  }
+  /* Entering: top segments grow AFTER the sides finish. */
   .btn-frame-draw:hover .btn-frame-draw-top-left,
-  .btn-frame-draw:hover .btn-frame-draw-top-right { transform: scaleX(1); }
+  .btn-frame-draw:hover .btn-frame-draw-top-right {
+    transform: scaleX(1);
+    transition: transform 0.25s ease-out 0.15s;
+  }
 
   .gradient-text {
     background: linear-gradient(160deg, #E8C070 0%, #D47820 45%, #B84A10 100%);
@@ -138,17 +138,6 @@
     box-shadow: 0 6px 28px rgba(196, 100, 20, 0.50);
   }
 
-  .btn-outline-sharp {
-    background: transparent;
-    border: 1px solid rgba(196, 100, 32, 0.55);
-    color: #F2EDE4;
-    border-radius: 0.5rem;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
-  .btn-outline-sharp:hover {
-    background: rgba(196, 100, 32, 0.12);
-    border-color: rgba(196, 100, 32, 0.9);
-  }
 
   .glass {
     background: rgba(30, 6, 12, 0.90);
