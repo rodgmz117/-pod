@@ -454,7 +454,7 @@ function Travel() {
         {/* Alternate accommodations */}
         <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
-          <div className="relative">
+          <div className="relative sm:mx-0 -mx-6">
             <button
               onClick={() => scrollHotels(-1)}
               aria-label="Previous hotel"
@@ -469,9 +469,9 @@ function Travel() {
             >
               <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
             </button>
-            <div ref={hotelScrollRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-[14%] scroll-pr-[9%] -mx-6 pl-[14%] pr-[9%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+            <div ref={hotelScrollRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-[14vw] scroll-pr-[9vw] pl-[14vw] pr-[9vw] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
               {HOTELS.map((hotel, i) => (
-                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[77%] snap-center sm:w-auto sm:shrink">
+                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[77vw] snap-center sm:w-auto sm:shrink">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>
