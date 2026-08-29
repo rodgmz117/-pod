@@ -11,16 +11,20 @@
 }
 
 @layer base {
-  html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
   body {
     @apply text-ink font-body overflow-x-hidden;
     background-color: #2A080E;
   }
   ::selection { background-color: #C46420; color: white; }
   ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #12040A; }
-  ::-webkit-scrollbar-thumb { background: #6A1828; border-radius: 6px; }
-  ::-webkit-scrollbar-thumb:hover { background: #D08828; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: transparent; border-radius: 6px; }
 }
 
 @layer components {
