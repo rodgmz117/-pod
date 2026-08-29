@@ -244,7 +244,7 @@ function Hero({ scrollToSection }) {
   }, [])
 
   return (
-    <section ref={ref} id="home" className="relative min-h-[85dvh] sm:min-h-[100dvh] flex flex-col justify-center py-16 sm:py-24">
+    <section ref={ref} id="home" className="relative min-h-[68dvh] sm:min-h-[100dvh] flex flex-col justify-center py-12 sm:py-24">
       {/* Full-bleed black & white photo backdrop. On mobile the viewport is much taller/narrower than
           this landscape photo, so object-cover would have to crop most of the width away — not enough
           room to show both people no matter where the crop is centered. Switched mobile to object-contain
@@ -260,31 +260,31 @@ function Hero({ scrollToSection }) {
 
       <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
         <h1 className="leading-relaxed">
-          <span className="hero-name-1 block font-serif uppercase text-3xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
+          <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
             {COUPLE.name1}
           </span>
 
-          <div className="hero-monogram mx-auto my-3 sm:my-8 flex items-center justify-center">
-            <span className="font-serif text-2xl sm:text-5xl text-primary">&amp;</span>
+          <div className="hero-monogram mx-auto my-1.5 sm:my-8 flex items-center justify-center">
+            <span className="font-serif text-lg sm:text-5xl text-primary">&amp;</span>
           </div>
 
-          <span className="hero-name-2 block font-serif uppercase text-3xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
+          <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
             {COUPLE.name2}
           </span>
         </h1>
 
-        <IconDivider className="my-5 sm:my-10" />
+        <IconDivider className="my-3 sm:my-10" />
 
         <div className="hero-date">
-          <p className="font-serif text-xl sm:text-4xl text-ink tracking-wide">
+          <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
             {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
           </p>
-          <p className="font-subheading text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.25em] text-white/50 mt-2 sm:mt-3">
+          <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
             {COUPLE.venue} &middot; {COUPLE.city}
           </p>
         </div>
 
-        <div className="hero-count flex items-center justify-center gap-6 sm:gap-8 mt-5 sm:mt-10">
+        <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 mt-3 sm:mt-10">
           {[
             { v: days,    l: 'Days' },
             { v: hours,   l: 'Hours' },
@@ -292,18 +292,18 @@ function Hero({ scrollToSection }) {
             { v: seconds, l: 'Sec' },
           ].map(({ v, l }) => (
             <div key={l} className="text-center">
-              <div className="font-serif text-2xl sm:text-3xl font-medium text-ink tabular-nums">
+              <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
                 {String(v).padStart(2, '0')}
               </div>
-              <div className="font-subheading text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+              <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
             </div>
           ))}
         </div>
 
-        <div className="hero-cta flex justify-center mt-5 sm:mt-10">
+        <div className="hero-cta flex justify-center mt-3 sm:mt-10">
           <button
             onClick={() => scrollToSection('rsvp')}
-            className="btn-frame-draw px-8 py-3 font-serif text-base tracking-[0.05em]"
+            className="btn-frame-draw px-7 py-2 sm:px-8 sm:py-3 font-serif text-sm sm:text-base tracking-[0.05em]"
           >
             <span className="btn-frame-draw-edge btn-frame-draw-left" />
             <span className="btn-frame-draw-edge btn-frame-draw-right" />
@@ -355,7 +355,7 @@ function EventDetails() {
               href={mapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-underline-draw shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary sm:mt-1"
+              className="self-center sm:self-auto shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary hover:opacity-70 transition-opacity sm:mt-1"
             >
               Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
             </a>
@@ -403,6 +403,7 @@ function EventDetails() {
 // ─── Travel ───────────────────────────────────────────────────────────────────
 function Travel() {
   const ref = useRef(null)
+  const hotelScrollRef = useRef(null)
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -414,6 +415,12 @@ function Travel() {
     }, ref)
     return () => ctx.revert()
   }, [])
+
+  const scrollHotels = (dir) => {
+    const el = hotelScrollRef.current
+    if (!el) return
+    el.scrollBy({ left: dir * (el.clientWidth * 0.77 + 16), behavior: 'smooth' })
+  }
 
   return (
     <section ref={ref} id="travel" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
@@ -448,15 +455,23 @@ function Travel() {
         <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
           <div className="relative">
-            <div className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80 pointer-events-none">
+            <button
+              onClick={() => scrollHotels(-1)}
+              aria-label="Previous hotel"
+              className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80"
+            >
               <ChevronLeft className="h-4 w-4 text-primary/70" strokeWidth={2} />
-            </div>
-            <div className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80 pointer-events-none">
+            </button>
+            <button
+              onClick={() => scrollHotels(1)}
+              aria-label="Next hotel"
+              className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-surface/80"
+            >
               <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
-            </div>
-            <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[12%] -mx-6 px-[12%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+            </button>
+            <div ref={hotelScrollRef} className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-pl-[14%] scroll-pr-[9%] -mx-6 pl-[14%] pr-[9%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
               {HOTELS.map((hotel, i) => (
-                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[76%] snap-center sm:w-auto sm:shrink">
+                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider flex flex-col shrink-0 w-[77%] snap-center sm:w-auto sm:shrink">
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>

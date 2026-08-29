@@ -38,14 +38,6 @@
   .lift-on-hover { transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94); }
   .lift-on-hover:hover { transform: translateY(-1px); }
 
-  .btn-underline-draw { position: relative; }
-  .btn-underline-draw::after {
-    content: ''; position: absolute; left: 50%; right: 50%; bottom: -3px;
-    height: 1px; background: currentColor;
-    transition: left 0.3s ease, right 0.3s ease;
-  }
-  .btn-underline-draw:hover::after { left: 0; right: 0; }
-
 
   .btn-reveal-label { position: relative; z-index: 3; display: inline-flex; align-items: center; }
 
