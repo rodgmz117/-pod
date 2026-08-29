@@ -632,7 +632,7 @@ function RSVPSection() {
 
   if (submitted) {
     return (
-      <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -657,7 +657,7 @@ function RSVPSection() {
 
   if (rsvpLocked) {
     return (
-      <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+      <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
@@ -672,7 +672,7 @@ function RSVPSection() {
   }
 
   return (
-    <section ref={ref} id="rsvp" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
+    <section ref={ref} id="rsvp" className="bg-oxblood-lead scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-lg lg:max-w-xl mx-auto px-6">
         <div className="text-center mb-12">
           <Send className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />

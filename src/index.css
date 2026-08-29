@@ -168,6 +168,19 @@
     );
   }
 
+  /* Same tint, but for the section directly under the Hero — starts solid instead of
+     fading in from transparent, so it continues Hero's dark photo overlay instead of
+     jumping straight to the bright wallpaper red at the seam. */
+  .bg-oxblood-lead {
+    background: linear-gradient(
+      to bottom,
+      rgba(20, 4, 7, 0.75) 0%,
+      rgba(20, 4, 7, 0.55) 20%,
+      rgba(20, 4, 7, 0.55) 85%,
+      transparent 100%
+    );
+  }
+
   .red-envelope-glow {
     box-shadow: 0 0 60px rgba(181,23,43,0.15), 0 0 120px rgba(181,23,43,0.05);
   }
