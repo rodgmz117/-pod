@@ -7,7 +7,6 @@ import {
   Heart, Plane, Building,
   ExternalLink, ChevronDown, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
-  Infinity, Music2,
 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -41,12 +40,10 @@ const COUPLE = {
 }
 
 const SCHEDULE = [
-  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     icon: 'Infinity', note: 'Please give yourself 15 minutes before the ceremony.' },
-  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   iconSrc: '/icon-cocktail.png' },
-  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', icon: 'Music2' },
+  { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     iconSrc: '/icon-ceremony.svg', note: 'Please give yourself 15 minutes before the ceremony.' },
+  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   iconSrc: '/icon-cocktail.svg' },
+  { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', iconSrc: '/icon-disco.svg' },
 ]
-
-const EVENT_ICONS = { Infinity, Music2 }
 
 const HOTELS = [
   {
@@ -367,20 +364,14 @@ function EventDetails() {
         </div>
 
         <div className="flex flex-col items-center gap-4 mb-5">
-          {SCHEDULE.map((item, i) => {
-            const Icon = item.icon ? EVENT_ICONS[item.icon] : null
-            return (
-              <div key={i} className="event-card bg-surface rounded-xl px-7 py-8 border border-divider text-center w-full max-w-xs">
-                {item.iconSrc
-                  ? <img src={item.iconSrc} alt="" className="h-24 w-auto mx-auto mb-4 opacity-90" />
-                  : <Icon className="h-7 w-7 text-primary/50 mx-auto mb-4" strokeWidth={1.25} />
-                }
-                <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
-                <p className="font-body text-sm text-muted">{item.time} · {item.location}</p>
-                {item.note && <p className="font-body text-xs text-muted mt-2">{item.note}</p>}
-              </div>
-            )
-          })}
+          {SCHEDULE.map((item, i) => (
+            <div key={i} className="event-card bg-surface rounded-xl px-7 py-8 border border-divider text-center w-full max-w-xs">
+              <img src={item.iconSrc} alt="" className="h-20 w-auto mx-auto mb-4 opacity-90" />
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
+              <p className="font-body text-sm text-muted">{item.time} · {item.location}</p>
+              {item.note && <p className="font-body text-xs text-muted mt-2">{item.note}</p>}
+            </div>
+          ))}
         </div>
 
         <div className="event-card bg-surface/50 rounded-xl px-6 py-5 border border-divider/60 mb-5">
