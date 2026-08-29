@@ -848,11 +848,16 @@ function FAQ() {
                   strokeWidth={2.2}
                 />
               </button>
-              {open === i && (
-                <div className="px-7 pb-6 border-t border-divider/60 pt-5">
-                  <p className="font-body text-muted text-sm leading-relaxed">{item.a}</p>
+              <div
+                className="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                style={{ gridTemplateRows: open === i ? '1fr' : '0fr' }}
+              >
+                <div className="overflow-hidden">
+                  <div className="px-7 pb-6 border-t border-divider/60 pt-5">
+                    <p className="font-body text-muted text-sm leading-relaxed">{item.a}</p>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
