@@ -326,7 +326,7 @@ function EventDetails() {
 
   return (
     <section ref={ref} id="details" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
-      <div className="max-w-3xl mx-auto px-6 sm:px-10">
+      <div className="max-w-3xl lg:max-w-4xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
           <CalendarHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">The Day</p>
@@ -417,7 +417,7 @@ function Travel() {
         </div>
 
         {/* Stay With Us — Montage room block */}
-        <div className="max-w-2xl mx-auto mb-6">
+        <div className="max-w-2xl lg:max-w-3xl mx-auto mb-6">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
           <div className="travel-card bg-surface rounded-xl p-8 border border-divider">
             <h3 className="font-serif text-xl font-medium text-ink mb-3">{COUPLE.venue}</h3>
@@ -425,7 +425,7 @@ function Travel() {
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
             </p>
             <div className="mt-6 text-center">
-              <span className="inline-flex items-center gap-1.5 px-6 py-3 border border-divider text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
+              <span className="inline-flex items-center gap-1.5 rounded-lg px-6 py-3 border border-divider text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
                 Booking Link Coming Soon
               </span>
             </div>
@@ -433,7 +433,7 @@ function Travel() {
         </div>
 
         {/* Alternate accommodations */}
-        <div className="max-w-4xl mx-auto mb-10">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
           <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[10%] -mx-6 px-[10%] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:gap-4 sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
             {HOTELS.map((hotel, i) => (
@@ -457,7 +457,7 @@ function Travel() {
           </div>
         </div>
 
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md lg:max-w-lg mx-auto">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center">Nearest Airport</p>
           <div className="travel-card bg-surface rounded-xl p-7 border border-divider flex items-start gap-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
@@ -491,7 +491,7 @@ function RedEnvelopes() {
 
   return (
     <section ref={ref} id="gifts" className="bg-oxblood scroll-mt-16 pt-10 pb-20 sm:pb-28">
-      <div className="max-w-md mx-auto px-6 text-center">
+      <div className="max-w-md lg:max-w-lg mx-auto px-6 text-center">
         <HandHeart className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
         <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Gifts</p>
         <div className="section-divider w-24 mx-auto mt-6 mb-10" />
@@ -633,7 +633,7 @@ function RSVPSection() {
   if (submitted) {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
-        <div className="max-w-lg mx-auto px-6 text-center">
+        <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
@@ -658,7 +658,7 @@ function RSVPSection() {
   if (rsvpLocked) {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
-        <div className="max-w-lg mx-auto px-6 text-center">
+        <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
           <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
@@ -673,7 +673,7 @@ function RSVPSection() {
 
   return (
     <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
-      <div className="max-w-lg mx-auto px-6">
+      <div className="max-w-lg lg:max-w-xl mx-auto px-6">
         <div className="text-center mb-12">
           <Send className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Join Us</p>
@@ -828,7 +828,7 @@ function FAQ() {
 
   return (
     <section ref={ref} id="faq" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
-      <div className="max-w-2xl mx-auto px-6 sm:px-10">
+      <div className="max-w-2xl lg:max-w-3xl mx-auto px-6 sm:px-10">
         <div className="text-center mb-14">
           <MessageCircleQuestion className="h-8 w-8 text-primary/40 mx-auto mb-4" strokeWidth={1.25} />
           <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Questions</p>
