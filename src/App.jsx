@@ -7,7 +7,7 @@ import {
   Heart, Plane, Building,
   ExternalLink, ChevronDown, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
-  Infinity, Sparkles, Music2,
+  Infinity, Music2,
 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -42,11 +42,11 @@ const COUPLE = {
 
 const SCHEDULE = [
   { time: '5:00 PM',   event: 'Ceremony',           location: 'Ocean Lawn',     icon: 'Infinity', note: 'Please give yourself 15 minutes before the ceremony.' },
-  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   icon: 'Sparkles' },
+  { time: 'Following', event: 'Cocktail Reception', location: 'Pacific Lawn',   iconSrc: '/icon-cocktail.png' },
   { time: 'Evening',   event: 'Dinner & Dancing',   location: 'Grand Ballroom', icon: 'Music2' },
 ]
 
-const EVENT_ICONS = { Infinity, Sparkles, Music2 }
+const EVENT_ICONS = { Infinity, Music2 }
 
 const HOTELS = [
   {
@@ -368,10 +368,13 @@ function EventDetails() {
 
         <div className="flex flex-col items-center gap-4 mb-5">
           {SCHEDULE.map((item, i) => {
-            const Icon = EVENT_ICONS[item.icon]
+            const Icon = item.icon ? EVENT_ICONS[item.icon] : null
             return (
               <div key={i} className="event-card bg-surface rounded-xl px-7 py-8 border border-divider text-center w-full max-w-xs">
-                <Icon className="h-7 w-7 text-primary/50 mx-auto mb-4" strokeWidth={1.25} />
+                {item.iconSrc
+                  ? <img src={item.iconSrc} alt="" className="h-16 w-auto mx-auto mb-4 opacity-90" />
+                  : <Icon className="h-7 w-7 text-primary/50 mx-auto mb-4" strokeWidth={1.25} />
+                }
                 <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
                 <p className="font-body text-sm text-muted">{item.time} · {item.location}</p>
                 {item.note && <p className="font-body text-xs text-muted mt-2">{item.note}</p>}
