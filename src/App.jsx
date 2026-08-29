@@ -372,7 +372,7 @@ function EventDetails() {
             return (
               <div key={i} className="event-card bg-surface rounded-xl px-7 py-8 border border-divider text-center w-full max-w-xs">
                 {item.iconSrc
-                  ? <img src={item.iconSrc} alt="" className="h-16 w-auto mx-auto mb-4 opacity-90" />
+                  ? <img src={item.iconSrc} alt="" className="h-24 w-auto mx-auto mb-4 opacity-90" />
                   : <Icon className="h-7 w-7 text-primary/50 mx-auto mb-4" strokeWidth={1.25} />
                 }
                 <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
