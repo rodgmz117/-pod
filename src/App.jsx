@@ -245,13 +245,11 @@ function Hero({ scrollToSection }) {
 
   return (
     <section ref={ref} id="home" className="relative min-h-[68dvh] sm:min-h-[100dvh] flex flex-col justify-center py-12 sm:py-24">
-      {/* Full-bleed black & white photo backdrop. On mobile the viewport is much taller/narrower than
-          this landscape photo, so object-cover would have to crop most of the width away — not enough
-          room to show both people no matter where the crop is centered. Switched mobile to object-contain
-          (whole photo visible, letterboxed with a solid fill) so both subjects stay in frame; desktop
-          keeps the original cover crop, which has enough width to fill without cropping out either person. */}
+      {/* Full-bleed black & white photo backdrop — dedicated portrait (4:5) crop on mobile so the photo
+          fills the frame via object-cover with no letterboxing; separate landscape crop on desktop. */}
       <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
-        <img src="/home-hero.jpg" alt="" className="h-full w-full object-contain object-center sm:object-cover sm:object-top grayscale" />
+        <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
+        <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
       </div>
 
