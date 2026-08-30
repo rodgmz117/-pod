@@ -159,16 +159,45 @@ function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
 
 // ─── Menu Overlay ───────────────────────────────────────────────────────────────
 function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
+  // Kept mounted for the close animation's duration after `open` goes false, instead of
+  // unmounting instantly — a plain `if (!open) return null` gives a CSS transition/animation no
+  // outgoing element to animate. `animates` guards against a pointless 300ms "closing" delay on
+  // desktop (where .menu-drop-out has no animation at all, see index.css) or with
+  // prefers-reduced-motion, where it should just close instantly like before.
+  const [rendered, setRendered] = useState(open)
+  const [closing, setClosing] = useState(false)
+
   useEffect(() => {
-    if (!open) return
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
+    if (open) {
+      setClosing(false)
+      setRendered(true)
+      return
+    }
+    if (!rendered) return
+    const animates = !prefersReducedMotion && window.matchMedia('(max-width: 639px)').matches
+    if (!animates) {
+      setRendered(false)
+      return
+    }
+    setClosing(true)
+    const t = setTimeout(() => { setRendered(false); setClosing(false) }, 300)
+    return () => clearTimeout(t)
   }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    if (!rendered) return
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [rendered])
+
+  if (!rendered) return null
 
   return (
-    <div className="menu-drop-in fixed inset-0 z-40 flex items-center justify-center" style={{ background: 'rgba(14,4,6,0.97)' }} onClick={onClose}>
+    <div
+      className={`fixed inset-0 z-40 flex items-center justify-center ${closing ? 'menu-drop-out' : 'menu-drop-in'}`}
+      style={{ background: 'rgba(14,4,6,0.97)' }}
+      onClick={onClose}
+    >
       <nav className="flex flex-col items-center gap-1" onClick={e => e.stopPropagation()}>
         {TABS.map(tab => (
           <button
@@ -311,7 +340,14 @@ function Hero({ scrollToSection }) {
       <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
         <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
         <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
+        {/* Mobile photo's box aspect (tall/narrow) means the *full* image height always shows, top to
+            bottom, with no vertical crop possible regardless of object-position — so the lighter
+            wall/background at the very top of the source photo was showing as a visible band right at
+            the navbar seam. Darkened just this top stop (55%, was 20%) to blend it into the navbar
+            instead. Split from desktop's gradient (unchanged) since desktop's photo/crop doesn't have
+            this problem. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/55 sm:hidden" />
+        <div className="absolute inset-0 hidden bg-gradient-to-t from-black/85 via-black/45 to-black/20 sm:block" />
       </div>
 
       {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
