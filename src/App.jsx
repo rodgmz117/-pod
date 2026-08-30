@@ -168,7 +168,7 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center" style={{ background: 'rgba(14,4,6,0.97)' }} onClick={onClose}>
+    <div className="menu-drop-in fixed inset-0 z-40 flex items-center justify-center" style={{ background: 'rgba(14,4,6,0.97)' }} onClick={onClose}>
       <nav className="flex flex-col items-center gap-1" onClick={e => e.stopPropagation()}>
         {TABS.map(tab => (
           <button
