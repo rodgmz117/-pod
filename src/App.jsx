@@ -274,8 +274,6 @@ function Hero({ scrollToSection }) {
 
   const weddingInfo = (
     <>
-      <IconDivider className="my-3 sm:my-10" />
-
       <div className="hero-date">
         <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
           {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
@@ -304,13 +302,17 @@ function Hero({ scrollToSection }) {
   )
 
   return (
-    <section ref={ref} id="home" className="relative min-h-[100dvh] flex flex-col py-12 sm:py-24 sm:justify-center">
-      {/* Photo layer — capped at 68dvh on mobile (tuned crop, see gotcha in project memory), full-bleed
+    <section ref={ref} id="home" className="relative min-h-[100svh] flex flex-col py-12 sm:py-24 sm:justify-center">
+      {/* Photo layer — capped at 68svh on mobile (tuned crop, see gotcha in project memory), full-bleed
           on desktop. Below the photo on mobile there's no opaque fill: the site's shared fixed wallpaper
           (rendered at the App root, z-0) shows through with just a dark wash for legibility, matching the
-          pattern used for the rest of the page instead of a flat black block. */}
+          pattern used for the rest of the page instead of a flat black block.
+          Uses `svh` (small viewport height — the stable, toolbar-always-visible baseline), not `dvh`:
+          `dvh` recalculates continuously as iOS Safari's address bar collapses/expands during scroll,
+          which made this absolutely-positioned photo visibly resize/rezoom the instant you started
+          scrolling. `svh` is a fixed value, so it can't jump. See gotcha in project memory. */}
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <div className="absolute inset-x-0 top-0 h-[68dvh] overflow-hidden bg-black sm:inset-0 sm:h-auto">
+        <div className="absolute inset-x-0 top-0 h-[68svh] overflow-hidden bg-black sm:inset-0 sm:h-auto">
           <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
           <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
@@ -318,47 +320,50 @@ function Hero({ scrollToSection }) {
         {/* Matches the "continuous wash" gradient that starts right after Hero (rgba(20,4,7,0.7) at its
             own 0%) so there's no visible seam at the section boundary — see gotcha in project memory. */}
         <div
-          className="absolute inset-x-0 top-[68dvh] bottom-0 sm:hidden"
+          className="absolute inset-x-0 top-[68svh] bottom-0 sm:hidden"
           style={{ background: 'linear-gradient(to bottom, rgba(20,4,7,0.3), rgba(20,4,7,0.7))' }}
         />
       </div>
 
       {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides.
-          Mobile: height is capped to track the photo's own 68dvh box (not the full 100dvh section) so the
+          Mobile: height is capped to track the photo's own 68svh box (not the full 100svh section) so the
           frame doesn't stretch down over the wallpaper/wedding-info area below the photo. Desktop keeps the
           original full-section stretch since the photo is full-bleed there. */}
-      <div className="absolute top-20 h-[calc(68dvh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
+      <div className="absolute top-20 h-[calc(68svh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
 
       {/* Mobile: only the names sit on the photo. Wedding info (date/countdown) and the RSVP button move
           down onto the wallpaper below, in normal flow right after this block, so they can never overlap
-          the photo. This box is pinned to the literal same `h-[68dvh]` expression as the photo above
+          the photo. This box is pinned to the literal same `h-[68svh]` expression as the photo above
           (not `flex-1`, which would instead grow to fill whatever space is "left over" after the
-          wedding-info block below is measured) — on a real device, iOS Safari's `dvh` shifts slightly as
-          the address bar collapses/expands, and `flex-1`'s leftover-space math could resolve to a
-          different height than the photo's own dvh value in that same reflow, letting the wedding-info
-          block visually spill up into the photo. Matching the exact same expression makes that impossible. */}
-      <div className="h-[68dvh] flex flex-col justify-center sm:hidden">
+          wedding-info block below is measured) — mismatched independently-computed values here is what
+          let the wedding-info block spill up into the photo before. Matching the exact same expression
+          makes that impossible. */}
+      <div className="h-[68svh] flex flex-col justify-center sm:hidden">
         <div className="relative max-w-3xl mx-auto w-full px-6 text-center">
           {namesOnly}
         </div>
       </div>
 
-      {/* Plain flex-grow spacer (no dvh, no fixed size) absorbs whatever's left of the section's
-          min-h-[100dvh] floor, pushing wedding-info/RSVP toward the bottom instead of leaving a dead
+      {/* Plain flex-grow spacer (no viewport unit, no fixed size) absorbs whatever's left of the section's
+          min-h-[100svh] floor, pushing wedding-info/RSVP toward the bottom instead of leaving a dead
           gap below the button. Being unitless, it can't desync from the photo the way the old flex-1
           on the names box could. */}
       <div className="flex-1 sm:hidden" aria-hidden />
 
-      <div className="relative flex flex-col items-center px-6 pb-4 sm:hidden">
+      {/* pb-10 (not pb-4) leaves real breathing room below the RSVP button — the spacer above pushes this
+          block all the way down to the section's bottom edge, and too little bottom padding there let the
+          button sit flush against (and get clipped by) the screen edge/home-indicator area. */}
+      <div className="relative flex flex-col items-center px-6 pb-10 sm:hidden">
         <div className="max-w-3xl mx-auto w-full text-center">
           {weddingInfo}
         </div>
         <div className="hero-cta flex justify-center mt-6">{rsvpButton}</div>
       </div>
 
-      {/* Desktop: unchanged — names, wedding info, and CTA all centered together over the photo */}
+      {/* Desktop: unchanged — names, divider, wedding info, and CTA all centered together over the photo */}
       <div className="relative hidden max-w-3xl mx-auto w-full px-10 text-center sm:block">
         {namesOnly}
+        <IconDivider className="my-10" />
         {weddingInfo}
         <div className="hero-cta flex justify-center mt-10">{rsvpButton}</div>
       </div>
