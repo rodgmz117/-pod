@@ -114,27 +114,6 @@ function useActiveSection(ids) {
   return active
 }
 
-// ─── Scroll progress (mobile progress line) ────────────────────────────────────
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0)
-  useEffect(() => {
-    let ticking = false
-    const onScroll = () => {
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        const scrollable = document.documentElement.scrollHeight - window.innerHeight
-        setProgress(scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0)
-        ticking = false
-      })
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-  return progress
-}
-
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
   return (
@@ -221,18 +200,6 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
 // Plain thin line, same border color/opacity as the Hero's inset frame.
 function IconDivider({ className = '' }) {
   return <div className={`w-20 mx-auto border-t border-primary/25 ${className}`} />
-}
-
-// ─── Scroll Progress Bar (mobile only) ─────────────────────────────────────────
-function ScrollProgressBar({ progress }) {
-  return (
-    <div className="sm:hidden fixed top-16 left-0 right-0 z-40 h-[2px] bg-white/5">
-      <div
-        className="h-full transition-[width] duration-75 ease-out"
-        style={{ width: `${progress}%`, background: 'linear-gradient(90deg, #B84010, #E0B848)' }}
-      />
-    </div>
-  )
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -340,14 +307,7 @@ function Hero({ scrollToSection }) {
       <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
         <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
         <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
-        {/* Mobile photo's box aspect (tall/narrow) means the *full* image height always shows, top to
-            bottom, with no vertical crop possible regardless of object-position — so the lighter
-            wall/background at the very top of the source photo was showing as a visible band right at
-            the navbar seam. Darkened just this top stop (55%, was 20%) to blend it into the navbar
-            instead. Split from desktop's gradient (unchanged) since desktop's photo/crop doesn't have
-            this problem. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/55 sm:hidden" />
-        <div className="absolute inset-0 hidden bg-gradient-to-t from-black/85 via-black/45 to-black/20 sm:block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
       </div>
 
       {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
@@ -1084,7 +1044,6 @@ function Footer() {
 function Site() {
   const [menuOpen, setMenuOpen] = useState(false)
   const activeSection = useActiveSection(TABS.map(t => t.id))
-  const scrollProgress = useScrollProgress()
 
   const scrollToSection = useCallback((id) => {
     // Close the menu first — closing it restores body overflow, and doing that mid-animation
@@ -1118,7 +1077,6 @@ function Site() {
       <div className="relative z-10 min-h-[100dvh]">
         <div className="noise-overlay" aria-hidden />
         <Navbar scrollToSection={scrollToSection} menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-        <ScrollProgressBar progress={scrollProgress} />
         <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} scrollToSection={scrollToSection} activeSection={activeSection} />
         <main>
           <Hero scrollToSection={scrollToSection} />
