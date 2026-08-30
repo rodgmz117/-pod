@@ -243,73 +243,113 @@ function Hero({ scrollToSection }) {
     return () => ctx.revert()
   }, [])
 
-  return (
-    <section ref={ref} id="home" className="relative min-h-[68dvh] sm:min-h-[100dvh] flex flex-col justify-center py-12 sm:py-24">
-      {/* Full-bleed black & white photo backdrop — dedicated portrait (4:5) crop on mobile so the photo
-          fills the frame via object-cover with no letterboxing; separate landscape crop on desktop. */}
-      <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
-        <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
-        <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/60" />
+  const rsvpButton = (
+    <button
+      onClick={() => scrollToSection('rsvp')}
+      className="btn-frame-draw px-7 py-2 sm:px-8 sm:py-3 font-serif text-sm sm:text-base tracking-[0.05em]"
+    >
+      <span className="btn-frame-draw-edge btn-frame-draw-left" />
+      <span className="btn-frame-draw-edge btn-frame-draw-right" />
+      <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+      <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+      <span className="btn-reveal-label">RSVP</span>
+    </button>
+  )
+
+  const namesOnly = (
+    <h1 className="leading-relaxed">
+      <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
+        {COUPLE.name1}
+      </span>
+
+      <div className="hero-monogram mx-auto my-1.5 sm:my-8 flex items-center justify-center">
+        <span className="font-serif text-lg sm:text-5xl text-primary">&amp;</span>
       </div>
 
-      {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
-      <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
+      <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
+        {COUPLE.name2}
+      </span>
+    </h1>
+  )
 
-      <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
-        <h1 className="leading-relaxed">
-          <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
-            {COUPLE.name1}
-          </span>
+  const weddingInfo = (
+    <>
+      <IconDivider className="my-3 sm:my-10" />
 
-          <div className="hero-monogram mx-auto my-1.5 sm:my-8 flex items-center justify-center">
-            <span className="font-serif text-lg sm:text-5xl text-primary">&amp;</span>
-          </div>
+      <div className="hero-date">
+        <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
+          {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
+        </p>
+        <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
+          {COUPLE.venue} &middot; {COUPLE.city}
+        </p>
+      </div>
 
-          <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
-            {COUPLE.name2}
-          </span>
-        </h1>
-
-        <IconDivider className="my-3 sm:my-10" />
-
-        <div className="hero-date">
-          <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
-            {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
-          </p>
-          <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
-            {COUPLE.venue} &middot; {COUPLE.city}
-          </p>
-        </div>
-
-        <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 mt-3 sm:mt-10">
-          {[
-            { v: days,    l: 'Days' },
-            { v: hours,   l: 'Hours' },
-            { v: minutes, l: 'Min' },
-            { v: seconds, l: 'Sec' },
-          ].map(({ v, l }) => (
-            <div key={l} className="text-center">
-              <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
-                {String(v).padStart(2, '0')}
-              </div>
-              <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+      <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 mt-3 sm:mt-10">
+        {[
+          { v: days,    l: 'Days' },
+          { v: hours,   l: 'Hours' },
+          { v: minutes, l: 'Min' },
+          { v: seconds, l: 'Sec' },
+        ].map(({ v, l }) => (
+          <div key={l} className="text-center">
+            <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
+              {String(v).padStart(2, '0')}
             </div>
-          ))}
-        </div>
+            <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
 
-        <div className="hero-cta flex justify-center mt-3 sm:mt-10">
-          <button
-            onClick={() => scrollToSection('rsvp')}
-            className="btn-frame-draw px-7 py-2 sm:px-8 sm:py-3 font-serif text-sm sm:text-base tracking-[0.05em]"
-          >
-            <span className="btn-frame-draw-edge btn-frame-draw-left" />
-            <span className="btn-frame-draw-edge btn-frame-draw-right" />
-            <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
-            <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
-            <span className="btn-reveal-label">RSVP</span>
-          </button>
+  return (
+    <section ref={ref} id="home" className="relative min-h-[100dvh] flex flex-col py-12 sm:py-24 sm:justify-center">
+      {/* Photo layer — capped at 68dvh on mobile (tuned crop, see gotcha in project memory), full-bleed
+          on desktop. Below the photo on mobile there's no opaque fill: the site's shared fixed wallpaper
+          (rendered at the App root, z-0) shows through with just a dark wash for legibility, matching the
+          pattern used for the rest of the page instead of a flat black block. */}
+      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+        <div className="absolute inset-x-0 top-0 h-[68dvh] overflow-hidden bg-black sm:inset-0 sm:h-auto">
+          <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
+          <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
         </div>
+        {/* Matches the "continuous wash" gradient that starts right after Hero (rgba(20,4,7,0.7) at its
+            own 0%) so there's no visible seam at the section boundary — see gotcha in project memory. */}
+        <div
+          className="absolute inset-x-0 top-[68dvh] bottom-0 sm:hidden"
+          style={{ background: 'linear-gradient(to bottom, rgba(20,4,7,0.3), rgba(20,4,7,0.7))' }}
+        />
+      </div>
+
+      {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides.
+          Mobile: height is capped to track the photo's own 68dvh box (not the full 100dvh section) so the
+          frame doesn't stretch down over the wallpaper/wedding-info area below the photo. Desktop keeps the
+          original full-section stretch since the photo is full-bleed there. */}
+      <div className="absolute top-20 h-[calc(68dvh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
+
+      {/* Mobile: only the names sit on the photo. Wedding info (date/countdown) and the RSVP button move
+          down onto the wallpaper below, anchored toward the bottom so the section's full-screen height
+          (needed to keep the next section off-screen on load) reads as intentional, not empty. */}
+      <div className="flex-1 flex flex-col justify-center sm:hidden">
+        <div className="relative max-w-3xl mx-auto w-full px-6 text-center">
+          {namesOnly}
+        </div>
+      </div>
+
+      <div className="relative flex flex-col items-center px-6 pb-4 sm:hidden">
+        <div className="max-w-3xl mx-auto w-full text-center">
+          {weddingInfo}
+        </div>
+        <div className="hero-cta flex justify-center mt-6">{rsvpButton}</div>
+      </div>
+
+      {/* Desktop: unchanged — names, wedding info, and CTA all centered together over the photo */}
+      <div className="relative hidden max-w-3xl mx-auto w-full px-10 text-center sm:block">
+        {namesOnly}
+        {weddingInfo}
+        <div className="hero-cta flex justify-center mt-10">{rsvpButton}</div>
       </div>
     </section>
   )
@@ -433,7 +473,7 @@ function Travel() {
         <div className="max-w-2xl lg:max-w-3xl mx-auto mb-6">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
           <div className="travel-card bg-surface rounded-xl p-8 border border-divider">
-            <h3 className="font-serif text-xl font-medium text-ink mb-3">{COUPLE.venue}</h3>
+            <h3 className="font-serif text-xl font-medium text-ink mb-3 text-center sm:text-left">{COUPLE.venue}</h3>
             <p className="font-body text-sm text-muted leading-relaxed">
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
             </p>
@@ -470,11 +510,11 @@ function Travel() {
             <div ref={hotelScrollRef} className="flex gap-6 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[15vw] px-[15vw] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
               {HOTELS.map((hotel, i) => (
                 <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider shadow-lg shadow-black/40 sm:shadow-none flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4 mx-auto sm:mx-0">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>
-                  <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1">{hotel.distance}</p>
-                  <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug">{hotel.name}</h3>
+                  <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1 text-center sm:text-left">{hotel.distance}</p>
+                  <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug text-center sm:text-left">{hotel.name}</h3>
                   <p className="font-body text-xs text-muted mb-4 leading-relaxed flex-1">{hotel.note}</p>
                   <a
                     href={hotel.url}
@@ -496,7 +536,7 @@ function Travel() {
 
         <div className="max-w-md lg:max-w-lg mx-auto">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center">Nearest Airport</p>
-          <div className="travel-card bg-surface rounded-xl p-7 border border-divider flex items-start gap-4">
+          <div className="travel-card bg-surface rounded-xl p-7 border border-divider flex flex-col items-center text-center gap-4 sm:flex-row sm:items-start sm:text-left">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <Plane className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
@@ -958,11 +998,14 @@ function Footer() {
   return (
     <footer className="bg-deep border-t border-divider py-12 sm:py-16">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16 text-center">
-        <p className="font-script text-4xl sm:text-5xl gradient-text mb-2">Rod &amp; Paean</p>
+        <p className="font-serif uppercase tracking-[0.2em] text-2xl sm:text-3xl mb-2">
+          <span className="text-ink">{COUPLE.name1}</span> <span className="text-primary">&amp;</span>{' '}
+          <span className="silver-metallic">{COUPLE.name2}</span>
+        </p>
         <p className="font-subheading text-[10px] uppercase tracking-[0.24em] text-white/20 mb-8">
           {COUPLE.dateLong} · {COUPLE.venue}
         </p>
-        <div className="section-divider w-32 mx-auto mb-8" />
+        <IconDivider className="mb-8" />
         <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-white/12 mt-2">
           Website by {COUPLE.brandName}
         </p>
