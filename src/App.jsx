@@ -233,7 +233,8 @@ function Hero({ scrollToSection }) {
   useEffect(() => {
     if (prefersReducedMotion) return
     const ctx = gsap.context(() => {
-      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.4,  ease: 'power3.out' })
+      gsap.from('.hero-venue',    { y: 16, opacity: 0, duration: 0.8, delay: 0.4,  ease: 'power3.out' })
+      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.55, ease: 'power3.out' })
       gsap.from('.hero-monogram', { scale: 0.9, opacity: 0, duration: 1,   delay: 0.72, ease: 'power3.out' })
       gsap.from('.hero-name-2',   { y: 52, opacity: 0, duration: 1.2, delay: 0.9,  ease: 'power3.out' })
       gsap.from('.hero-date',     { y: 16, opacity: 0, duration: 0.8, delay: 1.15, ease: 'power3.out' })
@@ -273,7 +274,7 @@ function Hero({ scrollToSection }) {
   )
 
   const dateBlock = (
-    <div className="hero-date mt-3 sm:mt-0">
+    <div className="hero-date">
       <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
         {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
       </p>
@@ -284,7 +285,7 @@ function Hero({ scrollToSection }) {
   )
 
   const countdownBlock = (
-    <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 sm:mt-10">
+    <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 mt-3 sm:mt-10">
       {[
         { v: days,    l: 'Days' },
         { v: hours,   l: 'Hours' },
@@ -303,62 +304,41 @@ function Hero({ scrollToSection }) {
 
   return (
     <section ref={ref} id="home" className="relative min-h-[100svh] flex flex-col py-12 sm:py-24 sm:justify-center">
-      {/* Photo layer — capped at 68svh on mobile (tuned crop, see gotcha in project memory), full-bleed
-          on desktop. Below the photo on mobile there's no opaque fill: the site's shared fixed wallpaper
-          (rendered at the App root, z-0) shows through with just a dark wash for legibility, matching the
-          pattern used for the rest of the page instead of a flat black block.
-          Uses `svh` (small viewport height — the stable, toolbar-always-visible baseline), not `dvh`:
-          `dvh` recalculates continuously as iOS Safari's address bar collapses/expands during scroll,
-          which made this absolutely-positioned photo visibly resize/rezoom the instant you started
-          scrolling. `svh` is a fixed value, so it can't jump. See gotcha in project memory. */}
-      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <div className="absolute inset-x-0 top-0 h-[68svh] overflow-hidden bg-black sm:inset-0 sm:h-auto">
-          <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
-          <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
-        </div>
-        {/* Matches the "continuous wash" gradient that starts right after Hero (rgba(20,4,7,0.7) at its
-            own 0%) so there's no visible seam at the section boundary — see gotcha in project memory. */}
-        <div
-          className="absolute inset-x-0 top-[68svh] bottom-0 sm:hidden"
-          style={{ background: 'linear-gradient(to bottom, rgba(20,4,7,0.3), rgba(20,4,7,0.7))' }}
-        />
+      {/* Full-bleed photo, both breakpoints — mobile crop is the "hands closer" edit (object-center already
+          reads as both hands + dress, no custom object-position needed). `svh` (not `dvh`): `dvh`
+          recalculates continuously as iOS Safari's address bar collapses/expands during scroll, which
+          visibly resized/rezoomed the photo the instant scrolling started — `svh` is fixed, can't jump.
+          See gotcha in project memory. */}
+      <div className="absolute inset-0 -z-10 overflow-hidden bg-black" aria-hidden>
+        <img src="/home-hero-mobile.jpg" alt="" className="h-full w-full object-cover object-center grayscale sm:hidden" />
+        <img src="/home-hero.jpg" alt="" className="hidden h-full w-full object-cover object-top grayscale sm:block" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
       </div>
 
-      {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides.
-          Mobile: height is capped to track the photo's own 68svh box (not the full 100svh section) so the
-          frame doesn't stretch down over the wallpaper/wedding-info area below the photo. Desktop keeps the
-          original full-section stretch since the photo is full-bleed there. */}
-      <div className="absolute top-20 h-[calc(68svh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
+      {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
+      <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
 
-      {/* Mobile: names + date/venue sit on the photo. This box is pinned to the literal same `h-[68svh]`
-          expression as the photo above (not `flex-1`, which would instead grow to fill whatever space is
-          "left over" after the block below is measured) — mismatched independently-computed values here
-          is what let content spill up into the photo before. Matching the exact same expression makes
-          that impossible. */}
-      <div className="h-[68svh] flex flex-col justify-center sm:hidden">
-        <div className="relative max-w-3xl mx-auto w-full px-6 text-center">
+      {/* Mobile: content block centers itself in the space above the scroll cue via flex-1 (section already
+          handles centering on its own for sm:). */}
+      <div className="flex-1 flex flex-col justify-center sm:flex-none sm:block">
+        <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
+          <p className="hero-venue font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-6 sm:mb-8">
+            Please join us for our wedding celebration
+          </p>
+
           {namesOnly}
+          <IconDivider className="my-3 sm:my-10" />
           {dateBlock}
+          {countdownBlock}
+
+          <div className="hero-cta flex justify-center mt-6 sm:mt-10">{rsvpButton}</div>
         </div>
       </div>
 
-      {/* Countdown + RSVP fill the remaining gap below the photo (on the wallpaper), vertically centered
-          within it via flex — not bottom-anchored with a spacer + padding, which needed repeated manual
-          tuning and still left the button close to the screen edge on a real device. Centering the (now
-          shorter) content in this box gives even space above and below automatically. */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 sm:hidden">
-        {countdownBlock}
-        <div className="hero-cta flex justify-center mt-6">{rsvpButton}</div>
-      </div>
-
-      {/* Desktop: unchanged — names, divider, date, countdown, and CTA all centered together over the photo */}
-      <div className="relative hidden max-w-3xl mx-auto w-full px-10 text-center sm:block">
-        {namesOnly}
-        <IconDivider className="my-10" />
-        {dateBlock}
-        {countdownBlock}
-        <div className="hero-cta flex justify-center mt-10">{rsvpButton}</div>
+      {/* Scroll cue — mobile only, sits below the centered content block in normal flow. */}
+      <div className="flex flex-col items-center gap-2 pb-2 text-white/35 sm:hidden motion-reduce:animate-none animate-bounce">
+        <span className="font-subheading text-[9px] uppercase tracking-[0.25em]">Scroll</span>
+        <span className="h-4 w-px bg-white/35" />
       </div>
     </section>
   )
