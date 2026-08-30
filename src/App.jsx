@@ -204,12 +204,12 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
       <div className="hidden sm:flex fixed inset-0 z-40" onClick={onClose}>
         <div
           className={`w-1/2 h-full ${closing ? 'menu-left-out' : 'menu-left-in'}`}
-          style={{ background: 'rgba(14,4,6,0.97)' }}
+          style={{ background: 'rgba(42,8,14,0.97)' }}
           aria-hidden
         />
         <div
           className={`w-1/2 h-full flex items-center ${closing ? 'menu-right-out' : 'menu-right-in'}`}
-          style={{ background: 'rgba(32,11,15,0.97)' }}
+          style={{ background: 'rgba(58,16,22,0.95)' }}
         >
           <nav className="flex flex-col items-start gap-2 pl-16 lg:pl-24" onClick={e => e.stopPropagation()}>
             {TABS.map(tab => (
