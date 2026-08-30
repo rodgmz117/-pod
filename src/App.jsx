@@ -330,13 +330,24 @@ function Hero({ scrollToSection }) {
       <div className="absolute top-20 h-[calc(68dvh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
 
       {/* Mobile: only the names sit on the photo. Wedding info (date/countdown) and the RSVP button move
-          down onto the wallpaper below, anchored toward the bottom so the section's full-screen height
-          (needed to keep the next section off-screen on load) reads as intentional, not empty. */}
-      <div className="flex-1 flex flex-col justify-center sm:hidden">
+          down onto the wallpaper below, in normal flow right after this block, so they can never overlap
+          the photo. This box is pinned to the literal same `h-[68dvh]` expression as the photo above
+          (not `flex-1`, which would instead grow to fill whatever space is "left over" after the
+          wedding-info block below is measured) — on a real device, iOS Safari's `dvh` shifts slightly as
+          the address bar collapses/expands, and `flex-1`'s leftover-space math could resolve to a
+          different height than the photo's own dvh value in that same reflow, letting the wedding-info
+          block visually spill up into the photo. Matching the exact same expression makes that impossible. */}
+      <div className="h-[68dvh] flex flex-col justify-center sm:hidden">
         <div className="relative max-w-3xl mx-auto w-full px-6 text-center">
           {namesOnly}
         </div>
       </div>
+
+      {/* Plain flex-grow spacer (no dvh, no fixed size) absorbs whatever's left of the section's
+          min-h-[100dvh] floor, pushing wedding-info/RSVP toward the bottom instead of leaving a dead
+          gap below the button. Being unitless, it can't desync from the photo the way the old flex-1
+          on the names box could. */}
+      <div className="flex-1 sm:hidden" aria-hidden />
 
       <div className="relative flex flex-col items-center px-6 pb-4 sm:hidden">
         <div className="max-w-3xl mx-auto w-full text-center">
