@@ -272,33 +272,33 @@ function Hero({ scrollToSection }) {
     </h1>
   )
 
-  const weddingInfo = (
-    <>
-      <div className="hero-date">
-        <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
-          {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
-        </p>
-        <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
-          {COUPLE.venue} &middot; {COUPLE.city}
-        </p>
-      </div>
+  const dateBlock = (
+    <div className="hero-date mt-3 sm:mt-0">
+      <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
+        {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
+      </p>
+      <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
+        {COUPLE.venue} &middot; {COUPLE.city}
+      </p>
+    </div>
+  )
 
-      <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 mt-3 sm:mt-10">
-        {[
-          { v: days,    l: 'Days' },
-          { v: hours,   l: 'Hours' },
-          { v: minutes, l: 'Min' },
-          { v: seconds, l: 'Sec' },
-        ].map(({ v, l }) => (
-          <div key={l} className="text-center">
-            <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
-              {String(v).padStart(2, '0')}
-            </div>
-            <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+  const countdownBlock = (
+    <div className="hero-count flex items-center justify-center gap-5 sm:gap-8 sm:mt-10">
+      {[
+        { v: days,    l: 'Days' },
+        { v: hours,   l: 'Hours' },
+        { v: minutes, l: 'Min' },
+        { v: seconds, l: 'Sec' },
+      ].map(({ v, l }) => (
+        <div key={l} className="text-center">
+          <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
+            {String(v).padStart(2, '0')}
           </div>
-        ))}
-      </div>
-    </>
+          <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
+        </div>
+      ))}
+    </div>
   )
 
   return (
@@ -331,41 +331,33 @@ function Hero({ scrollToSection }) {
           original full-section stretch since the photo is full-bleed there. */}
       <div className="absolute top-20 h-[calc(68svh-6rem)] right-4 left-4 border border-primary/25 pointer-events-none sm:top-24 sm:h-auto sm:right-8 sm:bottom-8 sm:left-8" aria-hidden />
 
-      {/* Mobile: only the names sit on the photo. Wedding info (date/countdown) and the RSVP button move
-          down onto the wallpaper below, in normal flow right after this block, so they can never overlap
-          the photo. This box is pinned to the literal same `h-[68svh]` expression as the photo above
-          (not `flex-1`, which would instead grow to fill whatever space is "left over" after the
-          wedding-info block below is measured) — mismatched independently-computed values here is what
-          let the wedding-info block spill up into the photo before. Matching the exact same expression
-          makes that impossible. */}
+      {/* Mobile: names + date/venue sit on the photo. This box is pinned to the literal same `h-[68svh]`
+          expression as the photo above (not `flex-1`, which would instead grow to fill whatever space is
+          "left over" after the block below is measured) — mismatched independently-computed values here
+          is what let content spill up into the photo before. Matching the exact same expression makes
+          that impossible. */}
       <div className="h-[68svh] flex flex-col justify-center sm:hidden">
         <div className="relative max-w-3xl mx-auto w-full px-6 text-center">
           {namesOnly}
+          {dateBlock}
         </div>
       </div>
 
-      {/* Plain flex-grow spacer (no viewport unit, no fixed size) absorbs whatever's left of the section's
-          min-h-[100svh] floor, pushing wedding-info/RSVP toward the bottom instead of leaving a dead
-          gap below the button. Being unitless, it can't desync from the photo the way the old flex-1
-          on the names box could. */}
-      <div className="flex-1 sm:hidden" aria-hidden />
-
-      {/* pb-20 leaves real breathing room below the RSVP button — the spacer above pushes this block all
-          the way down to the section's bottom edge, and too little bottom padding there let the button
-          sit close to (or get clipped by) the screen edge/home-indicator area. Bumped from pb-4 → pb-10 →
-          pb-20 across two rounds of "still too close to the bottom" feedback from Rod's actual phone. */}
-      <div className="relative flex flex-col items-center px-6 pb-20 sm:hidden">
-        <div className="max-w-3xl mx-auto w-full text-center">
-          {weddingInfo}
-        </div>
+      {/* Countdown + RSVP fill the remaining gap below the photo (on the wallpaper), vertically centered
+          within it via flex — not bottom-anchored with a spacer + padding, which needed repeated manual
+          tuning and still left the button close to the screen edge on a real device. Centering the (now
+          shorter) content in this box gives even space above and below automatically. */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 sm:hidden">
+        {countdownBlock}
         <div className="hero-cta flex justify-center mt-6">{rsvpButton}</div>
       </div>
 
-      {/* Desktop: unchanged — names, divider, wedding info, and CTA all centered together over the photo */}
+      {/* Desktop: unchanged — names, divider, date, countdown, and CTA all centered together over the photo */}
       <div className="relative hidden max-w-3xl mx-auto w-full px-10 text-center sm:block">
         {namesOnly}
         <IconDivider className="my-10" />
-        {weddingInfo}
+        {dateBlock}
+        {countdownBlock}
         <div className="hero-cta flex justify-center mt-10">{rsvpButton}</div>
       </div>
     </section>
