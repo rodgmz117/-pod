@@ -99,12 +99,15 @@
 
     /* Underline tap highlight — brought back from the old .btn-underline-draw concept, but no
        "completion" draw (no growing left/right transition, which is what didn't work well on
-       touch in the first place). Just an instant small accent under the button on :active,
-       same idea as the background tint above. */
+       touch in the first place). Just an instant small accent under the button on :active, same
+       idea as the background tint above. Sits well clear of the button's own permanent border
+       (-8px, not -3px) and in a brighter, fixed accent color (not currentColor) — right next to
+       the always-visible border it was indistinguishable from it, so tapping didn't visibly
+       change anything. */
     .btn-frame-draw::after {
       content: '';
-      position: absolute; left: 0; right: 0; bottom: -3px;
-      height: 1px; background: currentColor;
+      position: absolute; left: 8px; right: 8px; bottom: -8px;
+      height: 2px; background: rgba(224, 184, 72, 0.9);
       opacity: 0;
       transition: opacity 0.15s ease;
     }

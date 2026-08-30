@@ -365,7 +365,7 @@ function EventDetails() {
 
         <div className="event-card bg-surface rounded-xl px-6 py-7 sm:px-8 border border-divider mb-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-            <div>
+            <div className="text-center sm:text-left">
               <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Venue</p>
               <h3 className="font-serif text-xl font-medium text-ink">{COUPLE.venue}</h3>
               <p className="font-body text-sm text-muted mt-1.5">{COUPLE.address}</p>
@@ -380,16 +380,16 @@ function EventDetails() {
             </a>
           </div>
           <div className="mt-6 pt-6 border-t border-divider">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col items-center gap-1 mb-2 text-center sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:text-left">
               <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
-              <p className="font-serif text-base text-ink">{COUPLE.dressCode}</p>
+              <p className="font-serif text-xl font-medium text-ink sm:text-base sm:font-normal">{COUPLE.dressCode}</p>
             </div>
             <p className="font-body text-xs text-muted leading-relaxed">
               Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
             </p>
           </div>
           <div className="mt-6 pt-6 border-t border-divider">
-            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Getting Here</p>
+            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2 text-center sm:text-left">Getting Here</p>
             <p className="font-body text-muted text-xs leading-relaxed">
               Plan to arrive 15 minutes before the ceremony begins. Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
             </p>
@@ -423,6 +423,8 @@ function EventDetails() {
 function Travel() {
   const ref = useRef(null)
   const hotelScrollRef = useRef(null)
+  const hotelCardRefs = useRef([])
+  const [activeHotel, setActiveHotel] = useState(0)
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -435,11 +437,54 @@ function Travel() {
     return () => ctx.revert()
   }, [])
 
-  const scrollHotels = (dir) => {
-    const el = hotelScrollRef.current
-    if (!el) return
-    el.scrollBy({ left: dir * (el.clientWidth * 0.77 + 16), behavior: 'smooth' })
+  // Centers a card by reading its *actual rendered* offsetLeft/offsetWidth rather than
+  // trusting vw-based padding math to line up with vw-based card widths — those are two
+  // independently-rounded CSS values that drifted further apart with every card on a real
+  // device (Chrome's mobile emulator never showed it), which is what made the old
+  // scrollBy()-with-an-approximate-increment approach get worse card over card. Reading the
+  // real DOM position sidesteps that entirely: whatever the true rendered pixels are, this
+  // computes the exact scrollLeft needed to put that card dead center.
+  const scrollToHotel = (index) => {
+    const container = hotelScrollRef.current
+    const card = hotelCardRefs.current[index]
+    if (!container || !card) return
+    const target = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2
+    container.scrollTo({ left: target, behavior: 'smooth' })
+    setActiveHotel(index)
   }
+
+  const scrollHotels = (dir) => {
+    scrollToHotel(Math.min(HOTELS.length - 1, Math.max(0, activeHotel + dir)))
+  }
+
+  // Mirrors the container's scroll-padding to the first card's *actual* rendered width, in real
+  // px, instead of leaving it on the `px-[15vw]`/`w-[70vw]` pair — those are independently
+  // rounded by the browser and only need to be a pixel or two off for a manual swipe (as
+  // opposed to the arrow buttons above, which now bypass this and center exactly) to drift.
+  // Mobile-only: on desktop the container becomes a grid (no scroll-snap), so this is skipped.
+  useEffect(() => {
+    const container = hotelScrollRef.current
+    if (!container) return
+    const syncPadding = () => {
+      if (!window.matchMedia('(max-width: 639px)').matches) {
+        container.style.paddingLeft = ''
+        container.style.paddingRight = ''
+        container.style.scrollPaddingLeft = ''
+        container.style.scrollPaddingRight = ''
+        return
+      }
+      const firstCard = hotelCardRefs.current[0]
+      if (!firstCard) return
+      const pad = `${Math.max(0, (container.clientWidth - firstCard.offsetWidth) / 2)}px`
+      container.style.paddingLeft = pad
+      container.style.paddingRight = pad
+      container.style.scrollPaddingLeft = pad
+      container.style.scrollPaddingRight = pad
+    }
+    syncPadding()
+    window.addEventListener('resize', syncPadding)
+    return () => window.removeEventListener('resize', syncPadding)
+  }, [])
 
   return (
     <section ref={ref} id="travel" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
@@ -488,9 +533,13 @@ function Travel() {
             >
               <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
             </button>
-            <div ref={hotelScrollRef} className="flex gap-6 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-[15vw] px-[15vw] pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:px-0 sm:pb-0 sm:overflow-visible sm:scroll-px-0">
+            <div ref={hotelScrollRef} className="flex gap-6 sm:gap-4 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:pb-0 sm:overflow-visible">
               {HOTELS.map((hotel, i) => (
-                <div key={i} className="travel-card bg-surface rounded-xl p-6 border border-divider shadow-lg shadow-black/40 sm:shadow-none flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink">
+                <div
+                  key={i}
+                  ref={el => { hotelCardRefs.current[i] = el }}
+                  className="travel-card bg-surface rounded-xl p-6 border border-divider shadow-lg shadow-black/40 sm:shadow-none flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink"
+                >
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4 mx-auto sm:mx-0">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
                   </div>
