@@ -233,8 +233,7 @@ function Hero({ scrollToSection }) {
   useEffect(() => {
     if (prefersReducedMotion) return
     const ctx = gsap.context(() => {
-      gsap.from('.hero-venue',    { y: 16, opacity: 0, duration: 0.8, delay: 0.4,  ease: 'power3.out' })
-      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.55, ease: 'power3.out' })
+      gsap.from('.hero-name-1',   { y: 52, opacity: 0, duration: 1.2, delay: 0.4,  ease: 'power3.out' })
       gsap.from('.hero-monogram', { scale: 0.9, opacity: 0, duration: 1,   delay: 0.72, ease: 'power3.out' })
       gsap.from('.hero-name-2',   { y: 52, opacity: 0, duration: 1.2, delay: 0.9,  ease: 'power3.out' })
       gsap.from('.hero-date',     { y: 16, opacity: 0, duration: 0.8, delay: 1.15, ease: 'power3.out' })
@@ -259,15 +258,15 @@ function Hero({ scrollToSection }) {
 
   const namesOnly = (
     <h1 className="leading-relaxed">
-      <span className="hero-name-1 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
+      <span className="hero-name-1 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] text-ink">
         {COUPLE.name1}
       </span>
 
-      <div className="hero-monogram mx-auto my-1.5 sm:my-8 flex items-center justify-center">
-        <span className="font-serif text-lg sm:text-5xl text-primary">&amp;</span>
+      <div className="hero-monogram mx-auto my-2 sm:my-8 flex items-center justify-center">
+        <span className="font-serif text-3xl sm:text-5xl text-primary">&amp;</span>
       </div>
 
-      <span className="hero-name-2 block font-serif uppercase text-2xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
+      <span className="hero-name-2 block font-serif uppercase text-4xl sm:text-5xl lg:text-6xl tracking-[0.2em] silver-metallic">
         {COUPLE.name2}
       </span>
     </h1>
@@ -275,7 +274,7 @@ function Hero({ scrollToSection }) {
 
   const dateBlock = (
     <div className="hero-date">
-      <p className="font-serif text-base sm:text-4xl text-ink tracking-wide">
+      <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
         {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
       </p>
       <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
@@ -293,7 +292,7 @@ function Hero({ scrollToSection }) {
         { v: seconds, l: 'Sec' },
       ].map(({ v, l }) => (
         <div key={l} className="text-center">
-          <div className="font-serif text-lg sm:text-3xl font-medium text-ink tabular-nums">
+          <div className="font-serif text-2xl sm:text-3xl font-medium text-ink tabular-nums">
             {String(v).padStart(2, '0')}
           </div>
           <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
@@ -318,14 +317,10 @@ function Hero({ scrollToSection }) {
       {/* Inset frame — top offset clears the fixed navbar (h-16) plus the same margin used on the other sides */}
       <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
 
-      {/* Mobile: content block centers itself in the space above the scroll cue via flex-1 (section already
-          handles centering on its own for sm:). */}
+      {/* Mobile: content block centers itself in the section via flex-1 (section already handles
+          centering on its own for sm:). */}
       <div className="flex-1 flex flex-col justify-center sm:flex-none sm:block">
         <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
-          <p className="hero-venue font-body text-[11px] sm:text-xs uppercase tracking-[0.3em] text-white/60 mb-6 sm:mb-8">
-            Please join us for our wedding celebration
-          </p>
-
           {namesOnly}
           <IconDivider className="my-3 sm:my-10" />
           {dateBlock}
@@ -333,12 +328,6 @@ function Hero({ scrollToSection }) {
 
           <div className="hero-cta flex justify-center mt-6 sm:mt-10">{rsvpButton}</div>
         </div>
-      </div>
-
-      {/* Scroll cue — mobile only, sits below the centered content block in normal flow. */}
-      <div className="flex flex-col items-center gap-2 pb-2 text-white/35 sm:hidden motion-reduce:animate-none animate-bounce">
-        <span className="font-subheading text-[9px] uppercase tracking-[0.25em]">Scroll</span>
-        <span className="h-4 w-px bg-white/35" />
       </div>
     </section>
   )
