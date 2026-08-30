@@ -318,8 +318,11 @@ function Hero({ scrollToSection }) {
       <div className="absolute top-20 sm:top-24 right-4 sm:right-8 bottom-4 sm:bottom-8 left-4 sm:left-8 border border-primary/25 pointer-events-none" aria-hidden />
 
       {/* Mobile: content block centers itself in the section via flex-1 (section already handles
-          centering on its own for sm:). */}
-      <div className="flex-1 flex flex-col justify-center sm:flex-none sm:block">
+          centering on its own for sm:). pt-16 shifts the centered position down by half the fixed
+          navbar's height (h-16) — the navbar visually obscures the section's own top 64px, so
+          centering against the section's full (nav-included) height put the content noticeably
+          higher than the actual visible area's true center. */}
+      <div className="flex-1 flex flex-col justify-center pt-16 sm:flex-none sm:block sm:pt-0">
         <div className="relative max-w-3xl mx-auto w-full px-6 sm:px-10 text-center">
           {namesOnly}
           <IconDivider className="my-3 sm:my-10" />
