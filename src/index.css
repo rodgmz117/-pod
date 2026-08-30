@@ -197,24 +197,19 @@
     to   { transform: translateY(-100%); }
   }
 
-  /* Desktop menu overlay — two regions instead of one: the left panel rises up from below, the
-     right panel (holding the nav) drops down from above. Both use the same background tint, so
-     once the animation settles it reads as a single seamless overlay — the split is only visible
-     during the motion itself. Reverses symmetrically on close. */
+  /* Desktop menu: a drawer panel that slides in from the right, over a dimming backdrop
+     (backdrop uses a plain opacity transition since it stays mounted for the close duration —
+     no keyframes needed for that part). Reverses on close via the *-out keyframe. */
   @media (min-width: 640px) {
-    .menu-left-in   { animation: menu-left-in   0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .menu-right-in  { animation: menu-right-in  0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    .menu-left-out  { animation: menu-left-out  0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
-    .menu-right-out { animation: menu-right-out 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
+    .menu-drawer-in  { animation: menu-drawer-in  0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .menu-drawer-out { animation: menu-drawer-out 0.35s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
   }
-  @keyframes menu-left-in   { from { transform: translateY(100%);  } to { transform: translateY(0); } }
-  @keyframes menu-right-in  { from { transform: translateY(-100%); } to { transform: translateY(0); } }
-  @keyframes menu-left-out  { from { transform: translateY(0); } to { transform: translateY(100%);  } }
-  @keyframes menu-right-out { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+  @keyframes menu-drawer-in  { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  @keyframes menu-drawer-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
 
   @media (prefers-reduced-motion: reduce) {
     .menu-drop-in, .menu-drop-out,
-    .menu-left-in, .menu-right-in, .menu-left-out, .menu-right-out { animation: none; }
+    .menu-drawer-in, .menu-drawer-out { animation: none; }
   }
 
   /* Desktop menu link underline — draws in from the left on hover (transform-origin: left), not

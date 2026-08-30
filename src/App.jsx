@@ -144,24 +144,32 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   // should just close instantly.
   const [rendered, setRendered] = useState(open)
   const [closing, setClosing] = useState(false)
+  // Drives the backdrop's opacity transition. A CSS `transition` only animates a *change* in
+  // class after the element has painted once — mounting straight at opacity-100 gives it nothing
+  // to animate from, so open would snap in instantly even though close (a real 100→0 class swap)
+  // faded smoothly. Mount at opacity-0 (entered=false), then flip true a frame later so the
+  // browser has already painted the starting state and the transition actually plays.
+  const [entered, setEntered] = useState(false)
 
   useEffect(() => {
     if (open) {
       setClosing(false)
       setRendered(true)
-      return
+      setEntered(false)
+      const raf = requestAnimationFrame(() => setEntered(true))
+      return () => cancelAnimationFrame(raf)
     }
     if (!rendered) return
     if (prefersReducedMotion) {
       setRendered(false)
       return
     }
-    // Both breakpoints animate now (mobile: drop down/up; desktop: two-region split — see
+    // Both breakpoints animate now (mobile: drop down/up; desktop: right-side drawer — see
     // index.css), so the close-delay always applies here, just with a duration matched to
     // whichever one is actually playing.
     const isMobile = window.matchMedia('(max-width: 639px)').matches
     setClosing(true)
-    const t = setTimeout(() => { setRendered(false); setClosing(false) }, isMobile ? 300 : 400)
+    const t = setTimeout(() => { setRendered(false); setClosing(false) }, isMobile ? 300 : 350)
     return () => clearTimeout(t)
   }, [open])
 
@@ -198,33 +206,31 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
         </nav>
       </div>
 
-      {/* Desktop: two regions — left panel rises up, right panel (holding the nav) drops down.
-          Slightly different shades (per reference screenshot) so the split stays visible at rest,
-          not just during the entrance/exit motion. */}
-      <div className="hidden sm:flex fixed inset-0 z-40" onClick={onClose}>
-        <div
-          className={`w-1/2 h-full ${closing ? 'menu-left-out' : 'menu-left-in'}`}
-          style={{ background: 'rgba(42,8,14,0.97)' }}
-          aria-hidden
-        />
-        <div
-          className={`w-1/2 h-full flex items-center ${closing ? 'menu-right-out' : 'menu-right-in'}`}
-          style={{ background: 'rgba(58,16,22,0.95)' }}
-        >
-          <nav className="flex flex-col items-start gap-2 pl-16 lg:pl-24" onClick={e => e.stopPropagation()}>
-            {TABS.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => scrollToSection(tab.id)}
-                className={`menu-link-underline text-left font-serif text-2xl lg:text-3xl transition-colors ${
-                  tab.id === activeSection ? 'is-active text-primary-light' : 'text-ink/85 hover:text-primary-light'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
+      {/* Desktop: a drawer panel slides in from the right, over a dimming backdrop. Backdrop and
+          drawer are siblings (not parent/child), so a click inside the drawer never bubbles into
+          the backdrop's onClose — only the backdrop itself (or picking a nav link) closes it. */}
+      <div
+        className={`hidden sm:block fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${closing || !entered ? 'opacity-0' : 'opacity-100'}`}
+        onClick={onClose}
+        aria-hidden
+      />
+      <div
+        className={`hidden sm:flex fixed top-0 right-0 z-40 h-full w-[380px] lg:w-[440px] items-center ${closing ? 'menu-drawer-out' : 'menu-drawer-in'}`}
+        style={{ background: 'rgba(42,8,14,0.97)' }}
+      >
+        <nav className="flex flex-col items-start gap-2 pl-12 lg:pl-16">
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => scrollToSection(tab.id)}
+              className={`menu-link-underline text-left font-serif text-2xl lg:text-3xl transition-colors ${
+                tab.id === activeSection ? 'is-active text-primary-light' : 'text-ink/85 hover:text-primary-light'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
       </div>
     </>
   )
