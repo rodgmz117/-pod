@@ -350,10 +350,11 @@ function Hero({ scrollToSection }) {
           on the names box could. */}
       <div className="flex-1 sm:hidden" aria-hidden />
 
-      {/* pb-10 (not pb-4) leaves real breathing room below the RSVP button — the spacer above pushes this
-          block all the way down to the section's bottom edge, and too little bottom padding there let the
-          button sit flush against (and get clipped by) the screen edge/home-indicator area. */}
-      <div className="relative flex flex-col items-center px-6 pb-10 sm:hidden">
+      {/* pb-20 leaves real breathing room below the RSVP button — the spacer above pushes this block all
+          the way down to the section's bottom edge, and too little bottom padding there let the button
+          sit close to (or get clipped by) the screen edge/home-indicator area. Bumped from pb-4 → pb-10 →
+          pb-20 across two rounds of "still too close to the bottom" feedback from Rod's actual phone. */}
+      <div className="relative flex flex-col items-center px-6 pb-20 sm:hidden">
         <div className="max-w-3xl mx-auto w-full text-center">
           {weddingInfo}
         </div>
