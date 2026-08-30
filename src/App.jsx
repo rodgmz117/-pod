@@ -199,8 +199,8 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
       </div>
 
       {/* Desktop: two regions — left panel rises up, right panel (holding the nav) drops down.
-          Both share the same tint, so once both land it reads as one seamless overlay; the split
-          only shows during the entrance/exit motion itself. */}
+          Slightly different shades (per reference screenshot) so the split stays visible at rest,
+          not just during the entrance/exit motion. */}
       <div className="hidden sm:flex fixed inset-0 z-40" onClick={onClose}>
         <div
           className={`w-1/2 h-full ${closing ? 'menu-left-out' : 'menu-left-in'}`}
@@ -209,14 +209,14 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
         />
         <div
           className={`w-1/2 h-full flex items-center ${closing ? 'menu-right-out' : 'menu-right-in'}`}
-          style={{ background: 'rgba(14,4,6,0.97)' }}
+          style={{ background: 'rgba(32,11,15,0.97)' }}
         >
           <nav className="flex flex-col items-start gap-2 pl-16 lg:pl-24" onClick={e => e.stopPropagation()}>
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => scrollToSection(tab.id)}
-                className={`menu-link-underline text-left font-serif italic text-2xl lg:text-3xl transition-colors ${
+                className={`menu-link-underline text-left font-serif text-2xl lg:text-3xl transition-colors ${
                   tab.id === activeSection ? 'is-active text-primary-light' : 'text-ink/85 hover:text-primary-light'
                 }`}
               >
