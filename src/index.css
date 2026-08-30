@@ -179,10 +179,9 @@
   }
 
   /* Mobile menu overlay — slides down from behind the navbar on open, back up on close, instead of
-     just appearing/disappearing. Desktop keeps the instant show/hide (no complaint there, not
-     asked to change). Plain CSS @keyframes, not a transition: the open case has no outgoing
-     element for a transition to animate from (the component wasn't mounted yet), and the close
-     case needs the component kept mounted for the animation's duration before actually
+     just appearing/disappearing. Plain CSS @keyframes, not a transition: the open case has no
+     outgoing element for a transition to animate from (the component wasn't mounted yet), and
+     the close case needs the component kept mounted for the animation's duration before actually
      unmounting (handled in MenuOverlay's `closing` state) — @keyframes plays automatically
      whichever state class lands on mount, no transition-triggering "previous value" needed. */
   @media (max-width: 639px) {
@@ -197,8 +196,42 @@
     from { transform: translateY(0); }
     to   { transform: translateY(-100%); }
   }
+
+  /* Desktop menu overlay — two regions instead of one: the left panel rises up from below, the
+     right panel (holding the nav) drops down from above. Both use the same background tint, so
+     once the animation settles it reads as a single seamless overlay — the split is only visible
+     during the motion itself. Reverses symmetrically on close. */
+  @media (min-width: 640px) {
+    .menu-left-in   { animation: menu-left-in   0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .menu-right-in  { animation: menu-right-in  0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .menu-left-out  { animation: menu-left-out  0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
+    .menu-right-out { animation: menu-right-out 0.4s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
+  }
+  @keyframes menu-left-in   { from { transform: translateY(100%);  } to { transform: translateY(0); } }
+  @keyframes menu-right-in  { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  @keyframes menu-left-out  { from { transform: translateY(0); } to { transform: translateY(100%);  } }
+  @keyframes menu-right-out { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+
   @media (prefers-reduced-motion: reduce) {
-    .menu-drop-in, .menu-drop-out { animation: none; }
+    .menu-drop-in, .menu-drop-out,
+    .menu-left-in, .menu-right-in, .menu-left-out, .menu-right-out { animation: none; }
+  }
+
+  /* Desktop menu link underline — draws in from the left on hover (transform-origin: left), not
+     a symmetric center-out reveal or a plain color change. Active tab keeps it drawn. */
+  .menu-link-underline { position: relative; display: inline-block; }
+  .menu-link-underline::after {
+    content: '';
+    position: absolute; left: 0; bottom: -2px;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease-out;
+  }
+  .menu-link-underline:hover::after,
+  .menu-link-underline.is-active::after {
+    transform: scaleX(1);
   }
 
   .gold-line {

@@ -140,9 +140,8 @@ function Navbar({ scrollToSection, menuOpen, setMenuOpen }) {
 function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   // Kept mounted for the close animation's duration after `open` goes false, instead of
   // unmounting instantly — a plain `if (!open) return null` gives a CSS transition/animation no
-  // outgoing element to animate. `animates` guards against a pointless 300ms "closing" delay on
-  // desktop (where .menu-drop-out has no animation at all, see index.css) or with
-  // prefers-reduced-motion, where it should just close instantly like before.
+  // outgoing element to animate. Skips the delay entirely under prefers-reduced-motion, where it
+  // should just close instantly.
   const [rendered, setRendered] = useState(open)
   const [closing, setClosing] = useState(false)
 
@@ -153,13 +152,16 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
       return
     }
     if (!rendered) return
-    const animates = !prefersReducedMotion && window.matchMedia('(max-width: 639px)').matches
-    if (!animates) {
+    if (prefersReducedMotion) {
       setRendered(false)
       return
     }
+    // Both breakpoints animate now (mobile: drop down/up; desktop: two-region split — see
+    // index.css), so the close-delay always applies here, just with a duration matched to
+    // whichever one is actually playing.
+    const isMobile = window.matchMedia('(max-width: 639px)').matches
     setClosing(true)
-    const t = setTimeout(() => { setRendered(false); setClosing(false) }, 300)
+    const t = setTimeout(() => { setRendered(false); setClosing(false) }, isMobile ? 300 : 400)
     return () => clearTimeout(t)
   }, [open])
 
@@ -172,27 +174,59 @@ function MenuOverlay({ open, onClose, scrollToSection, activeSection }) {
   if (!rendered) return null
 
   return (
-    <div
-      className={`fixed inset-0 z-40 flex items-center justify-center ${closing ? 'menu-drop-out' : 'menu-drop-in'}`}
-      style={{ background: 'rgba(14,4,6,0.97)' }}
-      onClick={onClose}
-    >
-      <nav className="flex flex-col items-center gap-1" onClick={e => e.stopPropagation()}>
-        {TABS.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => scrollToSection(tab.id)}
-            className={`lift-on-hover px-8 py-3 font-serif text-2xl sm:text-3xl transition-colors border-b ${
-              tab.id === activeSection
-                ? 'text-primary-light border-primary/40'
-                : 'text-ink/85 hover:text-primary-light border-transparent hover:border-primary/40'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </nav>
-    </div>
+    <>
+      {/* Mobile: single centered column, drops down from the navbar. */}
+      <div
+        className={`sm:hidden fixed inset-0 z-40 flex items-center justify-center ${closing ? 'menu-drop-out' : 'menu-drop-in'}`}
+        style={{ background: 'rgba(14,4,6,0.97)' }}
+        onClick={onClose}
+      >
+        <nav className="flex flex-col items-center gap-1" onClick={e => e.stopPropagation()}>
+          {TABS.map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => scrollToSection(tab.id)}
+              className={`lift-on-hover px-8 py-3 font-serif text-2xl transition-colors border-b ${
+                tab.id === activeSection
+                  ? 'text-primary-light border-primary/40'
+                  : 'text-ink/85 hover:text-primary-light border-transparent hover:border-primary/40'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Desktop: two regions — left panel rises up, right panel (holding the nav) drops down.
+          Both share the same tint, so once both land it reads as one seamless overlay; the split
+          only shows during the entrance/exit motion itself. */}
+      <div className="hidden sm:flex fixed inset-0 z-40" onClick={onClose}>
+        <div
+          className={`w-1/2 h-full ${closing ? 'menu-left-out' : 'menu-left-in'}`}
+          style={{ background: 'rgba(14,4,6,0.97)' }}
+          aria-hidden
+        />
+        <div
+          className={`w-1/2 h-full flex items-center ${closing ? 'menu-right-out' : 'menu-right-in'}`}
+          style={{ background: 'rgba(14,4,6,0.97)' }}
+        >
+          <nav className="flex flex-col items-start gap-2 pl-16 lg:pl-24" onClick={e => e.stopPropagation()}>
+            {TABS.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => scrollToSection(tab.id)}
+                className={`menu-link-underline text-left font-serif italic text-2xl lg:text-3xl transition-colors ${
+                  tab.id === activeSection ? 'is-active text-primary-light' : 'text-ink/85 hover:text-primary-light'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </>
   )
 }
 
