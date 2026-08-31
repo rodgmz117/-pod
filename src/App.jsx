@@ -712,6 +712,11 @@ function RSVPSection() {
     return () => ctx.revert()
   }, [])
 
+  useEffect(() => {
+    if (!submitted) return
+    ref.current?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'center' })
+  }, [submitted])
+
   const handleSearch = async () => {
     if (!query.trim()) return
     setSearching(true)
