@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo, Fragment } from 'react'
 import {
   Upload, LogOut, Pencil, Trash2, Plus, Download, Search,
-  Send, X, Check, RefreshCw, Lock, Unlock, Mail, ChevronDown,
+  Send, X, Check, RefreshCw, Lock, Unlock, Mail, ChevronDown, CornerDownRight,
 } from 'lucide-react'
 import { getAllGuests, insertGuests, updateGuestField, deleteGuest, deleteGuests, getConfig, updateConfig } from './lib/supabase.js'
 
@@ -127,14 +127,14 @@ function SalutationSelect({ value, onChange }) {
   )
 }
 
-function MealSelect({ value, onChange }) {
+function MealSelect({ value, onChange, className = '' }) {
   const labels = { beef: 'Beef', fish: 'Fish', vegetarian: 'Veg' }
   return (
     <select
       value={value || ''}
       onChange={e => onChange(e.target.value)}
       style={{ borderColor: 'rgba(196,100,32,0.25)', background: 'rgba(58,14,24,0.72)', color: value ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.2)' }}
-      className="rounded-lg px-3 py-1.5 font-subheading text-[10px] uppercase tracking-[0.15em] focus:outline-none transition-colors cursor-pointer"
+      className={`rounded-lg px-3 py-1.5 font-subheading text-[10px] uppercase tracking-[0.15em] focus:outline-none transition-colors cursor-pointer ${className}`}
     >
       <option value="">—</option>
       <option value="beef">Beef</option>
@@ -144,7 +144,7 @@ function MealSelect({ value, onChange }) {
   )
 }
 
-function MemberRSVPSelect({ attending, onChange }) {
+function MemberRSVPSelect({ attending, onChange, className = '' }) {
   const value = attending === true ? 'attending' : attending === false ? 'declined' : 'pending'
   const color = value === 'attending' ? '#34d399' : value === 'declined' ? '#f87171' : 'rgba(255,255,255,0.4)'
   return (
@@ -152,7 +152,7 @@ function MemberRSVPSelect({ attending, onChange }) {
       value={value}
       onChange={e => onChange(e.target.value === 'pending' ? null : e.target.value === 'attending')}
       style={{ color, borderColor: 'rgba(196,100,32,0.25)', background: 'rgba(58,14,24,0.72)' }}
-      className="rounded-lg px-2 py-1 font-subheading text-[9px] uppercase tracking-[0.15em] focus:outline-none transition-colors cursor-pointer"
+      className={`rounded-lg px-2 py-1 font-subheading text-[9px] uppercase tracking-[0.15em] focus:outline-none transition-colors cursor-pointer ${className}`}
     >
       <option value="pending">Pending</option>
       <option value="attending">Attending</option>
@@ -1140,64 +1140,80 @@ export default function Admin() {
                           <Checkbox checked={isSelected} indeterminate={false} onChange={c => toggleRow(g._id, c)} />
                         </td>
                       </tr>
-                      {(isEditing || expandedParty.has(g._id)) && (members.length > 0 || isEditing) && (
+                      {isEditing && edit.party_members.map((m, i) => {
+                        const setMember = (fields) => setEditField('party_members', edit.party_members.map((pm, pi) => pi === i ? { ...pm, ...fields } : pm))
+                        return (
+                          <tr key={`edit-${i}`} className="bg-surface-2/20">
+                            <td className="px-4 py-2 max-w-[140px]">
+                              <CornerDownRight className="h-3 w-3 text-muted/30" />
+                            </td>
+                            <td className="px-4 py-2 w-20" />
+                            <td className="px-4 py-2 max-w-[130px]">
+                              <input value={m.name} onChange={e => setMember({ name: e.target.value })} placeholder="Party member"
+                                className="w-full min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                            </td>
+                            <td className="px-4 py-2 w-16" />
+                            <td className="px-4 py-2 max-w-[160px]" />
+                            <td className="px-4 py-2">
+                              <MemberRSVPSelect attending={m.attending} onChange={v => setMember({ attending: v })} />
+                            </td>
+                            <td className="px-4 py-2">
+                              <MealSelect value={m.meal_choice} onChange={v => setMember({ meal_choice: v })} />
+                            </td>
+                            <td className="px-4 py-2 max-w-[160px]">
+                              <input value={m.dietary_notes || ''} onChange={e => setMember({ dietary_notes: e.target.value })} placeholder="—"
+                                className="w-full min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-muted pb-1 transition-colors" />
+                            </td>
+                            <td className="px-4 py-2 w-16">
+                              <button type="button" onClick={() => setEditPartyMembers(edit.party_members.filter((_, pi) => pi !== i))}
+                                className="text-muted hover:text-rose-400 transition-colors">
+                                <Trash2 className="h-3.5 w-3.5" strokeWidth={2} />
+                              </button>
+                            </td>
+                            <td className="px-4 py-2 pr-5 w-10" />
+                          </tr>
+                        )
+                      })}
+                      {isEditing && (
                         <tr className="bg-surface-2/20">
-                          <td colSpan={9} className="px-8 py-3">
-                            {isEditing ? (
-                              <div>
-                                <div className="grid grid-cols-[160px_100px_84px_180px_20px] gap-x-3 gap-y-1.5 items-center">
-                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Name</span>
-                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">RSVP</span>
-                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Meal</span>
-                                  <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Dietary</span>
-                                  <span />
-                                  {edit.party_members.map((m, i) => {
-                                    const setMember = (fields) => setEditField('party_members', edit.party_members.map((pm, pi) => pi === i ? { ...pm, ...fields } : pm))
-                                    return (
-                                      <Fragment key={i}>
-                                        <input value={m.name} onChange={e => setMember({ name: e.target.value })} placeholder="Party member"
-                                          className="min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
-                                        <MemberRSVPSelect attending={m.attending} onChange={v => setMember({ attending: v })} />
-                                        <MealSelect value={m.meal_choice} onChange={v => setMember({ meal_choice: v })} />
-                                        <input value={m.dietary_notes || ''} onChange={e => setMember({ dietary_notes: e.target.value })} placeholder="—"
-                                          className="min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-muted pb-1 transition-colors" />
-                                        <button type="button" onClick={() => setEditPartyMembers(edit.party_members.filter((_, pi) => pi !== i))}
-                                          className="text-muted hover:text-rose-400 transition-colors">
-                                          <Trash2 className="h-3 w-3" strokeWidth={2} />
-                                        </button>
-                                      </Fragment>
-                                    )
-                                  })}
-                                </div>
-                                <button type="button" onClick={() => setEditPartyMembers([...edit.party_members, { name: '', attending: null, meal_choice: '', dietary_notes: '' }])}
-                                  className="mt-2 text-left font-body text-xs text-muted hover:text-primary transition-colors">
-                                  + add member
-                                </button>
-                              </div>
-                            ) : (
-                              <div className="grid grid-cols-[160px_100px_84px_180px] gap-x-3 gap-y-1.5 items-center">
-                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Name</span>
-                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">RSVP</span>
-                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Meal</span>
-                                <span className="font-subheading text-[9px] uppercase tracking-[0.15em] text-muted/60">Dietary</span>
-                                {members.map((m, i) => {
-                                  const status = memberStatus(m)
-                                  return (
-                                    <Fragment key={i}>
-                                      <span className="font-body text-xs text-ink truncate">{m.name || 'Guest'}</span>
-                                      <RSVPBadge value={status} />
-                                      <span className="font-body text-xs text-muted">
-                                        {status === 'attending' ? (m.meal_choice || '—') : '—'}
-                                      </span>
-                                      <span className="font-body text-xs text-muted truncate">{m.dietary_notes || '—'}</span>
-                                    </Fragment>
-                                  )
-                                })}
-                              </div>
-                            )}
+                          <td className="px-4 py-2" colSpan={2} />
+                          <td className="px-4 py-2" colSpan={8}>
+                            <button type="button" onClick={() => setEditPartyMembers([...edit.party_members, { name: '', attending: null, meal_choice: '', dietary_notes: '' }])}
+                              className="text-left font-body text-xs text-muted hover:text-primary transition-colors">
+                              + add member
+                            </button>
                           </td>
                         </tr>
                       )}
+                      {!isEditing && expandedParty.has(g._id) && members.map((m, i) => {
+                        const status = memberStatus(m)
+                        return (
+                          <tr key={`view-${i}`} className="bg-surface-2/20">
+                            <td className="px-4 py-2 max-w-[140px]">
+                              <CornerDownRight className="h-3 w-3 text-muted/30" />
+                            </td>
+                            <td className="px-4 py-2 w-20" />
+                            <td className="px-4 py-2 max-w-[130px]">
+                              <span className="font-body text-xs text-ink truncate">{m.name || 'Guest'}</span>
+                            </td>
+                            <td className="px-4 py-2 w-16" />
+                            <td className="px-4 py-2 max-w-[160px]" />
+                            <td className="px-4 py-2">
+                              <RSVPBadge value={status} />
+                            </td>
+                            <td className="px-4 py-2">
+                              <span className="font-mono text-[10px] text-muted capitalize">
+                                {status === 'attending' ? (m.meal_choice || '—') : '—'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-2 max-w-[160px]">
+                              <span className="font-body text-xs text-muted truncate block">{m.dietary_notes || '—'}</span>
+                            </td>
+                            <td className="px-4 py-2 w-16" />
+                            <td className="px-4 py-2 pr-5 w-10" />
+                          </tr>
+                        )
+                      })}
                       </Fragment>
                     )
                   })}
