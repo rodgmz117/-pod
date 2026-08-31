@@ -729,7 +729,26 @@ function RSVPSection() {
       { id: 'primary', name: data.primary_guest_name },
       ...(data.party_members || []).map((m, i) => ({ id: `party_${i}`, name: m.name })),
     ]
-    setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList })
+
+    const hasResponded = data.rsvp_status === 'attending' || data.rsvp_status === 'declined'
+    const priorSelections = {}
+    if (hasResponded) {
+      priorSelections.primary = {
+        attending: !!data.primary_attending,
+        meal: data.primary_meal_choice || '',
+        notes: data.dietary_restrictions || '',
+      }
+      ;(data.party_members || []).forEach((m, i) => {
+        priorSelections[`party_${i}`] = {
+          attending: !!m.attending,
+          meal: m.meal_choice || '',
+          notes: m.dietary_notes || '',
+        }
+      })
+    }
+    setSelections(priorSelections)
+
+    setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList, hasResponded })
   }
 
   const handleBack = () => {
@@ -906,6 +925,12 @@ function RSVPSection() {
                   : `Welcome, ${result.guests[0]?.name.split(' ')[0]}.`
                 } Who's joining us?
               </p>
+
+              {result.hasResponded && (
+                <p className="font-body text-xs text-muted -mt-1 mb-1">
+                  You've already responded — here's what we have on file. Update anything below and confirm again.
+                </p>
+              )}
 
               {result.guests.map(g => {
                 const sel = selections[g.id] || {}
