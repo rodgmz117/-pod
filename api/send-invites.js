@@ -8,8 +8,8 @@ const supabase = createClient(
 )
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM_EMAIL    = 'Rod & Paean <noreply@sohappitogether.com>'
-const SITE_URL      = process.env.SITE_URL || 'https://sohappitogether.com'
+const FROM_EMAIL    = 'Rod & Paean <noreply@rodandpae.com>'
+const SITE_URL      = process.env.SITE_URL || 'https://www.rodandpae.com'
 const CONTACT_EMAIL = 'rodgmz@gmail.com'
 
 export default async function handler(req, res) {

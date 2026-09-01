@@ -381,7 +381,7 @@ function EmailModal({ guests, rsvpDeadline, onClose }) {
               <div className="bg-surface-2 border border-divider rounded-2xl px-5 py-4">
                 <p className="font-subheading text-[9px] uppercase tracking-[0.18em] text-muted mb-3">Preview</p>
                 <div className="space-y-1 mb-3">
-                  <p className="font-body text-xs text-muted"><span className="text-ink font-medium">From:</span> Rod &amp; Paean &lt;noreply@sohappitogether.com&gt;</p>
+                  <p className="font-body text-xs text-muted"><span className="text-ink font-medium">From:</span> Rod &amp; Paean &lt;noreply@rodandpae.com&gt;</p>
                   <p className="font-body text-xs text-muted"><span className="text-ink font-medium">Subject:</span> {subject || '—'}</p>
                 </div>
                 <div className="border-t border-divider pt-3">
