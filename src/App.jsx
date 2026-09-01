@@ -679,6 +679,8 @@ const MEALS = [
   { value: 'vegetarian', label: 'Vegetarian' },
 ]
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 function RSVPSection() {
   const ref = useRef(null)
   const [query, setQuery]         = useState('')
@@ -689,8 +691,10 @@ function RSVPSection() {
   const [selections, setSelections] = useState({})
   const [submitted, setSubmitted]   = useState(null) // 'attending' | 'declined'
   const [notFound, setNotFound]     = useState(false)
+  const [email, setEmail]           = useState('')
   const [mealError, setMealError]         = useState(false)
   const [attendanceError, setAttendanceError] = useState(false)
+  const [emailError, setEmailError]       = useState(false)
   const [rsvpDeadline, setRsvpDeadline] = useState(null)
   const [rsvpLocked, setRsvpLocked]     = useState(false)
 
@@ -747,6 +751,7 @@ function RSVPSection() {
       })
     }
     setSelections(priorSelections)
+    setEmail(data.email || '')
 
     setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList, hasResponded })
   }
@@ -756,8 +761,10 @@ function RSVPSection() {
     setSelections({})
     setQuery('')
     setNotFound(false)
+    setEmail('')
     setMealError(false)
     setAttendanceError(false)
+    setEmailError(false)
   }
 
   const setAttendance = (id, value) => {
@@ -789,10 +796,14 @@ function RSVPSection() {
     if (attending.some(g => !selections[g.id]?.meal)) { setMealError(true); return }
     setMealError(false)
 
+    if (!EMAIL_RE.test(email.trim())) { setEmailError(true); return }
+    setEmailError(false)
+
     const primary = selections['primary'] || {}
     const partyGuests = result.guests.filter(g => g.id !== 'primary')
     const anyAttending = attending.length > 0
     await submitRSVP(result.guestId, {
+      email:                 email.trim(),
       rsvp_status:          anyAttending ? 'attending' : 'declined',
       num_attending:        attending.length,
       primary_attending:    primary.attending === true,
@@ -809,13 +820,22 @@ function RSVPSection() {
   }
 
   const handleDecline = async () => {
+    if (!EMAIL_RE.test(email.trim())) { setEmailError(true); return }
+    setEmailError(false)
+
     await submitRSVP(result.guestId, {
+      email:            email.trim(),
       rsvp_status:      'declined',
       num_attending:    0,
       primary_attending: false,
       party_members:    (result.guests || []).filter(g => g.id !== 'primary').map(g => ({ name: g.name, attending: false })),
     })
     setSubmitted('declined')
+  }
+
+  const handleEditRSVP = () => {
+    setSubmitted(null)
+    setResult(r => r ? { ...r, hasResponded: true } : r)
   }
 
   if (submitted) {
@@ -836,6 +856,14 @@ function RSVPSection() {
                 <h3 className="font-serif text-2xl font-medium text-ink mb-3">We'll miss you.</h3>
                 <p className="font-body text-muted leading-relaxed text-sm">Thank you for letting us know. We hope to celebrate with you another time.</p>
               </>
+            )}
+            {!rsvpLocked && (
+              <button
+                onClick={handleEditRSVP}
+                className="mt-6 font-body text-xs text-muted hover:text-ink transition-colors underline underline-offset-4"
+              >
+                Edit RSVP
+              </button>
             )}
           </div>
         </div>
@@ -1001,6 +1029,21 @@ function RSVPSection() {
                 )
               })}
 
+              <div className="pt-2">
+                <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Email</p>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setEmailError(false) }}
+                  placeholder="you@example.com"
+                  className="w-full bg-surface-2 border border-divider rounded-lg px-4 py-2.5 font-body text-sm text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
+                />
+                <p className="font-body text-xs text-muted mt-1.5">We'll use this to keep you posted on wedding details.</p>
+              </div>
+
+              {emailError && (
+                <p className="font-body text-xs text-rose-400">Please enter a valid email address.</p>
+              )}
               {attendanceError && (
                 <p className="font-body text-xs text-rose-400">Please mark Attending or Not Attending for each guest.</p>
               )}
