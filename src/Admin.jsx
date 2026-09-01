@@ -875,7 +875,9 @@ export default function Admin() {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ background: '#0E0406' }}>
         <div className="w-full max-w-sm">
-          <p className="font-script text-4xl gradient-text text-center mb-8">Rod &amp; Paean</p>
+          <p className="font-serif uppercase tracking-[0.2em] text-3xl text-center mb-8">
+            <span className="text-ink">Rod</span> <span className="text-primary">&amp;</span> <span className="silver-metallic">Paean</span>
+          </p>
           <div className="bg-surface rounded-3xl p-8 border border-divider">
             <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-6 text-center">Admin Access</p>
             <input type="password" value={pw}
@@ -903,7 +905,9 @@ export default function Admin() {
       <div className="sticky top-0 z-10 border-b border-divider backdrop-blur-md" style={{ background: 'rgba(14,4,6,0.95)' }}>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-14 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <p className="font-script text-xl gradient-text">Rod &amp; Paean</p>
+            <p className="font-serif uppercase tracking-[0.15em] text-base sm:text-lg whitespace-nowrap">
+              <span className="text-ink">Rod</span> <span className="text-primary">&amp;</span> <span className="silver-metallic">Paean</span>
+            </p>
             <span className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted hidden sm:block">· Admin</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
