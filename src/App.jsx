@@ -753,7 +753,7 @@ function RSVPSection() {
     setSelections(priorSelections)
     setEmail(data.email || '')
 
-    setResult({ guestId: data.id, household: data.household_name, salutation: data.salutation, guests: guestList, hasResponded })
+    setResult({ guestId: data.id, household: data.household_name, guests: guestList, hasResponded })
   }
 
   const handleBack = () => {
@@ -948,10 +948,7 @@ function RSVPSection() {
               </button>
 
               <p className="font-body text-base text-ink mb-2">
-                {result.salutation
-                  ? `Welcome, ${result.salutation} ${result.guests[0]?.name.split(' ').pop()}.`
-                  : `Welcome, ${result.guests[0]?.name.split(' ')[0]}.`
-                } Who's joining us?
+                Welcome, {result.guests[0]?.name.split(' ')[0]}. Who's joining us?
               </p>
 
               {result.hasResponded && (
