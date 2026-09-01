@@ -26,13 +26,15 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 6px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.28); }
+}
 
-  /* iOS Safari auto-zooms on focus when an input's font-size is under 16px —
-     force 16px on mobile only so the page doesn't jump/zoom when a field is tapped. */
-  @media (max-width: 640px) {
-    input, select, textarea {
-      font-size: 16px;
-    }
+/* iOS Safari auto-zooms on focus when an input's font-size is under 16px — force 16px on
+   mobile only so the page doesn't jump/zoom when a field is tapped. Left unlayered (not
+   inside @layer base) so it beats Tailwind's text-sm/text-xs utilities, which live in
+   @layer utilities and always win over @layer base regardless of specificity. */
+@media (max-width: 640px) {
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }
 
