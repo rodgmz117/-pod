@@ -1171,6 +1171,10 @@ function Site() {
     const id = window.location.hash.replace('#', '').split('?')[0]
     if (TABS.find(t => t.id === id) && id !== 'home') {
       requestAnimationFrame(() => scrollToSection(id))
+    } else {
+      // No section to deep-link to — make sure we're actually at the top. Mobile
+      // browsers sometimes restore a scroll position from a previous visit to this URL.
+      window.scrollTo(0, 0)
     }
   }, [scrollToSection])
 
