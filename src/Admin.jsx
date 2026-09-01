@@ -784,7 +784,16 @@ export default function Admin() {
       dietary_restrictions: g.dietary_restrictions || '',
     })
   }
-  const cancelEdit = () => { setEditingId(null); setEdit(blankEdit) }
+  const stopEditing = () => { setEditingId(null); setEdit(blankEdit) }
+  const cancelEdit = () => {
+    // A row added via "Add Row" has no id yet (not saved to Supabase) — cancelling it
+    // should discard the blank row rather than leave a ghost entry in the table.
+    const guest = guests.find(g => g._id === editingId)
+    if (guest && guest.id === null) {
+      setGuests(gs => gs.filter(g => g._id !== editingId))
+    }
+    stopEditing()
+  }
   const saveEdit = async () => {
     if (!edit.primary_guest_name.trim()) return
     const guest = guests.find(g => g._id === editingId)
@@ -800,12 +809,23 @@ export default function Admin() {
       // Confirmed count is derived from RSVP status + who's individually marked attending, not left stale.
       primary_attending: isAttending,
       num_attending: isAttending ? 1 + cleanedParty.filter(m => m.attending).length : 0,
+      // '' fails the DB check constraints on these columns (only null or a real value is allowed).
+      salutation:           edit.salutation || null,
+      primary_meal_choice:  edit.primary_meal_choice || null,
+      dietary_restrictions: edit.dietary_restrictions || null,
+      email:                edit.email || null,
     }
-    setGuests(gs => gs.map(g => g._id === editingId ? { ...g, ...cleaned } : g))
     if (guest.id) {
+      setGuests(gs => gs.map(g => g._id === editingId ? { ...g, ...cleaned } : g))
       await Promise.all(Object.entries(cleaned).map(([field, value]) => updateGuestField(guest.id, field, value)))
+    } else {
+      // Brand-new row from "Add Row" — not in Supabase yet, so insert it rather than
+      // just updating local state (which cancelEdit would then discard as unsaved).
+      const { data, error } = await insertGuests([cleaned])
+      if (error || !data?.[0]) return
+      setGuests(gs => gs.map(g => g._id === editingId ? { ...data[0], _id: g._id } : g))
     }
-    cancelEdit()
+    stopEditing()
   }
 
   const removeGuest = async (id) => {
@@ -823,11 +843,15 @@ export default function Admin() {
     if (ids.length > 0) await deleteGuests(ids)
   }
 
-  const addGuest = () => setGuests(gs => [...gs, {
-    _id: `local_${Date.now()}`, id: null,
-    household_name: '', primary_guest_name: '',
-    max_guests_allotted: 1, email: '', rsvp_status: 'pending', party_members: [],
-  }])
+  const addGuest = () => {
+    const newGuest = {
+      _id: `local_${Date.now()}`, id: null,
+      household_name: '', primary_guest_name: '',
+      max_guests_allotted: 1, email: '', rsvp_status: 'pending', party_members: [],
+    }
+    setGuests(gs => [...gs, newGuest])
+    startEdit(newGuest)
+  }
 
   const stats = useMemo(() => {
     const attending = guests.filter(g => g.rsvp_status === 'attending')
