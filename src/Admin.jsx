@@ -904,7 +904,7 @@ export default function Admin() {
       {/* Top bar */}
       <div className="sticky top-0 z-10 border-b border-divider backdrop-blur-md" style={{ background: 'rgba(14,4,6,0.95)' }}>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 h-14 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-baseline gap-2 min-w-0">
             <p className="font-serif uppercase tracking-[0.15em] text-base sm:text-lg whitespace-nowrap">
               <span className="text-ink">Rod</span> <span className="text-primary">&amp;</span> <span className="silver-metallic">Paean</span>
             </p>
