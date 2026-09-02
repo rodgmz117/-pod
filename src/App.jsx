@@ -399,56 +399,67 @@ function EventDetails() {
           <IconDivider className="mt-3" />
         </div>
 
-        <div className="event-card bg-surface rounded-xl px-6 py-7 sm:px-8 border border-divider mb-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
-            <div className="text-center sm:text-left">
-              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2">Venue</p>
-              <h3 className="font-serif text-xl font-medium text-ink">{COUPLE.venue}</h3>
-              <p className="font-body text-sm text-muted mt-1.5">{COUPLE.address}</p>
+        <div className="event-card bg-deep rounded-none shadow-lg shadow-black/30 mb-5 overflow-hidden">
+          <div className="px-6 sm:px-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-6 py-7 border-b border-divider">
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted shrink-0 sm:w-32">Venue</p>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-4">
+                  <h3 className="font-serif text-2xl font-medium text-ink">{COUPLE.venue}</h3>
+                  <a
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 inline-flex items-center gap-1.5 font-subheading text-[10px] uppercase tracking-[0.15em] text-primary hover:opacity-70 transition-opacity mt-1.5"
+                  >
+                    Directions <ExternalLink className="h-3 w-3" strokeWidth={2.2} />
+                  </a>
+                </div>
+                <p className="font-body text-sm text-muted mt-1.5">{COUPLE.address}</p>
+              </div>
             </div>
-            <a
-              href={mapsUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="self-center sm:self-auto shrink-0 inline-flex items-center gap-1.5 font-subheading text-xs uppercase tracking-[0.15em] text-primary hover:opacity-70 transition-opacity sm:mt-1"
-            >
-              Directions <ExternalLink className="h-3.5 w-3.5" strokeWidth={2.2} />
-            </a>
-          </div>
-          <div className="mt-6 pt-6 border-t border-divider">
-            <div className="flex flex-col items-center gap-1 mb-2 text-center sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:text-left">
-              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted">Dress Code</p>
-              <p className="font-serif text-xl font-medium text-ink sm:text-base sm:font-normal">{COUPLE.dressCode}</p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-6 py-7 border-b border-divider">
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted shrink-0 sm:w-32">Dress Code</p>
+              <div>
+                <h3 className="font-serif text-2xl font-medium text-ink">{COUPLE.dressCode}</h3>
+                <p className="font-body text-sm text-muted leading-relaxed mt-1.5">
+                  Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
+                </p>
+              </div>
             </div>
-            <p className="font-body text-xs text-muted leading-relaxed">
-              Tuxedos welcome, not required — but attire should be formal. Dark suits, floor-length or midi gowns.
-            </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:gap-6 py-7 border-b border-divider">
+              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted shrink-0 sm:w-32">Getting Here</p>
+              <p className="font-body text-sm text-muted leading-relaxed">
+                Plan to arrive 15 minutes before the ceremony begins. Valet parking is available at Montage, but we strongly recommend rideshare — come, celebrate, get home safely.
+              </p>
+            </div>
           </div>
-          <div className="mt-6 pt-6 border-t border-divider">
-            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-2 text-center sm:text-left">Getting Here</p>
-            <p className="font-body text-muted text-xs leading-relaxed">
-              Plan to arrive 15 minutes before the ceremony begins. Valet parking is available at Montage, but we strongly recommend rideshare. Come, celebrate, get home safely.
-            </p>
+
+          <div className="px-6 sm:px-8" style={{ background: 'rgba(30, 9, 13, 0.95)' }}>
+            <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary pt-7 pb-1">The Evening</p>
+            {SCHEDULE.map((item, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-4 sm:gap-6 py-6 ${i < SCHEDULE.length - 1 ? 'border-b border-divider' : ''}`}
+              >
+                <div className="flex items-center gap-3 shrink-0">
+                  <div className="h-6 w-6 sm:h-7 sm:w-7 shrink-0 flex items-center justify-center">
+                    <img src={item.iconSrc} alt="" className="max-h-full max-w-full w-auto h-auto object-contain" />
+                  </div>
+                  <p className={`font-serif text-lg sm:text-xl text-primary w-14 sm:w-16 ${/\d/.test(item.time) ? '' : 'italic'}`}>
+                    {item.time}
+                  </p>
+                </div>
+                <h3 className="font-serif text-2xl font-medium text-ink flex-1 min-w-0">{item.event}</h3>
+                <span className="font-body text-sm sm:text-base italic text-muted shrink-0">{item.location}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 mb-5">
-          {SCHEDULE.map((item, i) => (
-            <div key={i} className="event-card bg-surface rounded-xl px-7 py-6 border border-divider text-center w-full max-w-xs">
-              <img src={item.iconSrc} alt="" className={`${item.iconClass || 'h-16'} w-auto mx-auto mb-3 opacity-90`} />
-              <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-2">{item.event}</p>
-              <p className="font-serif text-xl font-medium text-ink">{item.time}</p>
-              <p className="font-body text-xs text-muted mt-0.5">{item.location}</p>
-            </div>
-          ))}
-        </div>
-
-        <div className="event-card bg-surface/50 rounded-xl px-6 py-5 border border-divider/60 mb-5">
-          <p className="font-body text-sm text-muted leading-relaxed">
-            <span className="text-primary font-medium">Note —</span>{' '}
-            The ceremony and cocktail hour are outdoors on the grass. Laguna Beach in late March is typically 60–65°F by evening. Bring a wrap if you run cold.
-          </p>
-        </div>
+        <p className="font-body text-sm text-muted leading-relaxed text-center italic px-4">
+          The ceremony and cocktail hour are outdoors on the grass. Laguna Beach in late March is typically 60–65°F by evening — bring a wrap if you run cold.
+        </p>
 
       </div>
     </section>
