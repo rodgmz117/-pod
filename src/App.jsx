@@ -42,7 +42,7 @@ const COUPLE = {
 const SCHEDULE = [
   { time: '5:00 pm',   event: 'Ceremony',           location: 'ocean lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
   { time: 'following', event: 'Cocktail Reception', location: 'pacific lawn',   iconSrc: '/icon-cocktail.svg' },
-  { time: 'evening',   event: 'Dinner & Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
+  { time: 'evening',   event: 'Dinner/Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
 ]
 
 const HOTELS = [
@@ -69,7 +69,7 @@ const HOTELS = [
 const FAQ_ITEMS = [
   {
     q: "What's the parking situation?",
-    a: "Valet is available at Montage, but we'd love for you to rideshare. PCH at midnight is not the move.",
+    a: "Valet is available at Montage, but we'd love for you to rideshare instead.",
   },
   {
     q: "I heard the ceremony is outdoors. Will it be cold?",
@@ -81,7 +81,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "What does Black Tie Optional actually mean?",
-    a: "You don't have to wear a tux — but attire should be on the formal side. Think dark suits, floor-length gowns, or elegant midi dresses. Save the sundresses and anything spring-casual for another occasion. If you're unsure whether it's too dressed down, it probably is.",
+    a: "You don't have to wear a tux — but attire should be on the formal side. Think dark suits, floor-length gowns, or elegant midi dresses. If you're unsure whether it's too dressed down, it probably is.",
   },
 ]
 
@@ -545,7 +545,7 @@ function Travel() {
         {/* Stay With Us — Montage room block */}
         <div className="max-w-2xl lg:max-w-3xl mx-auto mb-6">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
-          <div className="travel-card bg-surface rounded-xl p-8 border border-divider">
+          <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none p-8 shadow-lg shadow-black/30">
             <h3 className="font-serif text-xl font-medium text-ink mb-3 text-center sm:text-left">{COUPLE.venue}</h3>
             <p className="font-body text-sm text-muted leading-relaxed">
               We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
@@ -585,7 +585,7 @@ function Travel() {
                 <div
                   key={i}
                   ref={el => { hotelCardRefs.current[i] = el }}
-                  className="travel-card bg-surface rounded-xl p-6 border border-divider shadow-lg shadow-black/40 sm:shadow-none flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink"
+                  className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none p-6 shadow-lg shadow-black/40 flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink"
                 >
                   <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4 mx-auto sm:mx-0">
                     <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
@@ -613,7 +613,7 @@ function Travel() {
 
         <div className="max-w-md lg:max-w-lg mx-auto">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center">Nearest Airport</p>
-          <div className="travel-card bg-surface rounded-xl p-7 border border-divider flex flex-col items-center text-center gap-4 sm:flex-row sm:items-start sm:text-left">
+          <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none p-7 shadow-lg shadow-black/30 flex flex-col items-center text-center gap-4 sm:flex-row sm:items-start sm:text-left">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <Plane className="h-5 w-5 text-primary" strokeWidth={2.2} />
             </div>
@@ -853,7 +853,7 @@ function RSVPSection() {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
-          <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
+          <div className="rsvp-card bg-[rgba(30,9,13,0.95)] rounded-none p-12 shadow-lg shadow-black/30">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
             </div>
@@ -886,7 +886,7 @@ function RSVPSection() {
     return (
       <section ref={ref} id="rsvp" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
         <div className="max-w-lg lg:max-w-xl mx-auto px-6 text-center">
-          <div className="rsvp-card bg-surface rounded-xl p-12 border border-divider">
+          <div className="rsvp-card bg-[rgba(30,9,13,0.95)] rounded-none p-12 shadow-lg shadow-black/30">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mx-auto mb-6">
               <Heart className="h-7 w-7 text-primary" strokeWidth={2.2} />
             </div>
@@ -908,7 +908,7 @@ function RSVPSection() {
           <p className="font-body text-muted text-sm mt-5">Kindly respond by {rsvpDeadline || COUPLE.rsvpDeadline}</p>
         </div>
 
-        <div className="rsvp-card bg-surface rounded-xl p-8 border border-divider">
+        <div className="rsvp-card bg-[rgba(30,9,13,0.95)] rounded-none p-8 shadow-lg shadow-black/30">
           {!result && (
             <>
               <p className="font-body text-base text-ink mb-5">Enter the name on your invitation.</p>
@@ -1111,7 +1111,7 @@ function FAQ() {
 
         <div className="space-y-3">
           {FAQ_ITEMS.map((item, i) => (
-            <div key={i} className="faq-item bg-surface rounded-xl border border-divider overflow-hidden">
+            <div key={i} className="faq-item bg-[rgba(30,9,13,0.95)] rounded-none shadow-lg shadow-black/30 overflow-hidden">
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 className="w-full flex items-center justify-between gap-4 px-7 py-5 text-left"
