@@ -42,7 +42,7 @@ const COUPLE = {
 const SCHEDULE = [
   { time: '5:00 pm',   event: 'Ceremony',           location: 'ocean lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
   { time: 'following', event: 'Cocktail Reception', location: 'pacific lawn',   iconSrc: '/icon-cocktail.svg' },
-  { time: 'evening',   event: 'Dinner/Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
+  { time: 'evening',   event: 'Dinner / Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
 ]
 
 const HOTELS = [
@@ -650,28 +650,10 @@ function RedEnvelopes() {
         <p className="font-subheading text-sm uppercase tracking-[0.26em] text-primary">Gifts</p>
         <IconDivider className="mt-3 mb-10" />
 
-        <div className="envelope-card red-envelope-glow rounded-xl border border-white/10 overflow-hidden text-left relative" style={{ background: 'rgba(48, 6, 12, 0.96)' }}>
-          <div className="hidden sm:flex items-center justify-center pt-8 pb-6 relative border-b border-white/10 overflow-hidden">
-            <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.12 }}>
-              <svg width="100%" height="100%" viewBox="0 0 400 140" preserveAspectRatio="none">
-                <line x1="0" y1="4" x2="200" y2="118" stroke="white" strokeWidth="0.8" />
-                <line x1="400" y1="4" x2="200" y2="118" stroke="white" strokeWidth="0.8" />
-              </svg>
-            </div>
-            <img
-              src="/monogram-pr.jpg"
-              alt="R & P monogram"
-              className="relative"
-              style={{ width: '110px', height: '110px', objectFit: 'cover', borderRadius: '50%' }}
-            />
-          </div>
-
-          <div className="px-8 pb-10 sm:pt-8 pt-10 relative">
-            <p className="font-body text-muted leading-relaxed text-sm mb-5">
-              We aren't registered anywhere. In place of a traditional gift, we warmly welcome red envelopes — a tradition meaningful to us and to Paean's family. A red envelope is a gift of good fortune and blessings for the new chapter ahead.
-            </p>
+        <div className="envelope-card rounded-none shadow-lg shadow-black/30 overflow-hidden relative" style={{ background: 'rgba(30, 9, 13, 0.95)' }}>
+          <div className="px-8 py-10 relative">
             <p className="font-body text-muted leading-relaxed text-sm">
-              If you'd like to bring one, we'll have a box at the reception. There is absolutely no obligation — your presence at this celebration is the only thing we asked for when we sent the invitations.
+              Keeping with tradition — red envelopes are welcomed in lieu of a gift registry.
             </p>
             <div className="mt-8 pt-8 border-t border-divider text-center">
               <p className="font-serif italic text-sm text-primary/55">With gratitude — Rod &amp; Paean</p>
