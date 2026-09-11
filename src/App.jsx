@@ -775,6 +775,18 @@ function RSVPSection() {
   const setAttendance = (id, value) => {
     setAttendanceError(false)
     setMealError(false)
+    // If the primary guest declines, the rest of the party can't attend without them —
+    // decline everyone else in the same submission too.
+    if (id === 'primary' && value === false) {
+      setSelections(s => {
+        const next = { ...s, primary: { attending: false, meal: '', notes: '' } }
+        result.guests.forEach(g => {
+          if (g.id !== 'primary') next[g.id] = { attending: false, meal: '', notes: '' }
+        })
+        return next
+      })
+      return
+    }
     setSelections(s => ({
       ...s,
       [id]: value
@@ -804,14 +816,15 @@ function RSVPSection() {
     if (attending.some(g => g.needsName && !(guestNames[g.id] || '').trim())) { setNameError(true); return }
     setNameError(false)
 
-    if (!EMAIL_RE.test(email.trim())) { setEmailError(true); return }
+    const anyAttending = attending.length > 0
+    // Nobody's coming — no need to make them give an email to say so.
+    if (anyAttending && !EMAIL_RE.test(email.trim())) { setEmailError(true); return }
     setEmailError(false)
 
     const primary = selections['primary'] || {}
     const partyGuests = result.guests.filter(g => g.id !== 'primary')
-    const anyAttending = attending.length > 0
     await submitRSVP(result.guestId, {
-      email:                 email.trim(),
+      email:                 email.trim() || null,
       rsvp_status:          anyAttending ? 'attending' : 'declined',
       num_attending:        attending.length,
       primary_attending:    primary.attending === true,
@@ -829,23 +842,6 @@ function RSVPSection() {
       }),
     })
     setSubmitted(anyAttending ? 'attending' : 'declined')
-  }
-
-  const handleDecline = async () => {
-    if (!EMAIL_RE.test(email.trim())) { setEmailError(true); return }
-    setEmailError(false)
-
-    await submitRSVP(result.guestId, {
-      email:            email.trim(),
-      rsvp_status:      'declined',
-      num_attending:    0,
-      primary_attending: false,
-      party_members:    (result.guests || []).filter(g => g.id !== 'primary').map(g => {
-        const name = g.needsName ? (guestNames[g.id] || '').trim() : g.name
-        return { name, needsName: g.needsName && !name, attending: false }
-      }),
-    })
-    setSubmitted('declined')
   }
 
   const handleEditRSVP = () => {
@@ -974,10 +970,12 @@ function RSVPSection() {
 
               {result.guests.map(g => {
                 const sel = selections[g.id] || {}
+                const isPrimary = g.id === 'primary'
+                const lockedByPrimary = !isPrimary && selections.primary?.attending === false
                 return (
                   <div key={g.id} className={`rounded-lg border-2 transition-all overflow-hidden ${
                     sel.attending === true ? 'border-primary' : 'border-divider'
-                  }`}>
+                  } ${lockedByPrimary ? 'opacity-50' : ''}`}>
                     <div className="p-4 bg-surface-2">
                       {g.needsName ? (
                         <div className="mb-3">
@@ -987,7 +985,8 @@ function RSVPSection() {
                             value={guestNames[g.id] || ''}
                             onChange={e => setGuestName(g.id, e.target.value)}
                             placeholder="Guest's full name"
-                            className="w-full bg-surface border border-divider rounded-md px-3 py-2 font-serif text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors"
+                            disabled={lockedByPrimary}
+                            className="w-full bg-surface border border-divider rounded-md px-3 py-2 font-serif text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors disabled:cursor-not-allowed"
                           />
                         </div>
                       ) : (
@@ -996,25 +995,32 @@ function RSVPSection() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setAttendance(g.id, true)}
+                          disabled={lockedByPrimary}
                           className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 rounded-md font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
                             sel.attending === true
                               ? 'border-primary bg-primary text-white'
                               : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
-                          }`}
+                          } ${lockedByPrimary ? 'cursor-not-allowed hover:border-divider hover:text-muted' : ''}`}
                         >
                           {sel.attending === true && <Check className="h-3 w-3" />} Attending
                         </button>
                         <button
                           onClick={() => setAttendance(g.id, false)}
+                          disabled={lockedByPrimary}
                           className={`flex-1 py-2 rounded-md font-subheading text-[9px] uppercase tracking-[0.15em] border-2 transition-all ${
                             sel.attending === false
                               ? 'border-primary bg-primary text-white'
                               : 'border-divider text-muted hover:border-primary/40 hover:text-ink'
-                          }`}
+                          } ${lockedByPrimary ? 'cursor-not-allowed hover:border-divider hover:text-muted' : ''}`}
                         >
                           Not Attending
                         </button>
                       </div>
+                      {lockedByPrimary && (
+                        <p className="font-body text-[11px] text-muted mt-2">
+                          Can't attend without {result.guests[0]?.name.split(' ')[0]}.
+                        </p>
+                      )}
                     </div>
 
                     {/* Meal + notes — only when attending */}
@@ -1054,17 +1060,19 @@ function RSVPSection() {
                 )
               })}
 
-              <div className="pt-2">
-                <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Email</p>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => { setEmail(e.target.value); setEmailError(false) }}
-                  placeholder="you@example.com"
-                  className="w-full bg-surface-2 border border-divider rounded-lg px-4 py-2.5 font-body text-sm text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
-                />
-                <p className="font-body text-xs text-muted mt-1.5">We'll use this to keep you posted on wedding details.</p>
-              </div>
+              {result.guests.some(g => selections[g.id]?.attending === true) && (
+                <div className="pt-2">
+                  <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Email</p>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => { setEmail(e.target.value); setEmailError(false) }}
+                    placeholder="you@example.com"
+                    className="w-full bg-surface-2 border border-divider rounded-lg px-4 py-2.5 font-body text-sm text-ink placeholder:text-muted/30 focus:outline-none focus:border-primary/40 transition-colors"
+                  />
+                  <p className="font-body text-xs text-muted mt-1.5">We'll use this to keep you posted on wedding details.</p>
+                </div>
+              )}
 
               {emailError && (
                 <p className="font-body text-xs text-rose-400">Please enter a valid email address.</p>
@@ -1088,13 +1096,6 @@ function RSVPSection() {
                 <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
                 <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
                 <span className="btn-reveal-label">Confirm RSVP</span>
-              </button>
-
-              <button
-                onClick={handleDecline}
-                className="w-full text-center font-body text-xs text-muted hover:text-ink transition-colors pt-1"
-              >
-                {result.guests.length === 1 ? "I can't make it" : "We can't make it"}
               </button>
             </div>
           )}
