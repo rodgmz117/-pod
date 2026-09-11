@@ -1026,27 +1026,32 @@ export default function Admin() {
               </button>
             ))}
           </div>
-          {guests.length > 0 && (
-            <div className="flex items-center gap-2 ml-auto">
-              {selected.size > 0 && (
-                <button onClick={deleteSelected}
-                  className="inline-flex items-center gap-2 bg-rose-900/30 border border-rose-500/30 text-rose-400 hover:bg-rose-900/50 px-4 py-2 rounded-full font-subheading font-semibold text-xs transition-colors">
-                  <Trash2 className="h-3 w-3" /> Delete selected ({selected.size})
-                </button>
-              )}
-              <button onClick={addGuest} className="inline-flex items-center gap-1.5 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted hover:text-ink border border-divider rounded-full px-4 py-2 transition-colors">
-                <Plus className="h-3 w-3" /> Add Row
+          <div className="flex items-center gap-2 ml-auto">
+            {selected.size > 0 && (
+              <button onClick={deleteSelected}
+                className="inline-flex items-center gap-2 bg-rose-900/30 border border-rose-500/30 text-rose-400 hover:bg-rose-900/50 px-4 py-2 rounded-full font-subheading font-semibold text-xs transition-colors">
+                <Trash2 className="h-3 w-3" /> Delete selected ({selected.size})
               </button>
-            </div>
-          )}
+            )}
+            <button onClick={addGuest} className="inline-flex items-center gap-1.5 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted hover:text-ink border border-divider rounded-full px-4 py-2 transition-colors">
+              <Plus className="h-3 w-3" /> Add Row
+            </button>
+          </div>
         </div>
 
         {/* Table */}
         {guests.length === 0 ? (
-          <div onClick={() => setShowImport(true)} className="border-2 border-dashed border-divider rounded-3xl py-24 text-center cursor-pointer hover:border-primary/40 transition-colors">
-            <Upload className="h-8 w-8 text-muted/40 mx-auto mb-4" />
-            <p className="font-body text-muted text-sm">Click to import a guest list CSV</p>
-            <p className="font-body text-muted/40 text-xs mt-1">household_name · primary_guest_name · max_guests_allotted · email</p>
+          <div className="border-2 border-dashed border-divider rounded-3xl py-24 text-center">
+            <div onClick={() => setShowImport(true)} className="cursor-pointer hover:opacity-80 transition-opacity">
+              <Upload className="h-8 w-8 text-muted/40 mx-auto mb-4" />
+              <p className="font-body text-muted text-sm">Click to import a guest list CSV</p>
+              <p className="font-body text-muted/40 text-xs mt-1">household_name · primary_guest_name · max_guests_allotted · email</p>
+            </div>
+            <p className="font-body text-muted/40 text-xs mt-6">— or —</p>
+            <button onClick={addGuest}
+              className="inline-flex items-center gap-1.5 font-subheading text-[9px] uppercase tracking-[0.15em] text-muted hover:text-ink border border-divider rounded-full px-4 py-2 mt-3 transition-colors">
+              <Plus className="h-3 w-3" /> Add a guest manually
+            </button>
           </div>
         ) : (
           <div className="bg-surface rounded-3xl border border-divider overflow-hidden">
