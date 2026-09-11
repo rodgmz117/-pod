@@ -688,6 +688,8 @@ function RSVPSection() {
   const [mealError, setMealError]         = useState(false)
   const [attendanceError, setAttendanceError] = useState(false)
   const [emailError, setEmailError]       = useState(false)
+  const [nameError, setNameError]         = useState(false)
+  const [guestNames, setGuestNames]       = useState({}) // per-id typed name, for plus-ones the couple hasn't named yet
   const [rsvpDeadline, setRsvpDeadline] = useState(null)
   const [rsvpLocked, setRsvpLocked]     = useState(false)
 
@@ -724,11 +726,12 @@ function RSVPSection() {
     if (!data) { setNotFound(true); return }
     const guestList = [
       { id: 'primary', name: data.primary_guest_name },
-      ...(data.party_members || []).map((m, i) => ({ id: `party_${i}`, name: m.name })),
+      ...(data.party_members || []).map((m, i) => ({ id: `party_${i}`, name: m.name, needsName: !!m.needsName })),
     ]
 
     const hasResponded = data.rsvp_status === 'attending' || data.rsvp_status === 'declined'
     const priorSelections = {}
+    const priorNames = {}
     if (hasResponded) {
       priorSelections.primary = {
         attending: !!data.primary_attending,
@@ -741,9 +744,11 @@ function RSVPSection() {
           meal: m.meal_choice || '',
           notes: m.dietary_notes || '',
         }
+        if (m.name) priorNames[`party_${i}`] = m.name
       })
     }
     setSelections(priorSelections)
+    setGuestNames(priorNames)
     setEmail(data.email || '')
 
     setResult({ guestId: data.id, household: data.household_name, guests: guestList, hasResponded })
@@ -752,12 +757,19 @@ function RSVPSection() {
   const handleBack = () => {
     setResult(null)
     setSelections({})
+    setGuestNames({})
     setQuery('')
     setNotFound(false)
     setEmail('')
     setMealError(false)
     setAttendanceError(false)
     setEmailError(false)
+    setNameError(false)
+  }
+
+  const setGuestName = (id, name) => {
+    setNameError(false)
+    setGuestNames(n => ({ ...n, [id]: name }))
   }
 
   const setAttendance = (id, value) => {
@@ -789,6 +801,9 @@ function RSVPSection() {
     if (attending.some(g => !selections[g.id]?.meal)) { setMealError(true); return }
     setMealError(false)
 
+    if (attending.some(g => g.needsName && !(guestNames[g.id] || '').trim())) { setNameError(true); return }
+    setNameError(false)
+
     if (!EMAIL_RE.test(email.trim())) { setEmailError(true); return }
     setEmailError(false)
 
@@ -802,12 +817,16 @@ function RSVPSection() {
       primary_attending:    primary.attending === true,
       primary_meal_choice:  primary.meal || null,
       dietary_restrictions: primary.notes || null,
-      party_members: partyGuests.map(g => ({
-        name:          g.name,
-        attending:     selections[g.id]?.attending === true,
-        meal_choice:   selections[g.id]?.meal || null,
-        dietary_notes: selections[g.id]?.notes || null,
-      })),
+      party_members: partyGuests.map(g => {
+        const name = g.needsName ? (guestNames[g.id] || '').trim() : g.name
+        return {
+          name,
+          needsName:     g.needsName && !name,
+          attending:     selections[g.id]?.attending === true,
+          meal_choice:   selections[g.id]?.meal || null,
+          dietary_notes: selections[g.id]?.notes || null,
+        }
+      }),
     })
     setSubmitted(anyAttending ? 'attending' : 'declined')
   }
@@ -821,7 +840,10 @@ function RSVPSection() {
       rsvp_status:      'declined',
       num_attending:    0,
       primary_attending: false,
-      party_members:    (result.guests || []).filter(g => g.id !== 'primary').map(g => ({ name: g.name, attending: false })),
+      party_members:    (result.guests || []).filter(g => g.id !== 'primary').map(g => {
+        const name = g.needsName ? (guestNames[g.id] || '').trim() : g.name
+        return { name, needsName: g.needsName && !name, attending: false }
+      }),
     })
     setSubmitted('declined')
   }
@@ -957,7 +979,20 @@ function RSVPSection() {
                     sel.attending === true ? 'border-primary' : 'border-divider'
                   }`}>
                     <div className="p-4 bg-surface-2">
-                      <p className="font-serif text-sm font-medium text-ink mb-3">{g.name}</p>
+                      {g.needsName ? (
+                        <div className="mb-3">
+                          <p className="font-subheading text-[9px] uppercase tracking-[0.2em] text-muted mb-2">Your plus-one</p>
+                          <input
+                            type="text"
+                            value={guestNames[g.id] || ''}
+                            onChange={e => setGuestName(g.id, e.target.value)}
+                            placeholder="Guest's full name"
+                            className="w-full bg-surface border border-divider rounded-md px-3 py-2 font-serif text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors"
+                          />
+                        </div>
+                      ) : (
+                        <p className="font-serif text-sm font-medium text-ink mb-3">{g.name}</p>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={() => setAttendance(g.id, true)}
@@ -1039,6 +1074,9 @@ function RSVPSection() {
               )}
               {mealError && (
                 <p className="font-body text-xs text-rose-400">Please select a meal for each attending guest.</p>
+              )}
+              {nameError && (
+                <p className="font-body text-xs text-rose-400">Please enter your plus-one's name.</p>
               )}
 
               <button

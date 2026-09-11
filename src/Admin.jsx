@@ -38,10 +38,12 @@ function parseCSVText(text) {
 }
 
 // Splits any party member whose name contains commas (bad data, or a pasted list) into separate members.
+// An unnamed plus-one (needsName: true) is passed through untouched — it has no name to split yet.
 function splitPartyMembers(members) {
-  return (members || []).flatMap(m =>
-    (m.name || '').split(',').map(s => s.trim()).filter(Boolean).map(name => ({ ...m, name })),
-  )
+  return (members || []).flatMap(m => {
+    if (m.needsName) return [m]
+    return (m.name || '').split(',').map(s => s.trim()).filter(Boolean).map(name => ({ ...m, name }))
+  })
 }
 
 function toCSV(guests) {
@@ -798,7 +800,7 @@ export default function Admin() {
     if (!edit.primary_guest_name.trim()) return
     const guest = guests.find(g => g._id === editingId)
     if (!guest) return
-    const cleanedParty = edit.party_members.filter(m => m.name.trim()).map(m => ({ ...m, name: m.name.trim() }))
+    const cleanedParty = edit.party_members.filter(m => m.name.trim() || m.needsName).map(m => ({ ...m, name: m.name.trim() }))
     const isAttending = edit.rsvp_status === 'attending'
     const cleaned = {
       ...edit,
@@ -1177,8 +1179,25 @@ export default function Admin() {
                             </td>
                             <td className="px-4 py-2 w-20" />
                             <td className="px-4 py-2 max-w-[130px]">
-                              <input value={m.name} onChange={e => setMember({ name: e.target.value })} placeholder="Party member"
-                                className="w-full min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                              {m.needsName ? (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-body text-xs text-muted italic truncate">Named by guest</span>
+                                  <button type="button" onClick={() => setMember({ needsName: false })}
+                                    className="font-subheading text-[8px] uppercase tracking-wide text-primary/70 hover:text-primary transition-colors shrink-0">
+                                    Undo
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-1.5">
+                                  <input value={m.name} onChange={e => setMember({ name: e.target.value })} placeholder="Party member"
+                                    className="w-full min-w-0 bg-transparent border-b border-divider focus:border-primary outline-none font-body text-xs text-ink pb-1 transition-colors" />
+                                  <button type="button" onClick={() => setMember({ needsName: true, name: '' })}
+                                    title="Plus-one not named yet — let the guest fill it in on the RSVP page"
+                                    className="font-subheading text-[8px] uppercase tracking-wide text-muted hover:text-primary transition-colors shrink-0 whitespace-nowrap">
+                                    TBD?
+                                  </button>
+                                </div>
+                              )}
                             </td>
                             <td className="px-4 py-2 w-16" />
                             <td className="px-4 py-2 max-w-[160px]" />
@@ -1222,7 +1241,11 @@ export default function Admin() {
                             </td>
                             <td className="px-4 py-2 w-20" />
                             <td className="px-4 py-2 max-w-[130px]">
-                              <span className="font-body text-xs text-ink truncate">{m.name || 'Guest'}</span>
+                              {m.needsName ? (
+                                <span className="font-body text-xs text-muted italic truncate">Plus-one — named by guest</span>
+                              ) : (
+                                <span className="font-body text-xs text-ink truncate">{m.name || 'Guest'}</span>
+                              )}
                             </td>
                             <td className="px-4 py-2 w-16" />
                             <td className="px-4 py-2 max-w-[160px]" />
