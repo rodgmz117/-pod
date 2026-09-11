@@ -972,12 +972,11 @@ export default function Admin() {
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-8">
 
         {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-          <StatCard label="Households"  value={stats.households} sub={`${stats.seatsInvited} seats invited`} />
-          <StatCard label="Attending"   value={stats.attending}  sub="households" accent />
-          <StatCard label="Declined"    value={stats.declined}   sub="households" />
-          <StatCard label="Pending"     value={stats.pending}    sub="no response yet" />
-          <StatCard label="Total Seats" value={stats.seatsConfirmed} sub={`of ${stats.seatsInvited} invited`} />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
+          <StatCard label="Households"       value={stats.households}     sub={`${stats.seatsInvited} guests invited`} />
+          <StatCard label="Guests Attending" value={stats.seatsConfirmed} sub={`of ${stats.seatsInvited} invited`} accent />
+          <StatCard label="Declined"         value={stats.declined}       sub="households" />
+          <StatCard label="Pending"          value={stats.pending}        sub="no response yet" />
         </div>
 
         {fetchError && (
