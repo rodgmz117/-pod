@@ -16,6 +16,8 @@ const prefersReducedMotion =
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+const SITE_PASSWORD = import.meta.env.VITE_SITE_PASSWORD
+
 function formatDeadline(dateStr) {
   if (!dateStr) return null
   const [y, m, d] = dateStr.split('-').map(Number)
@@ -1259,7 +1261,52 @@ function Site() {
   )
 }
 
+function SiteGate({ children }) {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('site_authed') === '1')
+  const [pw, setPw]         = useState('')
+  const [pwError, setPwError] = useState(false)
+
+  const unlock = () => {
+    if (pw === SITE_PASSWORD) { sessionStorage.setItem('site_authed', '1'); setAuthed(true) }
+    else setPwError(true)
+  }
+
+  if (authed) return children
+
+  return (
+    <div className="min-h-[100dvh] flex items-center justify-center px-6" style={{ background: '#0E0406' }}>
+      <div className="w-full max-w-sm">
+        <p className="font-serif uppercase tracking-[0.2em] text-3xl text-center mb-8">
+          <span className="text-ink">Rod</span> <span className="text-primary">&amp;</span> <span className="silver-metallic">Paean</span>
+        </p>
+        <div className="bg-surface rounded-3xl p-8 border border-divider">
+          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-muted mb-6 text-center">
+            Enter Password
+          </p>
+          <input
+            type="password"
+            value={pw}
+            onChange={e => { setPw(e.target.value); setPwError(false) }}
+            onKeyDown={e => e.key === 'Enter' && unlock()}
+            placeholder="Password"
+            autoFocus
+            className="w-full bg-surface-2 border border-divider rounded-2xl px-5 py-3.5 font-body text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors mb-3"
+          />
+          {pwError && <p className="font-body text-xs text-rose-400 mb-3">Incorrect password.</p>}
+          <button onClick={unlock} className="w-full btn-amber-gradient text-white py-3.5 rounded-2xl font-subheading font-semibold text-sm">
+            Enter
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   if (window.location.hash === '#admin') return <Admin />
-  return <Site />
+  return (
+    <SiteGate>
+      <Site />
+    </SiteGate>
+  )
 }
