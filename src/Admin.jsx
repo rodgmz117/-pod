@@ -912,8 +912,12 @@ export default function Admin() {
               placeholder="Password" autoFocus
               className="w-full bg-surface-2 border border-divider rounded-2xl px-5 py-3.5 font-body text-sm text-ink placeholder:text-muted/40 focus:outline-none focus:border-primary/40 transition-colors mb-3" />
             {pwError && <p className="font-body text-xs text-rose-400 mb-3">Incorrect password.</p>}
-            <button onClick={login} className="w-full btn-amber-gradient text-white py-3.5 rounded-2xl font-subheading font-semibold text-sm">
-              Sign In
+            <button onClick={login} className="btn-frame-draw w-full py-3.5 font-serif text-base tracking-[0.05em]">
+              <span className="btn-frame-draw-edge btn-frame-draw-left" />
+              <span className="btn-frame-draw-edge btn-frame-draw-right" />
+              <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+              <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+              <span className="btn-reveal-label">Sign In</span>
             </button>
           </div>
         </div>
