@@ -4,8 +4,8 @@ import { findGuest, submitRSVP, getConfig } from './lib/supabase.js'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
-  Heart, Plane, Building,
-  ExternalLink, ChevronDown, ChevronLeft, ChevronRight, Check, Search,
+  Heart, Plane,
+  ExternalLink, ChevronDown, ChevronLeft, Check, Search,
   CalendarHeart, Compass, Send, HandHeart, MessageCircleQuestion,
 } from 'lucide-react'
 
@@ -47,27 +47,6 @@ const SCHEDULE = [
   { time: '5:00 pm',   event: 'Ceremony',           location: 'ocean lawn',     iconSrc: '/icon-ceremony.svg', iconClass: 'h-11' },
   { time: 'following', event: 'Cocktail Reception', location: 'pacific lawn',   iconSrc: '/icon-cocktail.svg' },
   { time: 'evening',   event: 'Dinner / Dancing',   location: 'grand ballroom', iconSrc: '/icon-disco.svg' },
-]
-
-const HOTELS = [
-  {
-    name: 'Le Petit Pali Laguna Beach',
-    distance: '~650 ft',
-    note: 'Literally across Coast Hwy from Montage',
-    url: 'https://www.lepetitpali.com/locations/laguna-beach',
-  },
-  {
-    name: 'The Ranch at Laguna Beach',
-    distance: '~1.5 miles',
-    note: 'Boutique resort tucked into Laguna Canyon.',
-    url: 'https://be.synxis.com/?hotel=61912&chain=10237&arrive=2027-03-26&depart=2027-03-28&adult=2&currency=USD&locale=en-US',
-  },
-  {
-    name: 'Laguna Cliffs Marriott Resort & Spa',
-    distance: '~8 miles (Dana Point)',
-    note: 'Clifftop resort, easy rideshare distance',
-    url: 'https://www.marriott.com/reservation/availabilitySearch.mi?propertyCode=SNADP&fromDate=03/26/2027&toDate=03/28/2027',
-  },
 ]
 
 const FAQ_ITEMS = [
@@ -473,9 +452,6 @@ function EventDetails() {
 // ─── Travel ───────────────────────────────────────────────────────────────────
 function Travel() {
   const ref = useRef(null)
-  const hotelScrollRef = useRef(null)
-  const hotelCardRefs = useRef([])
-  const [activeHotel, setActiveHotel] = useState(0)
 
   useEffect(() => {
     if (prefersReducedMotion) return
@@ -488,55 +464,6 @@ function Travel() {
     return () => ctx.revert()
   }, [])
 
-  // Centers a card by reading its *actual rendered* offsetLeft/offsetWidth rather than
-  // trusting vw-based padding math to line up with vw-based card widths — those are two
-  // independently-rounded CSS values that drifted further apart with every card on a real
-  // device (Chrome's mobile emulator never showed it), which is what made the old
-  // scrollBy()-with-an-approximate-increment approach get worse card over card. Reading the
-  // real DOM position sidesteps that entirely: whatever the true rendered pixels are, this
-  // computes the exact scrollLeft needed to put that card dead center.
-  const scrollToHotel = (index) => {
-    const container = hotelScrollRef.current
-    const card = hotelCardRefs.current[index]
-    if (!container || !card) return
-    const target = card.offsetLeft - (container.clientWidth - card.offsetWidth) / 2
-    container.scrollTo({ left: target, behavior: 'smooth' })
-    setActiveHotel(index)
-  }
-
-  const scrollHotels = (dir) => {
-    scrollToHotel(Math.min(HOTELS.length - 1, Math.max(0, activeHotel + dir)))
-  }
-
-  // Mirrors the container's scroll-padding to the first card's *actual* rendered width, in real
-  // px, instead of leaving it on the `px-[15vw]`/`w-[70vw]` pair — those are independently
-  // rounded by the browser and only need to be a pixel or two off for a manual swipe (as
-  // opposed to the arrow buttons above, which now bypass this and center exactly) to drift.
-  // Mobile-only: on desktop the container becomes a grid (no scroll-snap), so this is skipped.
-  useEffect(() => {
-    const container = hotelScrollRef.current
-    if (!container) return
-    const syncPadding = () => {
-      if (!window.matchMedia('(max-width: 639px)').matches) {
-        container.style.paddingLeft = ''
-        container.style.paddingRight = ''
-        container.style.scrollPaddingLeft = ''
-        container.style.scrollPaddingRight = ''
-        return
-      }
-      const firstCard = hotelCardRefs.current[0]
-      if (!firstCard) return
-      const pad = `${Math.max(0, (container.clientWidth - firstCard.offsetWidth) / 2)}px`
-      container.style.paddingLeft = pad
-      container.style.paddingRight = pad
-      container.style.scrollPaddingLeft = pad
-      container.style.scrollPaddingRight = pad
-    }
-    syncPadding()
-    window.addEventListener('resize', syncPadding)
-    return () => window.removeEventListener('resize', syncPadding)
-  }, [])
-
   return (
     <section ref={ref} id="travel" className="scroll-mt-16 pt-10 pb-20 sm:pb-28">
       <div className="max-w-6xl mx-auto px-6 sm:px-10 lg:px-16">
@@ -547,7 +474,7 @@ function Travel() {
         </div>
 
         {/* Stay With Us — Montage room block */}
-        <div className="max-w-3xl lg:max-w-4xl mx-auto mb-6">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
           <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none shadow-lg shadow-black/30 overflow-hidden flex flex-col sm:flex-row">
             <img src="/montage-stay-v2.jpg" alt={COUPLE.venue} className="w-full sm:w-1/2 sm:order-2 aspect-[4/3] object-cover shrink-0" />
@@ -570,55 +497,6 @@ function Travel() {
                   <span className="btn-reveal-label gap-1.5">Book Your Room <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
                 </a>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Alternate accommodations */}
-        <div className="max-w-4xl lg:max-w-5xl mx-auto mb-10">
-          <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-left">Alternate Accommodations</p>
-          <div className="relative sm:mx-0 -mx-6">
-            <button
-              onClick={() => scrollHotels(-1)}
-              aria-label="Previous hotel"
-              className="sm:hidden absolute left-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-deep"
-            >
-              <ChevronLeft className="h-4 w-4 text-primary/70" strokeWidth={2} />
-            </button>
-            <button
-              onClick={() => scrollHotels(1)}
-              aria-label="Next hotel"
-              className="sm:hidden absolute right-1 top-1/2 -translate-y-1/2 z-10 flex h-7 w-7 items-center justify-center rounded-md border border-primary/40 bg-deep"
-            >
-              <ChevronRight className="h-4 w-4 text-primary/70" strokeWidth={2} />
-            </button>
-            <div ref={hotelScrollRef} className="flex gap-6 sm:gap-4 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar sm:grid sm:grid-cols-3 sm:pb-0 sm:overflow-visible">
-              {HOTELS.map((hotel, i) => (
-                <div
-                  key={i}
-                  ref={el => { hotelCardRefs.current[i] = el }}
-                  className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none p-6 shadow-lg shadow-black/40 flex flex-col shrink-0 w-[70vw] snap-center sm:w-auto sm:shrink"
-                >
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-mauve/10 mb-4 mx-auto sm:mx-0">
-                    <Building className="h-4 w-4 text-mauve" strokeWidth={2.2} />
-                  </div>
-                  <p className="font-subheading text-[9px] uppercase tracking-[0.16em] text-primary mb-1 text-center sm:text-left">{hotel.distance}</p>
-                  <h3 className="font-serif text-sm font-medium text-ink mb-1 leading-snug text-center sm:text-left">{hotel.name}</h3>
-                  <p className="font-body text-xs text-muted mb-4 leading-relaxed flex-1">{hotel.note}</p>
-                  <a
-                    href={hotel.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-frame-draw inline-flex items-center gap-1.5 px-4 py-2 text-xs font-serif tracking-[0.03em] self-center"
-                  >
-                    <span className="btn-frame-draw-edge btn-frame-draw-left" />
-                    <span className="btn-frame-draw-edge btn-frame-draw-right" />
-                    <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
-                    <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
-                    <span className="btn-reveal-label gap-1.5">View Hotel <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
-                  </a>
-                </div>
-              ))}
             </div>
           </div>
         </div>
