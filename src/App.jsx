@@ -39,6 +39,8 @@ const COUPLE = {
   airport: 'John Wayne Airport (SNA)',
   airportDistance: 'Approx. 30 min via I-405 & CA-133',
   brandName: 'SO HAPPI',
+  montageBookingUrl: 'https://book.passkey.com/event/51344247/owner/49640336/home',
+  montageBookingDeadline: 'January 26, 2027',
 }
 
 const SCHEDULE = [
@@ -545,21 +547,29 @@ function Travel() {
         </div>
 
         {/* Stay With Us — Montage room block */}
-        <div className="max-w-2xl lg:max-w-3xl mx-auto mb-6">
+        <div className="max-w-3xl lg:max-w-4xl mx-auto mb-6">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
-          <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none p-8 shadow-lg shadow-black/30">
-            <h3 className="font-serif text-xl font-medium text-ink mb-3 text-center sm:text-left">{COUPLE.venue}</h3>
-            <p className="font-body text-sm text-muted leading-relaxed">
-              We're holding a room block at {COUPLE.venue} — our wedding venue — so you can stay right where the celebration is happening. Rate, minimum-night requirement, and booking deadline to come.
-            </p>
-            <div className="mt-6 text-center">
-              <span className="btn-frame-draw btn-frame-draw-muted inline-flex items-center px-6 py-3 text-muted/60 text-xs font-serif tracking-[0.03em] cursor-default">
-                <span className="btn-frame-draw-edge btn-frame-draw-left" />
-                <span className="btn-frame-draw-edge btn-frame-draw-right" />
-                <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
-                <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
-                <span className="btn-reveal-label">Booking Link Coming Soon</span>
-              </span>
+          <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none shadow-lg shadow-black/30 overflow-hidden flex flex-col sm:flex-row">
+            <img src="/montage-stay-v2.jpg" alt={COUPLE.venue} className="w-full sm:w-1/2 sm:order-2 aspect-[4/3] object-cover shrink-0" />
+            <div className="p-8 flex flex-col justify-center sm:order-1">
+              <h3 className="font-serif text-xl font-medium text-ink mb-3 text-center sm:text-left">{COUPLE.venue}</h3>
+              <p className="font-body text-sm text-muted leading-relaxed">
+                We've secured a room block so you can stay right where the celebration is happening. Book by {COUPLE.montageBookingDeadline} to guarantee your rate.
+              </p>
+              <div className="mt-6 text-center">
+                <a
+                  href={COUPLE.montageBookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-frame-draw inline-flex items-center px-6 py-3 text-xs font-serif tracking-[0.03em]"
+                >
+                  <span className="btn-frame-draw-edge btn-frame-draw-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-right" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-left" />
+                  <span className="btn-frame-draw-edge btn-frame-draw-top-right" />
+                  <span className="btn-reveal-label gap-1.5">Book Your Room <ExternalLink className="h-3 w-3" strokeWidth={2.2} /></span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
