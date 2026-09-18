@@ -310,6 +310,11 @@ function EmailModal({ guests, rsvpDeadline, onClose }) {
                       <Search className="h-3.5 w-3.5 text-muted shrink-0" />
                       <input value={recipientSearch} onChange={e => setRecipientSearch(e.target.value)} placeholder="Search guests…"
                         className="bg-transparent font-body text-xs text-ink placeholder:text-muted/40 focus:outline-none w-full" />
+                      {recipientSearch && (
+                        <button onClick={() => setRecipientSearch('')} aria-label="Clear search" className="shrink-0 text-muted hover:text-ink transition-colors">
+                          <X className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        </button>
+                      )}
                     </div>
                     <div className="flex items-center gap-1 bg-surface-2 border border-divider rounded-full px-2 py-1.5">
                       {RECIPIENT_FILTERS.map(f => (
@@ -1020,6 +1025,11 @@ export default function Admin() {
             <Search className="h-3.5 w-3.5 text-muted shrink-0" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search guests…"
               className="bg-transparent font-body text-xs text-ink placeholder:text-muted/40 focus:outline-none w-full" />
+            {search && (
+              <button onClick={() => setSearch('')} aria-label="Clear search" className="shrink-0 text-muted hover:text-ink transition-colors">
+                <X className="h-3.5 w-3.5" strokeWidth={2.2} />
+              </button>
+            )}
           </div>
           <div className="flex items-center gap-1 bg-surface border border-divider rounded-full px-2 py-1.5">
             {FILTERS.map(f => (

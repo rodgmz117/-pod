@@ -477,7 +477,7 @@ function Travel() {
         <div className="max-w-3xl lg:max-w-4xl mx-auto mb-10">
           <p className="font-subheading text-[10px] uppercase tracking-[0.2em] text-primary mb-4 text-center sm:text-right">Stay With Us</p>
           <div className="travel-card bg-[rgba(30,9,13,0.95)] rounded-none shadow-lg shadow-black/30 overflow-hidden flex flex-col sm:flex-row">
-            <img src="/montage-stay-v2.jpg" alt={COUPLE.venue} className="w-full sm:w-1/2 sm:order-2 aspect-[4/3] object-cover shrink-0" />
+            <img src="/montage-stay-v2.jpg" alt={COUPLE.venue} className="w-full sm:w-1/2 sm:order-2 aspect-[4/3] object-cover object-[center_0%] shrink-0" />
             <div className="p-8 flex flex-col justify-center sm:order-1">
               <h3 className="font-serif text-xl font-medium text-ink mb-3 text-center sm:text-left">{COUPLE.venue}</h3>
               <p className="font-body text-sm text-muted leading-relaxed">
