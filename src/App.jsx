@@ -293,10 +293,7 @@ function Hero({ scrollToSection }) {
 
   const dateBlock = (
     <div className="hero-date">
-      <p
-        className="font-serif text-2xl sm:text-4xl text-ink tracking-wide"
-        style={{ fontVariationSettings: "'wght' 300, 'CNTR' 50, 'wdth' 100" }}
-      >
+      <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
         {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
       </p>
       <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">
@@ -314,7 +311,10 @@ function Hero({ scrollToSection }) {
         { v: seconds, l: 'Sec' },
       ].map(({ v, l }) => (
         <div key={l} className="text-center">
-          <div className="font-serif text-2xl sm:text-3xl font-medium text-ink tabular-nums">
+          <div
+            className="font-reckless text-2xl sm:text-3xl font-medium text-ink tabular-nums"
+            style={{ fontVariationSettings: "'wght' 400, 'CNTR' 50, 'wdth' 100" }}
+          >
             {String(v).padStart(2, '0')}
           </div>
           <div className="font-subheading text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-white/30 mt-0.5">{l}</div>
@@ -549,7 +549,7 @@ function RedEnvelopes() {
               Keeping with tradition — red envelopes are welcomed in lieu of a gift registry.
             </p>
             <div className="mt-8 pt-8 border-t border-divider text-center">
-              <p className="font-serif italic text-sm text-primary/55">With gratitude — Rod &amp; Paean</p>
+              <p className="font-serif italic text-sm text-primary/55">With gratitude — Rod <span className="not-italic">&amp;</span> Paean</p>
             </div>
           </div>
         </div>

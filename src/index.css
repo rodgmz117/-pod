@@ -43,13 +43,6 @@
   body {
     @apply text-ink font-body overflow-x-hidden;
     background-color: #2A080E;
-    /* Pins Reckless's 3 variable axes sitewide to Rod's exact dial-in: Weight 400,
-       Contrast 50, Width 100. This overrides the implicit wght mapping from
-       font-weight utilities (font-medium/font-semibold/etc no longer change
-       anything, since 'wght' here always wins) — the point is one consistent,
-       lighter look everywhere rather than per-element weight variation. */
-    font-weight: 400;
-    font-variation-settings: 'wght' 400, 'CNTR' 50, 'wdth' 100;
   }
   ::selection { background-color: #C46420; color: white; }
   ::-webkit-scrollbar { width: 6px; }
