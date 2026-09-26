@@ -37,9 +37,9 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 3svh;
+        gap: 1.5svh;
         background: #2A0810;
-        padding: 3svh 24px;
+        padding: 1.5svh 12px;
         font-family: 'Reckless', Georgia, serif;
         font-variation-settings: 'wght' 400, 'CNTR' 50, 'wdth' 100;
         overflow: hidden;
@@ -47,14 +47,16 @@
 
       /* Fit within the viewport on BOTH axes (not just width) — width:auto +
          height:auto with both max- constraints set scales the image down to
-         whichever limit is tighter, same idea as object-fit:contain, so a short
-         phone screen shrinks the card instead of pushing the RSVP button off
-         the bottom edge. */
+         whichever limit is tighter, same idea as object-fit:contain. On a
+         typical phone (narrower/taller than the card's own aspect ratio) width
+         is what actually binds, so the real lever for "fill the screen" is
+         tight horizontal padding above, not this height cap — this is just a
+         safety net for unusual aspect ratios (e.g. landscape). */
       .invite-card {
         width: auto;
         height: auto;
-        max-width: min(480px, 100%);
-        max-height: 76svh;
+        max-width: min(520px, 100%);
+        max-height: 88svh;
         box-shadow: 0 30px 70px rgba(0,0,0,0.55);
       }
 
