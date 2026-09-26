@@ -10,6 +10,29 @@
   font-display: swap;
 }
 
+/* Reckless (variable font, trial) — self-hosted like Sweet Sans Pro above.
+   Has 3 variation axes: wght (100-900), CNTR/contrast (10-100), wdth (50-150).
+   Pinned sitewide via `font-variation-settings` on body below, per Rod's exact
+   dial-in (Weight 400 / Contrast 50 / Width 100).
+   Note: this is the foundry's TRIAL build — fine for local/dev, but a real
+   license should be purchased before this goes live on the actual domain. */
+@font-face {
+  font-family: 'Reckless';
+  src: url('/fonts/reckless-variable.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Reckless';
+  src: url('/fonts/reckless-variable-italic.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  font-style: italic;
+  font-display: swap;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -20,6 +43,13 @@
   body {
     @apply text-ink font-body overflow-x-hidden;
     background-color: #2A080E;
+    /* Pins Reckless's 3 variable axes sitewide to Rod's exact dial-in: Weight 400,
+       Contrast 50, Width 100. This overrides the implicit wght mapping from
+       font-weight utilities (font-medium/font-semibold/etc no longer change
+       anything, since 'wght' here always wins) — the point is one consistent,
+       lighter look everywhere rather than per-element weight variation. */
+    font-weight: 400;
+    font-variation-settings: 'wght' 400, 'CNTR' 50, 'wdth' 100;
   }
   ::selection { background-color: #C46420; color: white; }
   ::-webkit-scrollbar { width: 6px; }

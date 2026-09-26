@@ -21,12 +21,15 @@ export default {
         deep:           'rgba(18, 4, 8, 0.96)',
       },
       fontFamily: {
-        script:      ['"Pinyon Script"', 'cursive'],
-        serif:       ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        display:     ['"Cormorant Garamond"', 'Georgia', 'serif'],
-        subheading:  ['"Sweet Sans Pro"', 'sans-serif'],
-        body:        ['"Karla"', 'sans-serif'],
-        mono:        ['"JetBrains Mono"', 'monospace'],
+        // Every token points at Reckless (self-hosted, see index.css @font-face) — a
+        // sitewide font swap at Rod's request, keeping each usage's existing caps/
+        // tracking/size classes untouched. Fallbacks kept per-token in case it fails to load.
+        script:      ['"Reckless"', 'cursive'],
+        serif:       ['"Reckless"', 'Georgia', 'serif'],
+        display:     ['"Reckless"', 'Georgia', 'serif'],
+        subheading:  ['"Reckless"', 'sans-serif'],
+        body:        ['"Reckless"', 'sans-serif'],
+        mono:        ['"Reckless"', 'monospace'],
       },
       borderRadius: {
         '2.5xl': '1.25rem',

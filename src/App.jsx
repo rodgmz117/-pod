@@ -293,7 +293,10 @@ function Hero({ scrollToSection }) {
 
   const dateBlock = (
     <div className="hero-date">
-      <p className="font-serif text-2xl sm:text-4xl text-ink tracking-wide">
+      <p
+        className="font-serif text-2xl sm:text-4xl text-ink tracking-wide"
+        style={{ fontVariationSettings: "'wght' 300, 'CNTR' 50, 'wdth' 100" }}
+      >
         {COUPLE.dateLong} &middot; {SCHEDULE[0].time}
       </p>
       <p className="font-subheading text-[9px] sm:text-xs uppercase tracking-[0.1em] sm:tracking-[0.25em] text-white/50 mt-1.5 sm:mt-3">

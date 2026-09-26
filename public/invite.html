@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Rod Gomez & Paean Wang are getting married on March 27, 2027 at Montage Laguna Beach. You're invited." />
+
+    <meta property="og:title" content="You're Invited — Rod & Paean" />
+    <meta property="og:description" content="March 27, 2027 · Montage Laguna Beach" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.rodandpae.com/invite" />
+    <meta property="og:image" content="https://www.rodandpae.com/invite-card.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="You're Invited — Rod & Paean" />
+    <meta name="twitter:description" content="March 27, 2027 · Montage Laguna Beach" />
+    <meta name="twitter:image" content="https://www.rodandpae.com/invite-card.jpg" />
+
+    <title>You're Invited — Rod & Paean</title>
+
+    <style>
+      @font-face {
+        font-family: 'Reckless';
+        src: url('/fonts/reckless-variable.ttf') format('truetype-variations');
+        font-weight: 100 900;
+        font-stretch: 50% 150%;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 36px;
+        background: #2A0810;
+        padding: 40px 24px;
+        font-family: 'Reckless', Georgia, serif;
+        font-variation-settings: 'wght' 400, 'CNTR' 50, 'wdth' 100;
+      }
+
+      .invite-card {
+        width: 100%;
+        max-width: 480px;
+        height: auto;
+        box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+      }
+
+      /* Frame-draw CTA — identical mechanic to the main site's .btn-frame-draw */
+      .cta {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 13px 38px;
+        background: transparent;
+        color: #F3E3D6;
+        border: none;
+        border-bottom: 1px solid rgba(231, 207, 192, 0.5);
+        font-family: 'Reckless', Georgia, serif;
+        font-size: 12px;
+        letter-spacing: 0.22em;
+        text-decoration: none;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+      .cta-edge { position: absolute; background: rgba(231, 207, 192, 0.75); }
+      .cta-left, .cta-right { top: 0; bottom: 0; width: 1px; transform: scaleY(0); transition: transform .3s ease-out .15s; }
+      .cta-left { left: 0; transform-origin: bottom; }
+      .cta-right { right: 0; transform-origin: bottom; }
+      .cta-top-left, .cta-top-right { top: 0; height: 1px; width: 50%; transform: scaleX(0); transition: transform .25s ease-out; }
+      .cta-top-left { left: 0; transform-origin: left; }
+      .cta-top-right { right: 0; transform-origin: right; }
+      .cta:hover .cta-left, .cta:hover .cta-right { transform: scaleY(1); transition: transform .3s ease-out; }
+      .cta:hover .cta-top-left, .cta:hover .cta-top-right { transform: scaleX(1); transition: transform .25s ease-out .15s; }
+      @media (hover: none) {
+        .cta-edge { display: none; }
+        .cta:active { background: rgba(231, 207, 192, 0.12); }
+      }
+    </style>
+  </head>
+  <body>
+    <img class="invite-card" src="/invite-card.jpg" alt="Rod & Paean wedding invitation" />
+
+    <a class="cta" href="https://www.rodandpae.com/#rsvp">
+      <span class="cta-edge cta-left"></span>
+      <span class="cta-edge cta-right"></span>
+      <span class="cta-edge cta-top-left"></span>
+      <span class="cta-edge cta-top-right"></span>
+      <span>RSVP</span>
+    </a>
+  </body>
+</html>
