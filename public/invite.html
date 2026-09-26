@@ -30,34 +30,45 @@
 
       :root { color-scheme: dark; }
       * { box-sizing: border-box; }
-      html, body { margin: 0; height: 100%; }
+      html, body { margin: 0; height: 100%; overflow: hidden; }
       body {
         height: 100svh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 1.5svh;
         background: #2A0810;
-        padding: 1.5svh 12px;
         font-family: 'Reckless', Georgia, serif;
         font-variation-settings: 'wght' 400, 'CNTR' 50, 'wdth' 100;
-        overflow: hidden;
       }
 
-      /* Fit within the viewport on BOTH axes (not just width) — width:auto +
-         height:auto with both max- constraints set scales the image down to
-         whichever limit is tighter, same idea as object-fit:contain. On a
-         typical phone (narrower/taller than the card's own aspect ratio) width
-         is what actually binds, so the real lever for "fill the screen" is
-         tight horizontal padding above, not this height cap — this is just a
-         safety net for unusual aspect ratios (e.g. landscape). */
+      /* Full-bleed: the card fills the entire screen edge-to-edge (object-fit:
+         cover) rather than sitting "contained" with padding around it — on a
+         phone whose aspect ratio doesn't match the card's, contain-fit always
+         leaves visible dead space no matter how tight the margins get, since
+         one axis will always come up short. Cover crops slightly into the
+         card's own blank top/bottom margin instead, which reads as intentional
+         full-bleed rather than a floating card. */
       .invite-card {
-        width: auto;
-        height: auto;
-        max-width: min(520px, 100%);
-        max-height: 88svh;
-        box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      /* Subtle scrim behind the button only, for legibility over the photo
+         regardless of exactly where the crop lands */
+      .scrim {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        height: 22svh;
+        background: linear-gradient(to top, rgba(20,4,7,0.65), rgba(20,4,7,0));
+        pointer-events: none;
+      }
+
+      .cta-wrap {
+        position: fixed;
+        left: 50%;
+        bottom: 4svh;
+        transform: translateX(-50%);
       }
 
       /* Frame-draw CTA — identical mechanic to the main site's .btn-frame-draw */
@@ -95,13 +106,16 @@
   </head>
   <body>
     <img class="invite-card" src="/invite-card.jpg" alt="Rod & Paean wedding invitation" />
+    <div class="scrim" aria-hidden="true"></div>
 
-    <a class="cta" href="https://www.rodandpae.com/#rsvp">
-      <span class="cta-edge cta-left"></span>
-      <span class="cta-edge cta-right"></span>
-      <span class="cta-edge cta-top-left"></span>
-      <span class="cta-edge cta-top-right"></span>
-      <span>RSVP</span>
-    </a>
+    <div class="cta-wrap">
+      <a class="cta" href="https://www.rodandpae.com/#rsvp">
+        <span class="cta-edge cta-left"></span>
+        <span class="cta-edge cta-right"></span>
+        <span class="cta-edge cta-top-left"></span>
+        <span class="cta-edge cta-top-right"></span>
+        <span>RSVP</span>
+      </a>
+    </div>
   </body>
 </html>
