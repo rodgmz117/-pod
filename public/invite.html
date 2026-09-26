@@ -102,6 +102,36 @@
         .cta-edge { display: none; }
         .cta:active { background: rgba(231, 207, 192, 0.12); }
       }
+
+      /* Desktop/wide viewports: full-bleed cover is right for a phone (narrow,
+         tall — cropping into the card's blank margins), but on a wide screen it
+         crops the card down to a tight, badly-zoomed sliver instead. Past this
+         breakpoint, switch to a centered, uncropped "show the whole card" card
+         with the button in normal flow below it rather than overlaid. */
+      @media (min-width: 768px) {
+        html, body { overflow: auto; }
+        body {
+          height: auto;
+          min-height: 100svh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 32px;
+          padding: 48px 24px;
+        }
+        .invite-card {
+          position: static;
+          width: auto;
+          height: auto;
+          max-width: min(480px, 100%);
+          max-height: 80svh;
+          object-fit: contain;
+          box-shadow: 0 30px 70px rgba(0,0,0,0.55);
+        }
+        .scrim { display: none; }
+        .cta-wrap { position: static; transform: none; }
+      }
     </style>
   </head>
   <body>
