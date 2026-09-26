@@ -47,16 +47,9 @@
          full-bleed rather than a floating card. */
       .invite-card {
         position: fixed;
-        left: 50%;
-        top: 50%;
+        inset: 0;
         width: 100%;
-        /* Height already exactly matches the viewport at plain 100% (this phone
-           aspect ratio is narrower than the card's own, so cover crops only
-           left/right, never top/bottom) — meaning there's zero vertical slack to
-           reposition within. Overzooming to 130% first creates that slack, then
-           the translateY nudges the whole thing up within it. */
-        height: 130%;
-        transform: translate(-50%, -50%) translateY(-8%);
+        height: 100%;
         object-fit: cover;
         object-position: center;
       }
