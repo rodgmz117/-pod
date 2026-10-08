@@ -804,7 +804,7 @@ function RSVPSection() {
         <div className="rsvp-card bg-[rgba(30,9,13,0.95)] rounded-none p-8 shadow-lg shadow-black/30">
           {!result && (
             <>
-              <p className="font-body text-base text-ink mb-5">Search for the name on your invitation.</p>
+              <p className="font-body text-base text-ink mb-5">Enter the name on your invitation.</p>
               <div className="flex gap-3">
                 <input
                   type="text"
