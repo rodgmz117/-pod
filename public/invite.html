@@ -71,37 +71,35 @@
         transform: translateX(-50%);
       }
 
-      /* Frame-draw CTA — identical mechanic to the main site's .btn-frame-draw */
+      /* Solid filled CTA — reads as an obvious button rather than the site's
+         usual understated underline link, since this page's whole job is
+         getting the tap. Same amber-gradient recipe used for primary actions
+         elsewhere on the site, square corners to match this page's engraved-
+         card aesthetic rather than Admin's rounded utilitarian style. */
       .cta {
-        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 13px 38px;
-        background: transparent;
-        color: #F3E3D6;
+        padding: 16px 52px;
+        background: linear-gradient(160deg, #E0B848 0%, #D07018 55%, #B84010 100%);
+        box-shadow: 0 6px 24px rgba(196, 100, 20, 0.45);
+        color: #2A0810;
         border: none;
-        border-bottom: 1px solid rgba(231, 207, 192, 0.5);
         font-family: 'Reckless', Georgia, serif;
-        font-size: 12px;
-        letter-spacing: 0.22em;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.2em;
         text-decoration: none;
         text-transform: uppercase;
         cursor: pointer;
+        transition: box-shadow 0.2s ease, transform 0.2s ease;
       }
-      .cta-edge { position: absolute; background: rgba(231, 207, 192, 0.75); }
-      .cta-left, .cta-right { top: 0; bottom: 0; width: 1px; transform: scaleY(0); transition: transform .3s ease-out .15s; }
-      .cta-left { left: 0; transform-origin: bottom; }
-      .cta-right { right: 0; transform-origin: bottom; }
-      .cta-top-left, .cta-top-right { top: 0; height: 1px; width: 50%; transform: scaleX(0); transition: transform .25s ease-out; }
-      .cta-top-left { left: 0; transform-origin: left; }
-      .cta-top-right { right: 0; transform-origin: right; }
-      .cta:hover .cta-left, .cta:hover .cta-right { transform: scaleY(1); transition: transform .3s ease-out; }
-      .cta:hover .cta-top-left, .cta:hover .cta-top-right { transform: scaleX(1); transition: transform .25s ease-out .15s; }
-      @media (hover: none) {
-        .cta-edge { display: none; }
-        .cta:active { background: rgba(231, 207, 192, 0.12); }
+      .cta:hover {
+        background: linear-gradient(160deg, #ECC858 0%, #E08028 55%, #C85020 100%);
+        box-shadow: 0 8px 30px rgba(196, 100, 20, 0.6);
+        transform: translateY(-1px);
       }
+      .cta:active { transform: translateY(0); box-shadow: 0 4px 16px rgba(196, 100, 20, 0.45); }
 
       /* Desktop/wide viewports: full-bleed cover is right for a phone (narrow,
          tall — cropping into the card's blank margins), but on a wide screen it
@@ -142,13 +140,7 @@
     <div class="scrim" aria-hidden="true"></div>
 
     <div class="cta-wrap">
-      <a class="cta" href="https://www.rodandpae.com/#rsvp">
-        <span class="cta-edge cta-left"></span>
-        <span class="cta-edge cta-right"></span>
-        <span class="cta-edge cta-top-left"></span>
-        <span class="cta-edge cta-top-right"></span>
-        <span>RSVP</span>
-      </a>
+      <a class="cta" href="https://www.rodandpae.com/#rsvp">RSVP</a>
     </div>
   </body>
 </html>
