@@ -873,6 +873,11 @@ export default function Admin() {
       attending:  attending.length,
       declined:   guests.filter(g => g.rsvp_status === 'declined').length,
       pending:    guests.filter(g => g.rsvp_status === 'pending' || !g.rsvp_status).length,
+      // Declined/pending households haven't partially confirmed anything, so every
+      // seat they were allotted counts toward these guest-level totals (unlike
+      // seatsConfirmed, which only counts people individually marked attending).
+      seatsDeclined: guests.filter(g => g.rsvp_status === 'declined').reduce((s, g) => s + (parseInt(g.max_guests_allotted) || 1), 0),
+      seatsPending:  guests.filter(g => g.rsvp_status === 'pending' || !g.rsvp_status).reduce((s, g) => s + (parseInt(g.max_guests_allotted) || 1), 0),
       meals: {
         beef:       allMeals.filter(m => m === 'beef').length,
         fish:       allMeals.filter(m => m === 'fish').length,
@@ -984,8 +989,8 @@ export default function Admin() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           <StatCard label="Households"       value={stats.households}     sub={`${stats.seatsInvited} guests invited`} />
           <StatCard label="Guests Attending" value={stats.seatsConfirmed} sub={`of ${stats.seatsInvited} invited`} accent />
-          <StatCard label="Declined"         value={stats.declined}       sub="households" />
-          <StatCard label="Pending"          value={stats.pending}        sub="no response yet" />
+          <StatCard label="Declined"         value={stats.seatsDeclined}  sub={`${stats.declined} household${stats.declined === 1 ? '' : 's'} declined`} />
+          <StatCard label="Pending"          value={stats.seatsPending}   sub="no response yet" />
         </div>
 
         {fetchError && (
